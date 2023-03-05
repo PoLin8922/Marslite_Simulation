@@ -32,19 +32,14 @@
         </friction>
           </surface>
       </collision>
-
       <visual name="visual">
 	    <geometry>
           <mesh>
             <uri>model://my_store_shelf_01/meshes/my_store_shelf_01.dae</uri>
           </mesh>
-          <box>
-            <!-- <size>7.5 0.2 2.8</size> -->
-            <size>7.5 10 2.8</size>
-          </box>
         </geometry>
       <meta> <layer> 2 </layer></meta>
-      </visual>
+</visual>
     </link>
 <static>1</static>
   </model>

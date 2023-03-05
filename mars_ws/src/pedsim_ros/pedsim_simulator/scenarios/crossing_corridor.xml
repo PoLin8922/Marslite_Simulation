@@ -3,7 +3,7 @@
 <scenario>
     <!--Obstacles-->
     <!-- stage1 -->
-    <!-- <obstacle x1="-2" y1="-6" x2="-2" y2="-4"/>
+    <obstacle x1="-2" y1="-6" x2="-2" y2="-4"/>
     <obstacle x1="2" y1="-6" x2="2" y2="-4"/>
     
     <obstacle x1="-2" y1="-4" x2="-4" y2="-4"/>
@@ -21,7 +21,7 @@
     <obstacle x1="4" y1="2" x2="8" y2="2"/>
 
     <obstacle x1="-2" y1="4" x2="-2" y2="6"/>
-    <obstacle x1="2" y1="4" x2="2" y2="6"/> -->
+    <obstacle x1="2" y1="4" x2="2" y2="6"/>
 
 
 
