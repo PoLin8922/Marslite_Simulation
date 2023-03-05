@@ -1,0 +1,45 @@
+<launch>
+    <!-- this file is auto generated using pedsim_gazebo_plugin pkg -->
+
+    <arg name="use_sim_time" default="true"/>
+
+    <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
+         <arg name="world_name" value="$(find pedsim_gazebo_plugin)/worlds/crossing_corridor.world"/>
+         <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    </include> -->
+
+
+    <arg name="world_name" default="worlds/empty.world"/>
+
+    <!-- Gazebo launch setting -->
+    <arg name="paused" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+
+    <!-- Robot urdf setting -->
+    <arg name="laser_enabled" default="true" />
+    <arg name="realsense_enabled" default="true" />
+
+
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world_name)"/> 
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="headless" value="$(arg headless)"/>
+    </include>
+
+
+
+
+
+
+    <!-- this node spawn pedsim actors to gazebo once, then the plugin updates their pose -->
+    <node pkg="pedsim_gazebo_plugin" type="spawn_pedsim_agents.py" name="spawn_pedsim_agents"  output="screen">
+    </node>
+
+</launch>
+
