@@ -1,5 +1,11 @@
 socially-store-robot
 ===
+Requirement
+---
+* Nvidia driver >= 410.48
+* Docker >= 19.03.13
+* Nvidia-docker >= 2.5.0
+
 Installation
 ---
 Pull docker image
