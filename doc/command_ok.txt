@@ -1,11 +1,11 @@
 source docker_run cuda10
 source docker_run same
 #////////gym/////////////
-roslaunch pedsim_simulator gym_crowd_environment.launch scene_file:=crossing_corridor.xml
-roslaunch pedsim_gazebo_plugin crossing_corridor.launch
-roslaunch mars_lite_description spawn_mars.launch
-rosservice call /pedsim_simulator/unpause_simulation "{}"
-roslaunch scan yolodetect.launch
+cmd1	roslaunch pedsim_simulator gym_crowd_environment.launch scene_file:=crossing_corridor.xml
+cmd2	roslaunch pedsim_gazebo_plugin crossing_corridor.launch
+cmd3	roslaunch mars_lite_description spawn_mars.launch
+cmd4	rosservice call /pedsim_simulator/unpause_simulation "{}"
+cmd5	roslaunch scan yolodetect.launch
 
 
 #/////////////testing//////////////////////////////////
@@ -14,7 +14,7 @@ roslaunch mars_lite_moveit_config mars_lite_moveit_planning_execution_gz.launch
 
 
 ##path finding 
-roslaunch path_finding astar_path_finding_with_social_proxemics.launch
+cmd6	roslaunch path_finding astar_path_finding_with_social_proxemics.launch
 ##path following
 roslaunch path_tracking path_tracking_autonomous.launch
 

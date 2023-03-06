@@ -24,4 +24,4 @@ file----->index-------->local repository------->remote repository
 ###########################
 
 docker login
-docker push oocami35029287/marslite_simulation
+docker push oocami35029287/marslite_simulation:cuda10

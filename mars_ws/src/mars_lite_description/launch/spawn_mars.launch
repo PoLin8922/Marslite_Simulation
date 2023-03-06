@@ -4,12 +4,14 @@
     <arg name="robot_init_y" default="0.0" />
     <arg name="laser_enabled" default="true" />
     <arg name="realsense_enabled" default="true" />
+    <arg name="realsense_2_enabled" default="false" />
 
     <!-- Load the URDF into the ROS Parameter Server -->
     <param name="robot_description"
         command="$(find xacro)/xacro '$(find mars_lite_description)/urdf/mars_lite_with_gripper.urdf.xacro' 
                  laser_enabled:=$(arg laser_enabled)
-                 realsense_enabled:=$(arg realsense_enabled)" />
+                 realsense_enabled:=$(arg realsense_enabled)
+                 realsense_2_enabled:=$(arg realsense_2_enabled)" />
 
     <!-- Spawn the robot model -->
     <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" 

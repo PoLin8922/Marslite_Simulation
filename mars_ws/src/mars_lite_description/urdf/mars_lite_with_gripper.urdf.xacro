@@ -263,7 +263,7 @@
   </xacro:if>
 
   <!-- Intel realsense D435 -->
-  <xacro:if value="$(arg realsense_enabled)">
+  <xacro:if value="$(arg realsense_2_enabled)">
   <xacro:include filename="$(find mars_lite_description)/urdf/accessories/intel_realsense.urdf.xacro"/>
     <xacro:intel_realsense_mount prefix="camera2" topic="camera2" parent_link="realsense_mount_2"/>
     
