@@ -4,11 +4,19 @@ Installation
 ---
 Pull docker image
 ```
-docker pull oocami35029287/marslite_simulation
+docker pull oocami35029287/marslite_simulation:cuda10
 ```
 Pull this github
 ```
 git@github.com:oocami35029287/socially-store-robot.git
+```
+
+Make files
+---
+Before you start, you should compile all the required files.
+```bash
+source mars_ws/compile_py36.sh
+source yolo_ws/compile_py36.sh
 ```
 To run the corrider simulation
 ---
@@ -44,7 +52,7 @@ roslaunch scan yolodetect.launch
 sourcemars
 roslaunch turtlebot3_navigation globalmap.launch
 ```
-### Next part haven't been finished yet.
+####  Next part haven't been finished yet.
 6. To navigate robot
 ```bash
 #terminal 6 (path finding)
@@ -55,6 +63,17 @@ sourcemars
 roslaunch path_tracking path_tracking_autonomous.launch
 ```
 
+####  Use aliases
+Also, you can do the samething above using aliases in docker container.
+```bash
+#each command in different terminal
+cmd1
+cmd2
+cmd3
+cmd4
+cmd5
+cmd6
+```
 
 Only open mars model
 ---
@@ -63,8 +82,8 @@ If you only want to open gazebo model in gazebo you can try this.
 #terminal 1 (open gazebo in mars)
 sourcemars
 roslaunch mars_lite_description mars_gazebo.launch realsense_enabled:=true world:=world
-#terminal 2 
-sourcemars (see all state in rviz and open moveit)
+#terminal 2 (see all state in rviz and open moveit)
+sourcemars
 roslaunch mars_lite_moveit_config mars_lite_moveit_planning_execution_gz.launch
 ```
 reference
