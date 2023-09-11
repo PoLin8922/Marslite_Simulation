@@ -22,6 +22,7 @@ import time
 import copy
 import numpy as np
 from AB3DMOT_libs.model import AB3DMOT
+import message_filters 
 
 import rospy
 from nav_msgs.msg import Odometry
@@ -50,13 +51,18 @@ class MultiObjectTrackingNode(object):
         
         
         # Tracker
-        self.mot_tracker = AB3DMOT(max_age=6, min_hits=2)
+        self.mot_tracker = AB3DMOT(max_age=6, min_hits=3)
 
 
         self.pub_trk3d_vis = rospy.Publisher('trk3d_vis', MarkerArray, queue_size=1)
         self.pub_trk3d_result = rospy.Publisher('trk3d_result', Trk3DArray, queue_size=1)
-        self.sub_det3d = rospy.Subscriber("det3d_result", Det3DArray, self.det_result_cb, queue_size=5)
-        self.sub_scan = rospy.Subscriber("scan",LaserScan,self.scan_cb)
+        
+
+        self.sub_det3d = rospy.Subscriber("det3d_result", Det3DArray,self.det_result_cb)
+        # self.sub_scan = message_filters.Subscriber("scan",LaserScan)
+        # self.sub_det3d = message_filters.Subscriber("det3d_result", Det3DArray)
+        # ts = message_filters.TimeSynchronizer([self.sub_det3d,self.sub_scan], queue_size=5)
+        # ts.registerCallback(self.det_result_cb)
         # self.sub_odom = rospy.Subscriber("odom_filtered", Odometry, self.odom_cb, queue_size=1)
 
         # Ego velocity init
@@ -67,8 +73,9 @@ class MultiObjectTrackingNode(object):
         
         rospy.loginfo(rospy.get_name() + ' is ready.')
 
-    def scan_cb(self,scan_msg):
-        self.trk3d_array.scan = scan_msg.ranges
+    # def scan_cb(self,scan_msg):
+    #     print("scan ")
+    #     self.trk3d_array.scan = scan_msg.ranges
     def odom_cb(self, odom_msg):
         self.ego_velocity = odom_msg.twist.twist.linear
         self.ego_theta = odom_msg.twist.twist.angular
@@ -76,7 +83,8 @@ class MultiObjectTrackingNode(object):
         # print("vy",self.ego_velocity.y)
 
 
-    def det_result_cb(self, msg):
+    def det_result_cb(self, msg): #msg for person position and scan_msg for laserscanning
+        #print("det")
         dets_list = None
         info_list = None
         
@@ -91,7 +99,7 @@ class MultiObjectTrackingNode(object):
 
         
         # if len(dets_list.shape) == 1: dets_list = np.expand_dims(dets_list, axis=0)
-        # if len(info_list.shape) == 1: info_list = np.expand_dims(info_list, axis=0)
+        # if len(info_list.shape) == 1: info_list = np.expand_dims(info_list, axis=0)msg
         # if dets_list.shape[1] == 0:
         #     # If there is no detection, just pack the laserscan topic for localmap creation
         #     trk3d_array = Trk3DArray()
@@ -107,9 +115,10 @@ class MultiObjectTrackingNode(object):
             if len(dets_list.shape) == 1: dets_list = np.expand_dims(dets_list, axis=0)
             if len(info_list.shape) == 1: info_list = np.expand_dims(info_list, axis=0)
             dets_all = {'dets': dets_list, 'info': info_list}
-
+            print("O")
             trackers = self.mot_tracker.update(dets_all)
         else:
+            print("X")
             # if no detection in a sequence
             trackers = self.mot_tracker.update_with_no_dets()
         
@@ -133,7 +142,7 @@ class MultiObjectTrackingNode(object):
         # sys.stdout.write("{:.4f} s \r".format(delta_t))
         # sys.stdout.flush()
         self.last_time = time_now
-
+        self.trk3d_array.trks_list = []
         for idx, d in enumerate(trackers):
             '''
                 x, y, r, vx, vy, id, confidence, class_id
@@ -166,14 +175,16 @@ class MultiObjectTrackingNode(object):
             trk3d_msg.class_id = int(d[7])
             trk3d_msg.dangerous = dangerous
             self.trk3d_array.trks_list.append(trk3d_msg)
-            print("------------------------------------")
-            print("x,y = ",trk3d_msg.x, trk3d_msg.y)
-            print("trk3d_msg.yaw =", trk3d_msg.yaw*180/math.pi)
-            print("peolple speed:",speed)
+            # print("------------------------------------")
+            # print("x,y = ",trk3d_msg.x, trk3d_msg.y)
+            # print("trk3d_msg.yaw =", trk3d_msg.yaw*180/math.pi)
+            # print("peolple speed:",speed)
+
+            
             # Visualization
             marker = Marker()
-            marker.header.frame_id = msg.header.frame_id #'odom'
-            marker.header.stamp = rospy.Time()
+            marker.header.frame_id ='odom' #msg.header.frame_id #'odom'
+            marker.header.stamp = rospy.Time().now()
             marker.ns = 'object'
             marker.id = idx
             marker.lifetime = rospy.Duration(MARKER_LIFETIME)#The lifetime of the bounding-box, you can modify it according to the power of your machine.
@@ -194,10 +205,11 @@ class MultiObjectTrackingNode(object):
             marker.pose.orientation.w = q[3]
             marker_array.markers.append(marker)
 
+
             # Show tracking ID
             str_marker = Marker()
-            str_marker.header.frame_id = msg.header.frame_id #'odom'
-            str_marker.header.stamp = rospy.Time()
+            str_marker.header.frame_id = 'odom' #msg.header.frame_id #'odom'
+            str_marker.header.stamp = rospy.Time().now()
             str_marker.ns = 'text'
             str_marker.id = idx
             str_marker.scale.z = 0.4 #The size of the text
@@ -225,10 +237,12 @@ class MultiObjectTrackingNode(object):
 
         self.pub_trk3d_vis.publish(marker_array)
 
-        self.trk3d_array.header.frame_id = msg.header.frame_id
+        #self.trk3d_array.scan = scan_msg
+        self.trk3d_array.header.frame_id = 'odom' #msg.header.frame_id
         self.trk3d_array.header.stamp = rospy.Time().now()
         #trk3d_array.pointcloud = msg.pointcloud
         self.pub_trk3d_result.publish(self.trk3d_array)
+
 
         # self.last_time = time.time()
 

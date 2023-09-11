@@ -2,6 +2,7 @@
 <launch>
     <arg name="robot_init_x" default="0.0" />
     <arg name="robot_init_y" default="0.0" />
+    <arg name="robot_init_rot" default="0" />
     <arg name="laser_enabled" default="true" />
     <arg name="realsense_enabled" default="true" />
     <arg name="realsense_2_enabled" default="false" />
@@ -13,11 +14,14 @@
                  realsense_enabled:=$(arg realsense_enabled)
                  realsense_2_enabled:=$(arg realsense_2_enabled)" />
 
+
+
     <!-- Spawn the robot model -->
     <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" 
         args="-param robot_description -urdf
                 -x $(arg robot_init_x)
                 -y $(arg robot_init_y)
+                -Y $(arg robot_init_rot)
                 -model mars_lite
                 -J mars_lite::tm_left_wheel 0
                 -J mars_lite::tm_right_wheel 0
@@ -32,6 +36,7 @@
                 />
 
     <!-- convert joint states to TF transforms for rviz, etc -->
+    <!-- <param name="robot_description" command="cat $(find mars_lite_description)/urdf/mars_lite_with_gripper.urdf.xacro" /> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
         <!-- <param name="publish_frequency" type="double" value="50.0" /> -->
         <!-- <param name="tf_prefix" type="string" value="" /> -->
@@ -43,11 +48,10 @@
         args="spawn arm_controller" respawn="false" output="screen"/>
 
     <!-- Load Robotiq gripper controllers -->
-    <rosparam file="$(find mars_lite_moveit_config)/config/gripper_controller.yaml" command="load" /> 
     <rosparam file="$(find mars_lite_moveit_config)/config/mars_gripper_controller_robotiq.yaml" command="load"/>
     <node name="gripper_controller_spawner" pkg="controller_manager" type="controller_manager"
         args="spawn gripper_controller" respawn="false" output="screen"/>
-        
+
     <!-- Fake Calibration -->
     <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
         args="pub /calibrated std_msgs/Bool true" />
@@ -69,7 +73,8 @@
             <param name="laserscan_topics" value ="/front_scan /back_scan" /> <!-- LIST OF THE LASER SCAN TOPICS TO SUBSCRIBE -->
             <param name="angle_min" value="-3.14159274101"/>
             <param name="angle_max" value="3.14159274101"/>
-            <param name="angle_increment" value="0.05"/>
+            <!-- <param name="angle_increment" value="0.05"/>  -->
+            <param name="angle_increment" value="0.01"/> 
             <param name="scan_time" value="0.025"/>
             <param name="range_min" value="0.23"/>
             <param name="range_max" value="60.0"/>

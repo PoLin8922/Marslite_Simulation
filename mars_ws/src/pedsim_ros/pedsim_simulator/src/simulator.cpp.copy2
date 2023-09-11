@@ -154,6 +154,7 @@ void Simulator::runSimulation() {
 
     if (!paused_) {
       updateRobotPositionFromTF();
+      updateTransformMapToOdom();
       SCENE.moveAllAgents();
 
       publishAgents();
@@ -329,6 +330,18 @@ void Simulator::updateRobotPositionFromTF() {
   }
 }
 
+void Simulator::updateTransformMapToOdom(){
+	try {
+		  transform_listener_->lookupTransform("map", frame_id_,
+		                                       ros::Time(0), mapTransform);
+		} catch (tf::TransformException& e) {
+		  ROS_WARN_STREAM_THROTTLE(
+		      5.0,
+		      "TF lookup from " << "map" << " to " << "odom"
+		      << " failed. Reason: " << e.what());
+		  return;
+		}
+}
 void Simulator::publishRobotPosition() {
   if (robot_ == nullptr) return;
 
@@ -374,15 +387,26 @@ void Simulator::publishAgents() {
 
     state.id = a->getId();
     state.type = a->getType();
-    state.pose.position.x = a->getx();
-    state.pose.position.y = a->gety();
-    state.pose.position.z = a->getz();
-    auto theta = std::atan2(a->getvy(), a->getvx());
+
+    //++++++++++++
+    tf::Transform robotTransform;
+    robotTransform.setOrigin(tf::Vector3(a->getx(), a->gety(), a->getz()));
+    robotTransform.setRotation(tf::createQuaternionFromRPY(a->getvx(), a->getvy(), a->getvz()));
+    tf::Transform outTransform = mapTransform * robotTransform;
+    tf::Vector3 outPosition = outTransform.getOrigin();
+    tf::Quaternion outRotation = outTransform.getRotation();
+    double r,p,y;
+    tf::Matrix3x3(outRotation).getRPY(r,p,y);
+    //+++++++++++
+    state.pose.position.x = outPosition.x();
+    state.pose.position.y = outPosition.x();
+    state.pose.position.z = outPosition.x();
+    auto theta = std::atan2(p, r);
     state.pose.orientation = pedsim::angleToQuaternion(theta);
 
-    state.twist.linear.x = a->getvx();
-    state.twist.linear.y = a->getvy();
-    state.twist.linear.z = a->getvz();
+    state.twist.linear.x = r;
+    state.twist.linear.y = p;
+    state.twist.linear.z = y;
 
 
 	

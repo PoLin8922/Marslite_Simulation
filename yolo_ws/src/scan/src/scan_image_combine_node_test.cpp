@@ -142,7 +142,7 @@ ScanImageCombineNode::ScanImageCombineNode(ros::NodeHandle nh, ros::NodeHandle p
     ros::param::param<string>("~scan_topic", scan_topic, "/scan_pointcloud_filtered");
     ros::param::param<string>("~img_topic", img_topic, "/camera1/color/image_raw"); 
     ros::param::param<string>("~caminfo_topic", caminfo_topic, "/camera1/color/camera_info"); 
-    ros::param::param<string>("~localmap_frameid", localmap_frameid_, "base_link");
+    ros::param::param<string>("~localmap_frameid", localmap_frameid_, "camera1_realsense_gazebo");
 
     // ROS publisher & subscriber & message filter
     pub_combined_image_ = nh_.advertise<sensor_msgs::Image>("debug_reprojection", 1);
@@ -167,9 +167,9 @@ ScanImageCombineNode::ScanImageCombineNode(ros::NodeHandle nh, ros::NodeHandle p
     tflistener_ptr_ = new tf::TransformListener();
     ROS_INFO("Wait for TF from odom to %s in 10 seconds...", localmap_frameid_.c_str());
     try{
-        tflistener_ptr_->waitForTransform( "odom", localmap_frameid_,
+        tflistener_ptr_->waitForTransform( "base_link", localmap_frameid_,
                                     ros::Time(), ros::Duration(5));
-        tflistener_ptr_->lookupTransform( "odom", localmap_frameid_,
+        tflistener_ptr_->lookupTransform( "base_link", localmap_frameid_,
                                     ros::Time(), tf_base2odom_);
         ROS_INFO("Done.");
     }
@@ -301,7 +301,7 @@ cv::Point2d ScanImageCombineNode::point_pointcloud2pixel(double x_from_camera, d
 
 void ScanImageCombineNode::odom_transformed(tf::Vector3 &input,tf::Vector3 &output,tf::StampedTransform tf_base2odom_){
     
-    output = tf_base2odom_ * input;
+    output = tf_base2odom_.getBasis() * input + tf_base2odom_.getOrigin();
     
     ///tf::Vector3 trans_base2odom = tf_base2odom_.getOrigin();
     ///tf::Matrix3x3 rot_base2odom = tf_base2odom_.getBasis();
@@ -429,12 +429,15 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
             Eigen::Vector3f center;
             pcl::getMinMax3D(*(obj_list[i].cloud), min_point, max_point);
             center = (min_point.getVector3fMap() + max_point.getVector3fMap()) / 2.0;
-            obj_list[i].location.x = center[0];
-            obj_list[i].location.y = center[1];
-            obj_list[i].location.z = center[2];
-            tf::Vector3 position_vec(obj_list[i].location.z+0.41,
-                                     -obj_list[i].location.x, 
-                                     obj_list[i].location.y);
+            // obj_list[i].location.x = center[0];
+            // obj_list[i].location.y = center[1];
+            // obj_list[i].location.z = center[2];
+            // tf::Vector3 position_vec(obj_list[i].location.z+0.41,
+            //                          -obj_list[i].location.x, 
+            //                          obj_list[i].location.y);
+            tf::Vector3 position_vec(center[0],
+                                     center[1], 
+                                     center[2]);
             tf::Vector3 position_vec1;
             odom_transformed(position_vec,position_vec1,tf_base2odom_);
             obj_list[i].location.x=position_vec1.getX();
@@ -513,7 +516,7 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
 
     // Publish detection result
     if(pub_detection3d_.getNumSubscribers() > 0) {
-        detection_array.header.frame_id = cloud_raw_ptr->header.frame_id;
+        detection_array.header.frame_id = "base_link";
         detection_array.header.stamp = ros::Time::now();
         detection_array.pointcloud = *cloud_raw_ptr;
         pub_detection3d_.publish(detection_array);

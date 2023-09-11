@@ -1,13 +1,16 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 70
+    Help Height: 0
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /MotionPlanning1
-        - /Map1
+        - /MotionPlanning1/Scene Robot1
+        - /MarkerArray1
+        - /MarkerArray2
       Splitter Ratio: 0.7425600290298462
-    Tree Height: 544
+    Tree Height: 229
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -111,19 +114,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          camera2_realsense:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera2_realsense_gazebo:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera2_realsense_lens:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           front_laser_frame:
             Alpha: 1
             Show Axes: false
@@ -149,10 +139,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
           realsense_mount:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          realsense_mount_2:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -340,19 +326,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          camera2_realsense:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera2_realsense_gazebo:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera2_realsense_lens:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           front_laser_frame:
             Alpha: 1
             Show Axes: false
@@ -378,10 +351,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
           realsense_mount:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          realsense_mount_2:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -489,23 +458,131 @@ Visualization Manager:
             Value: true
         Robot Alpha: 1
         Show Robot Collision: false
-        Show Robot Visual: true
+        Show Robot Visual: false
       Value: true
       Velocity_Scaling_Factor: 1
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        back_laser_frame:
+          Value: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        camera1_realsense:
+          Value: true
+        camera1_realsense_gazebo:
+          Value: true
+        camera1_realsense_lens:
+          Value: true
+        front_laser_frame:
+          Value: true
+        left_wheel:
+          Value: true
+        merged_laser_frame:
+          Value: true
+        odom:
+          Value: true
+        realsense_mount:
+          Value: true
+        right_wheel:
+          Value: true
+        robotiq_85_base_link:
+          Value: true
+        robotiq_85_left_finger_link:
+          Value: true
+        robotiq_85_left_finger_tip_link:
+          Value: true
+        robotiq_85_left_inner_knuckle_link:
+          Value: true
+        robotiq_85_left_knuckle_link:
+          Value: true
+        robotiq_85_right_finger_link:
+          Value: true
+        robotiq_85_right_finger_tip_link:
+          Value: true
+        robotiq_85_right_inner_knuckle_link:
+          Value: true
+        robotiq_85_right_knuckle_link:
+          Value: true
+        tm_arm_1_link:
+          Value: true
+        tm_arm_2_link:
+          Value: true
+        tm_base:
+          Value: true
+        tm_base_link:
+          Value: true
+        tm_cntrl_box:
+          Value: true
+        tm_flange_link:
+          Value: true
+        tm_shoulder_1_link:
+          Value: true
+        tm_tool0:
+          Value: true
+        tm_wrist_1_link:
+          Value: true
+        tm_wrist_2_link:
+          Value: true
+        tm_wrist_3_link:
+          Value: true
       Marker Scale: 0.25
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        odom:
+          base_link:
+            back_laser_frame:
+              {}
+            base_footprint:
+              {}
+            front_laser_frame:
+              {}
+            left_wheel:
+              {}
+            merged_laser_frame:
+              {}
+            right_wheel:
+              {}
+            tm_base:
+              tm_base_link:
+                tm_shoulder_1_link:
+                  tm_arm_1_link:
+                    tm_arm_2_link:
+                      tm_wrist_1_link:
+                        tm_wrist_2_link:
+                          tm_wrist_3_link:
+                            realsense_mount:
+                              camera1_realsense_lens:
+                                camera1_realsense:
+                                  camera1_realsense_gazebo:
+                                    {}
+                            tm_flange_link:
+                              robotiq_85_base_link:
+                                robotiq_85_left_inner_knuckle_link:
+                                  robotiq_85_left_finger_tip_link:
+                                    {}
+                                robotiq_85_left_knuckle_link:
+                                  robotiq_85_left_finger_link:
+                                    {}
+                                robotiq_85_right_inner_knuckle_link:
+                                  robotiq_85_right_finger_tip_link:
+                                    {}
+                                robotiq_85_right_knuckle_link:
+                                  robotiq_85_right_finger_link:
+                                    {}
+                              tm_tool0:
+                                {}
+            tm_cntrl_box:
+              {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -566,45 +643,13 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz/PointCloud2
-      Color: 255; 255; 255
-      Color Transformer: RGB8
-      Decay Time: 0
+    - Class: rviz/MarkerArray
       Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: PointCloud2
-      Position Transformer: XYZ
-      Queue Size: 10
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.009999999776482582
-      Style: Flat Squares
-      Topic: /camera2/depth/color/points
-      Unreliable: false
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: true
-    - Alpha: 0.699999988079071
-      Class: rviz/Map
-      Color Scheme: map
-      Draw Behind: false
-      Enabled: true
-      Name: Map
-      Topic: /local_map
-      Unreliable: false
-      Use Timestamp: false
+      Marker Topic: /obj_marker
+      Name: MarkerArray
+      Namespaces:
+        detection_result: true
+      Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
@@ -620,7 +665,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: camera1_realsense
     Frame Rate: 30
   Name: root
   Tools:
@@ -632,30 +677,30 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 11.129788398742676
+      Distance: 8.127240180969238
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -2.5497188568115234
-        Y: 0.0938483476638794
-        Z: 2.592562395875575e-6
+        X: -0.8266819715499878
+        Y: -0.6028902530670166
+        Z: -1.0988006238221715e-7
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9403977394104004
+      Pitch: -0.009602285921573639
       Target Frame: base_link
       Value: XYOrbit (rviz)
-      Yaw: 1.9504097700119019
+      Yaw: 3.905402660369873
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 759
+  Height: 752
   Help:
     collapsed: false
   Hide Left Dock: false
@@ -664,9 +709,9 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd000000020000000000000274000002a1fc0200000006fb000000100044006900730070006c006100790073010000003b000002a1000000c700fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670000000168000001740000016900ffffff0000000100000158000003a7fc0200000001fb0000000a00560069006500770073000000003d000003a7000000a000ffffff00000326000002a100000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000002740000029afc0200000006fb000000100044006900730070006c006100790073010000003b00000120000000c700fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000161000001740000016900ffffff0000000100000158000003a7fc0200000001fb0000000a00560069006500770073000000003d000003a7000000a000ffffff000002f00000029a00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: true
-  Width: 1440
-  X: 246
-  Y: 274
+  Width: 1386
+  X: 345
+  Y: 190

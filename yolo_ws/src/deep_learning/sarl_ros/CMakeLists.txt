@@ -168,6 +168,7 @@ include_directories(
 # )
 
 add_executable(scan2observation_node src/scan2observation_node.cpp)
+add_dependencies(scan2observation_node walker_msgs_generate_messages_cpp)
 target_link_libraries(scan2observation_node
   ${catkin_LIBRARIES} 
   ${EIGEN3_INCLUDE_DIRS}

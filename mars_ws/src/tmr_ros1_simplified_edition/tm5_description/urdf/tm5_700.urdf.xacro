@@ -36,12 +36,12 @@
 
     <!-- Inertia parameters -->
     <xacro:property name="base_mass" value="1.0" />
-    <xacro:property name="shoulder_mass" value="4.5" />
-    <xacro:property name="arm_1_mass" value="11.0" />
-    <xacro:property name="arm_2_mass" value="2.5" />
-    <xacro:property name="wrist_1_mass" value="1.45" />
-    <xacro:property name="wrist_2_mass" value="1.45" />
-    <xacro:property name="wrist_3_mass" value="0.4" />
+    <xacro:property name="shoulder_mass" value="4.032" />
+    <xacro:property name="arm_1_mass" value="8.567" />
+    <xacro:property name="arm_2_mass" value="2.273" />
+    <xacro:property name="wrist_1_mass" value="1.576" />
+    <xacro:property name="wrist_2_mass" value="1.576" />
+    <xacro:property name="wrist_3_mass" value="0.31" />
 
     <!-- Kinematic model -->
     <!-- Properties from tmcontrol.conf -->
