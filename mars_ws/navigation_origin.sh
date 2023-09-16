@@ -9,7 +9,7 @@ cleanup() {
 trap cleanup INT
 
 # Start the first ROS launch command
-roslaunch pedsim_simulator gym_crowd_environment.launch scene_file:=crossing_corridor.xml &
+# roslaunch pedsim_simulator gym_crowd_environment.launch scene_file:=crossing_corridor.xml &
 
 sleep 3
 roslaunch pedsim_gazebo_plugin crossing_corridor.launch &
@@ -20,8 +20,8 @@ roslaunch mars_lite_description spawn_mars.launch &
 sleep 3
 rosservice call /pedsim_simulator/unpause_simulation "{}"
 
-sleep 3
-roslaunch turtlebot3_navigation nav_origin.launch map_file:=crossing_corrider.yaml &
+# sleep 3
+# roslaunch turtlebot3_navigation nav_origin.launch map_file:=crossing_corrider.yaml &
 
 # Keep the script running to maintain the ROS processes
 wait
