@@ -1,0 +1,16 @@
+global_costmap:
+  publish_frequency: 10.0
+  update_frequency: 10.0
+  transform_tolerance: 0.5
+  global_frame: map
+  robot_base_frame: base_footprint
+  rolling_window: false
+
+  plugins:
+    - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    # - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+    - {name: human_layer_static, type: "human_layers::StaticHumanLayer"}
+    # - {name: human_layer_visible, type: "human_layers::HumanVisibilityLayer"}
+
+
