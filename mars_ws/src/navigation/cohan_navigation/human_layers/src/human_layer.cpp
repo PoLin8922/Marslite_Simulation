@@ -87,8 +87,10 @@ void HumanLayer::updateBounds(double origin_x, double origin_y, double origin_z,
 
   for(auto &human : humans_.humans){
     for(auto &segment : human.segments){
-      if(segment.type == DEFAULT_HUMAN_PART && !reset){
+      if(0){
+      // if(segment.type == DEFAULT_HUMAN_PART && !reset){
         if((abs(segment.twist.twist.linear.x)+abs(segment.twist.twist.linear.y)+abs(segment.twist.twist.angular.z)) < 0.0001 && !states_.states.empty()){
+          ROS_INFO("human state %d\n", (int)states_.states[human.track_id-1]);
           if((int)states_.states[human.track_id-1]==0){
             HumanPoseVel human_pose_vel;
             human_pose_vel.header.frame_id = humans_.header.frame_id;
@@ -136,7 +138,8 @@ void HumanLayer::updateBounds(double origin_x, double origin_y, double origin_z,
           }
         }
       }
-      else if(reset){
+      // else if(reset){
+      if(1){
         HumanPoseVel human_pose_vel;
         human_pose_vel.header.frame_id = humans_.header.frame_id;
         human_pose_vel.header.stamp = humans_.header.stamp;

@@ -125,9 +125,11 @@ protected:
       double v = sqrt(vx * vx + vy * vy);
       double theta = atan2(vy, vx);
       double sigmaHead = fmax(1.5 * v, 1.0);
-      double sigmaRear = 2.0 / 7.0;
+      // double sigmaRear = 2.0 / 7.0;
+      double sigmaRear = 3.0 / 7.0;
       double sigmaLarge = 3.0 / 5.0;
-      double sigmaSmall = 2.0 / 7.0;
+      // double sigmaSmall = 2.0 / 7.0;
+      double sigmaSmall = 3.0 / 7.0;
 
       // compute αmain, αside
       double alphaMain = normalize(atan2(y - y0, x - x0) - theta + PI / 2);

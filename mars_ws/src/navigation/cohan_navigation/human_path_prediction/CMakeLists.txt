@@ -31,6 +31,7 @@ add_message_files( DIRECTORY msg
 add_service_files( DIRECTORY srv
   FILES
     HumanPosePredict.srv
+    HumanGoalPredict.srv
     HumanGoal.srv
 )
 
@@ -91,6 +92,10 @@ target_link_libraries(human_path_prediction ${catkin_LIBRARIES})
 
 
 ## install ##
+catkin_install_python(PROGRAMS
+  scripts/predict_goal_srv.py
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 ## executable scripts (python etc.) for installation
 # install(PROGRAMS

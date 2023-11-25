@@ -745,7 +745,8 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
 
     if(isMode==0)
       isMode = -1;
-
+    
+    // only consider two humans
     for(int i=0;i<2 && i<visible_human_ids.size();i++){
       if((int)humans_states_.states[visible_human_ids[i]-1]>0){
         predict_srv.request.ids.push_back(visible_human_ids[i]);
@@ -808,7 +809,6 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
         if(std::find(predict_srv.request.ids.begin(), predict_srv.request.ids.end(),predicted_humans_poses.id) == predict_srv.request.ids.end()){
           continue;
         }
-
         if(isMode > 1)
           continue;
 

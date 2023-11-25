@@ -19,9 +19,9 @@ shrink_horizon_backup: True
 
 # Robot
 # max_vel_x: 0.5
-max_vel_x: 1.0
+max_vel_x: 1.2
 min_vel_x: 0.08
-max_vel_x_backwards: 0.2
+max_vel_x_backwards: 0.5
 max_vel_theta: 1.5
 min_vel_theta: -1.5
 acc_lim_x: 0.5
@@ -49,10 +49,12 @@ max_human_vel_theta: 1.1
 human_acc_lim_x: 0.6
 human_acc_lim_y: 0.3
 human_acc_lim_theta: 0.8
-# use_external_prediction: True
-use_external_prediction: False
-predict_human_behind_robot: True
-predict_human_goal: False
+use_external_prediction: True
+# use_external_prediction: False
+# predict_human_behind_robot: True
+predict_human_behind_robot: False
+predict_human_goal: True
+# predict_human_goal: False
 human_robot_ttc_scale_alpha: 1.0
 human_robot_ttcplus_scale_alpha: 1.0
 human_min_samples: 3
@@ -150,7 +152,7 @@ weight_human_acc_lim_theta: 2
 weight_kinematics_nh: 1000
 # weight_kinematics_forward_drive: 1.0
 # weight_kinematics_forward_drive: 300.0
-weight_kinematics_forward_drive: 800.0
+weight_kinematics_forward_drive: 1000.0
 # weight_kinematics_turning_radius: 0
 weight_kinematics_turning_radius: 1
 weight_optimaltime: 1.0

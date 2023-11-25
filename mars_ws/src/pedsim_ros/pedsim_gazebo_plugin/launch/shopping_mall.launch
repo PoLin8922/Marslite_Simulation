@@ -6,7 +6,7 @@
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find pedsim_gazebo_plugin)/worlds/shelf_v2.world"/>
-    <!-- <arg name="world_name" value="$(find pedsim_gazebo_plugin)/worlds/123.world"/> -->
+    <!-- <arg name="world_name" value="$(find pedsim_gazebo_plugin)/worlds/wrs_fcsc2020.world"/> -->
     <arg name="paused" default="true"/>
     <arg name="use_sim_time" default="true"/>
     <arg name="gui" default="$(arg gui)"/>

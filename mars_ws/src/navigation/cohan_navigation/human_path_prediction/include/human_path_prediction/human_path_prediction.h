@@ -49,6 +49,7 @@
 #include <human_msgs/HumanTrajectory.h>
 #include <human_msgs/HumanTrajectoryArray.h>
 #include <human_path_prediction/HumanPosePredict.h>
+#include <human_path_prediction/HumanGoalPredict.h> //// added
 #include <human_path_prediction/PredictedGoal.h>
 #include <human_path_prediction/HumanGoal.h>
 #include <human_path_prediction/HumanPose.h>
@@ -82,7 +83,7 @@ private:
   // ros services
   ros::ServiceServer predict_humans_server_, reset_ext_paths_server_,
       publish_markers_srv_, set_goal_srv_, set_goal_call_srv_;
-  ros::ServiceClient get_plan_client_,goal_change_srv_;
+  ros::ServiceClient get_plan_client_,goal_change_srv_, human_goal_predict_srv_;
 
   // dynamic reconfigure variables
   dynamic_reconfigure::Server<HumanPathPredictionConfig> *dsrv_;

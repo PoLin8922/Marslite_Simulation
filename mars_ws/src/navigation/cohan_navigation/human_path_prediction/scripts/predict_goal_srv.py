@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Brief: This node subscribes to /tracked_humans and publishes the predicted goal to humans based on their trajectory
-# Author: Phani Teja Singamaneni
+# Author: Berlin JIang
 
 import numpy as np
 import rospy
@@ -9,6 +9,7 @@ import tf
 from geometry_msgs.msg import Point, PoseStamped
 from human_msgs.msg import TrackedHumans, TrackedHuman, TrackedSegmentType
 from human_path_prediction.msg import PredictedGoal
+from human_path_prediction.srv import HumanGoalPredict, HumanGoalPredictResponse
 from scipy.stats import multivariate_normal
 from std_srvs.srv import SetBool, Trigger, TriggerResponse
 EPS = 1e-12
@@ -34,75 +35,73 @@ class PredictGoal(object):
         self.predicted_goal = PoseStamped()
         self.last_idx = 0
         self.changed = False
-        self.current_poses = [[] for i in range(self.human_num)]
-        self.prev_poses = [[] for i in range(self.human_num)]
-        self.mv_nd = multivariate_normal(mean=0,cov=0.1)
+        self.poses_data = [[] for i in range(self.human_num)]
+        self.mean = np.array([0, 0])
+        self.cov = np.array([[0.1, 0.0], [0.0, 120.0]])
+        self.mv_nd = multivariate_normal(mean=self.mean, cov=self.cov)
         self.theta_phi = [[0]*self.goal_num for i in range(self.human_num)]
         self.window_size = 10
         self.probability_goal = [np.array([1.0/self.goal_num]*self.goal_num) for i in range(self.human_num)]
         self.probability_goal_window = [np.array([[1.0/self.goal_num]*self.goal_num]*self.window_size) for i in range(self.human_num)]
-        self.done = False
+        # self.done = False
         self.itr = 0
 
-        NODE_NAME = "human_goal_predict"
+        NODE_NAME = "human_goal_predict_srv"
         rospy.init_node(NODE_NAME)
         self.humans_sub_ = rospy.Subscriber("/tracked_humans",TrackedHumans,self.tracked_humansCB)
-        self.goal_pub_ = rospy.Publisher(NODE_NAME+"/predicted_goal",PredictedGoal, queue_size=2)
-        self.goal_srv_ = rospy.Service("goal_changed", Trigger, self.goal_changed)
+        self.goal_srv_ = rospy.Service("goal_changed_2", Trigger, self.goal_changed)
+        self.predict_srv_ = rospy.Service("human_goal_predict", HumanGoalPredict, self.predict_goal)
         rospy.spin()
 
     def tracked_humansCB(self,msg):
-        self.prev_poses = self.current_poses
-        self.current_poses = [[] for i in range(self.human_num)]
-
         for human in msg.humans:
             for segment in human.segments:
                 if segment.type == TrackedSegmentType.TORSO:
-                    self.current_poses[human.track_id-1].append(segment.pose.pose)
-        if not self.done:
-            self.prev_poses = self.current_poses
+                    self.poses_data[human.track_id-1].append(segment.pose.pose)
+                    if(len(self.poses_data[human.track_id-1]) > self.window_size+1):
+                        self.poses_data[human.track_id-1] = self.poses_data[human.track_id-1][1:]
 
-        for i in range(0,len(self.current_poses[0])):
-            diff = np.linalg.norm([self.current_poses[0][i].position.x - self.prev_poses[0][i].position.x, self.current_poses[0][i].position.y - self.prev_poses[0][i].position.y])
+    def predict_goal(self, req):
+        cur_poses_data = self.poses_data
+        track_id = req.human_id -1
+        for i in range(0,len(cur_poses_data[track_id])-1):
+            diff = np.linalg.norm([cur_poses_data[track_id][i+1].position.x - cur_poses_data[track_id][i].position.x, cur_poses_data[track_id][i+1].position.y - cur_poses_data[track_id][i].position.y])
 
-            if diff > EPS or not self.done:
+            if diff > EPS:
                 dist = []
                 for j in range(0,len(self.goals_x)):
-                    vec1 = np.array([self.goals_x[j],self.goals_y[j],0.0]) - np.array([self.current_poses[0][i].position.x,self.current_poses[0][i].position.y,0.0])  #Vector from current position to a goal
-                    rotation = (self.current_poses[0][i].orientation.x,self.current_poses[0][i].orientation.y,self.current_poses[0][i].orientation.z,self.current_poses[0][i].orientation.w)
+                    vec1 = np.array([self.goals_x[j],self.goals_y[j],0.0]) - np.array([cur_poses_data[track_id][i].position.x,cur_poses_data[track_id][i].position.y,0.0])  #Vector from current position to a goal
+                    rotation = (cur_poses_data[track_id][i].orientation.x,cur_poses_data[track_id][i].orientation.y,cur_poses_data[track_id][i].orientation.z,cur_poses_data[track_id][i].orientation.w)
                     roll,pitch,yaw = tf.transformations.euler_from_quaternion(rotation)
                     unit_vec = np.array([np.cos(yaw), np.sin(yaw),0.0])
                     self.theta_phi[i][j] = (np.arccos(np.dot(vec1,unit_vec)/np.linalg.norm(vec1)))
-                    dist.append(np.linalg.norm([self.current_poses[0][i].position.x - self.goals_x[j],self.current_poses[0][i].position.y - self.goals_y[j]]))
+                    dist.append(np.linalg.norm([cur_poses_data[track_id][i].position.x - self.goals_x[j],cur_poses_data[track_id][i].position.y - self.goals_y[j]]))
 
-                self.probability_goal_window[i][self.itr] = self.mv_nd.pdf(np.array(self.theta_phi[i]));
+                self.probability_goal_window[i][self.itr] = self.mv_nd.pdf(np.column_stack((np.array(self.theta_phi[i]), np.array(dist))))
 
                 self.probability_goal[i] = np.array([1.0]*self.goal_num)
+
                 for k in range(0,len(self.probability_goal_window[i])):
                     gf = np.exp((k-self.window_size)/5)
+                    
                     self.probability_goal[i] =  np.power(self.probability_goal_window[i][k],gf)* np.array(self.probability_goal[i]) # Linear prediction of goal
 
                 for ln in range(0,len(self.goals_x)):
-                    self.probability_goal[i][ln] = 0.5*(1/dist[ln] + 1/self.theta_phi[i][ln])*self.probability_goal[i][ln];
+                    self.probability_goal[i][ln] = (1/dist[ln])*self.probability_goal[i][ln]
 
                 self.probability_goal[i] = (self.probability_goal[i]-np.min(self.probability_goal[i]))/(np.max(self.probability_goal[i])-np.min(self.probability_goal[i]))
-
 
                 self.itr = self.itr + 1
                 if self.itr == self.window_size:
                     self.itr = 0
 
-                self.done = True
 
-        self.predict_goal()
-
-
-    def predict_goal(self):
+        # response goal
         idx = 0
         max_prob = 0.0
         p_goal = PredictedGoal()
 
-        for i in range(0,len(self.current_poses[0])):
+        for i in range(0,len(cur_poses_data[track_id])):
             for j in range(0,len(self.goals_x)):
                 if(max_prob<self.probability_goal[i][j]):
                     idx = j
@@ -113,15 +112,15 @@ class PredictGoal(object):
             self.predicted_goal.pose.position.x = self.goals_x[idx]
             self.predicted_goal.pose.position.y = self.goals_y[idx]
             self.predicted_goal.pose.position.z = 0.0
-            self.predicted_goal.pose.orientation = self.current_poses[0][i].orientation
+            self.predicted_goal.pose.orientation = cur_poses_data[track_id][i].orientation
 
             if self.last_idx != idx:
                 p_goal.changed = True
                 self.changed = True
 
         self.last_idx = idx
-        p_goal.goal = self.predicted_goal
-        self.goal_pub_.publish(p_goal)
+        p_goal.goal = self.predicted_goal   
+        return HumanGoalPredictResponse(p_goal)
 
 
     def goal_changed(self,req):

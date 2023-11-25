@@ -131,6 +131,7 @@ void HumanPathPrediction::initialize() {
   set_goal_srv_ = private_nh.advertiseService("set_human_goal", &HumanPathPrediction::setExternalGoal, this);
   set_goal_call_srv_ = private_nh.advertiseService("check_human_goal", &HumanPathPrediction::checkExternalGoal, this);
   goal_change_srv_  = private_nh.serviceClient<std_srvs::Trigger>("/goal_changed");
+  human_goal_predict_srv_  = private_nh.serviceClient<human_path_prediction::HumanGoalPredict>("/human_goal_predict"); //// added
 
   showing_markers_ = false;
   got_new_human_paths_ = false;
@@ -985,10 +986,22 @@ bool HumanPathPrediction::predictHumansGoal(
 
         get_plan_srv.request.goal.header.frame_id = map_frame_id_;
         get_plan_srv.request.goal.header.stamp = now;
-        get_plan_srv.request.goal.pose.position.x = predicted_goal_->goal.pose.position.x;
-        get_plan_srv.request.goal.pose.position.y = predicted_goal_->goal.pose.position.y;
-        get_plan_srv.request.goal.pose.position.z = predicted_goal_->goal.pose.position.z;
-        get_plan_srv.request.goal.pose.orientation = predicted_goal_->goal.pose.orientation;
+        
+    
+        human_path_prediction::HumanGoalPredict predict_goal;
+        predict_goal.request.human_id = human_start_pose_vel.id;
+        if (human_goal_predict_srv_.call(predict_goal)) {
+          get_plan_srv.request.goal.pose.position.x = predict_goal.response.human_goal.goal.pose.position.x;
+          get_plan_srv.request.goal.pose.position.y = predict_goal.response.human_goal.goal.pose.position.y;
+          get_plan_srv.request.goal.pose.position.z = predict_goal.response.human_goal.goal.pose.position.z;
+          get_plan_srv.request.goal.pose.orientation = predict_goal.response.human_goal.goal.pose.orientation;
+        }
+
+
+        // get_plan_srv.request.goal.pose.position.x = predicted_goal_->goal.pose.position.x;
+        // get_plan_srv.request.goal.pose.position.y = predicted_goal_->goal.pose.position.y;
+        // get_plan_srv.request.goal.pose.position.z = predicted_goal_->goal.pose.position.z;
+        // get_plan_srv.request.goal.pose.orientation = predicted_goal_->goal.pose.orientation;
 
         ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
                                    "goal: x=%.2f, y=%.2f, theta=%.2f",
@@ -1186,6 +1199,8 @@ bool HumanPathPrediction::setExternalGoal(human_path_prediction::HumanGoal::Requ
 
   res.success=true;
   res.message="Goal has been set.";
+
+  return true;
 }
 
 bool HumanPathPrediction::checkExternalGoal(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res){
