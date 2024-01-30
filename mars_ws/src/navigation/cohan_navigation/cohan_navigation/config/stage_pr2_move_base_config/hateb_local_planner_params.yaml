@@ -19,23 +19,28 @@ shrink_horizon_backup: True
 
 # Robot
 # max_vel_x: 0.5
-max_vel_x: 1.2
+# max_vel_x: 1.2
+max_vel_x: 1.5
 min_vel_x: 0.08
 max_vel_x_backwards: 0.5
-max_vel_theta: 1.5
-min_vel_theta: -1.5
-acc_lim_x: 0.5
-acc_lim_theta: 0.0
-min_turning_radius: 0.1
+# max_vel_theta: 1.5
+max_vel_theta: 0.8
+# min_vel_theta: -1.5
+min_vel_theta: -0.8
+acc_lim_x: 0.8
+# acc_lim_x: 0.0
+acc_lim_theta: 0.4
+min_turning_radius: 0.05
 footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
   type: "line"
-  radius: 0.6 # for type "circular"
+  # type: "circular"
+  radius: 0.7 # for type "circular"
   line_start: [-0.4, 0.0] # for type "line"
   line_end: [0.4, 0.0] # for type "line"
   front_offset: 0.2 # for type "two_circles"
-  front_radius: 0.2 # for type "two_circles"
+  front_radius: 0.3 # for type "two_circles"
   rear_offset: 0.2 # for type "two_circles"
-  rear_radius: 0.2 # for type "two_circles"
+  rear_radius: 0.3 # for type "two_circles"
   vertices: [ [0.25, -0.05], [0.18, -0.05], [0.18, -0.18], [-0.19, -0.18], [-0.25, 0], [-0.19, 0.18], [0.18, 0.18], [0.18, 0.05], [0.25, 0.05] ] # for type "polygon"
 
 # Humans
@@ -49,8 +54,8 @@ max_human_vel_theta: 1.1
 human_acc_lim_x: 0.6
 human_acc_lim_y: 0.3
 human_acc_lim_theta: 0.8
-use_external_prediction: True
-# use_external_prediction: False
+# use_external_prediction: True
+use_external_prediction: False
 # predict_human_behind_robot: True
 predict_human_behind_robot: False
 predict_human_goal: True
@@ -81,11 +86,11 @@ yaw_goal_tolerance: 0.15
 free_goal_vel: False
 
 # Obstacles
-min_obstacle_dist: 0.3
+min_obstacle_dist: 0.35
 include_costmap_obstacles: True
 # include_dynamic_obstacles: True
 costmap_obstacles_behind_robot_dist: 1.0
-obstacle_poses_affected: 30
+obstacle_poses_affected: 20
 costmap_converter_spin_thread: True
 costmap_converter_rate: 5
 obstacle_cost_mult: 1.0
@@ -135,7 +140,8 @@ optimization_activate: True
 optimization_verbose: False
 # penalty_epsilon: 0.01
 penalty_epsilon: 0.1
-weight_max_vel_x: 2
+# weight_max_vel_x: 2
+weight_max_vel_x: 1
 weight_max_vel_y: 2
 weight_max_human_vel_x: 4
 weight_max_human_vel_y: 4
@@ -150,12 +156,11 @@ weight_acc_lim_theta: 1
 weight_human_acc_lim_theta: 2
 # weight_kinematics_nh: 1.0
 weight_kinematics_nh: 1000
-# weight_kinematics_forward_drive: 1.0
 # weight_kinematics_forward_drive: 300.0
-weight_kinematics_forward_drive: 1000.0
-# weight_kinematics_turning_radius: 0
+weight_kinematics_forward_drive: 500.0
 weight_kinematics_turning_radius: 1
-weight_optimaltime: 1.0
+# weight_optimaltime: 1.0
+weight_optimaltime: 20.0
 weight_human_optimaltime: 3.0
 weight_obstacle: 50.0
 weight_dynamic_obstacle: 50 # not in use yet
@@ -204,4 +209,3 @@ approach_angle: 3.14
 
 # Recovery
 oscillation_recovery: True
-

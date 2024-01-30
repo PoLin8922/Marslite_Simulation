@@ -3,6 +3,7 @@
   <!-- Arguments -->
   <xacro:arg name="laser_enabled" default="1" />
   <xacro:arg name="realsense_enabled" default="0" />
+  <xacro:arg name="imu_enabled" default="0" />
 
   <!-- Gazebo plugin -->
   <xacro:include filename="$(find mars_lite_description)/urdf/mars_lite.gazebo" />
@@ -248,5 +249,129 @@
   <xacro:robotiq_85_gripper prefix="" parent="tm_flange_link" >
     <origin xyz="0 0 0" rpy="${-pi / 2} ${-pi / 2} 0"/>
   </xacro:robotiq_85_gripper>
+
+
+  <!-- IMU -->
+  <!-- <xacro:if value="$(arg imu_enabled)">
+  <xacro:include filename="$(find mars_lite_description)/urdf/accessories/intel_realsense.urdf.xacro"/>
+    <xacro:intel_realsense_mount prefix="camera1" topic="camera1" parent_link="realsense_mount"/>
+    
+    <link name="realsense_mount"/>
+    <joint name="realsense_mount_joint" type="fixed">
+      <origin xyz="0 0.05 0.062" rpy="0 ${-pi / 2} ${-pi / 2}" />
+      <parent link="tm_wrist_3_link"/>
+      <child link="realsense_mount" />
+    </joint>
+  </xacro:if>
+
+  <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>imu</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>base_link</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor> -->
+
+  <!-- <xacro:macro name="imu" params="imu">
+    <joint name="imu_joint" type="fixed">
+      <axis xyz="1 0 0"/> 
+      <origin xyz="0 0 0.19"/>
+      <parent link="base_link"/>
+      <child link="imu_link"/>
+    </joint>
+
+    <link name="imu_link">
+      <inertial>
+        <mass value="0.001"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.0001"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <box size="0.001 0.001 0.001"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <box size=".001 .001 .001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>imu_link</bodyName>
+      <topicName>imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <updateRate>0</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>                                                               
+  </xacro:macro> -->
+  <!-- <gazebo reference="imu_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+      <visualize>$(arg imu_visual)</visualize>
+    </sensor>
+    <material>Gazebo/Grey</material>
+  </gazebo> -->
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>base_link</bodyName>
+      <frameName>base_link</frameName>
+      <topicName>imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <updateRate>0</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
 
 </robot>

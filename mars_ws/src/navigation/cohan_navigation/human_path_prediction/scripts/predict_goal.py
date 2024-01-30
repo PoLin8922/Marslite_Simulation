@@ -83,7 +83,7 @@ class PredictGoal(object):
                     self.probability_goal[i] =  np.power(self.probability_goal_window[i][k],gf)* np.array(self.probability_goal[i]) # Linear prediction of goal
 
                 for ln in range(0,len(self.goals_x)):
-                    self.probability_goal[i][ln] = 0.5*(1/dist[ln] + 1/self.theta_phi[i][ln])*self.probability_goal[i][ln];
+                    self.probability_goal[i][ln] = (1/dist[ln])*self.probability_goal[i][ln]
 
                 self.probability_goal[i] = (self.probability_goal[i]-np.min(self.probability_goal[i]))/(np.max(self.probability_goal[i])-np.min(self.probability_goal[i]))
 
