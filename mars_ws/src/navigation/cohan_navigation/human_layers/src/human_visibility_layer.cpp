@@ -47,6 +47,7 @@ using costmap_2d::FREE_SPACE;
 
 namespace human_layers
 {
+
 void HumanVisibilityLayer::onInitialize()
 {
   HumanLayer::onInitialize();
@@ -130,7 +131,9 @@ void HumanVisibilityLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int m
         double x = bx + i * res, y = by + j * res;
         double val;
 
+        // printf("visibility amplitude %f \n", amplitude_);
         val = Gaussian2D(x, y, cx, cy, amplitude_, var, var);
+        // printf("visibility layer %f \n", val);
 
         double rad = sqrt(-2*var*log(val/amplitude_));
         Eigen::Vector2d pt_vec(x-cx,y-cy);
@@ -138,8 +141,8 @@ void HumanVisibilityLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int m
         if (rad > radius_)
           continue;
         unsigned char cvalue = (unsigned char) val;//std::min(5*val,254.0);
-        if(orient_vec.dot(pt_vec) <= 0)
-          costmap->setCost(i + mx, j + my, std::max(cvalue, old_cost));
+        if(orient_vec.dot(pt_vec) <= 0){
+          costmap->setCost(i + mx, j + my, std::max(cvalue, old_cost));}
       }
     }
   }

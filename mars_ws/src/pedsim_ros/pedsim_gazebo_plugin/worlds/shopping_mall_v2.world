@@ -26948,12 +26948,14 @@
       <pose>12.2751 -15.5447 0 4.8e-05 5.5e-05 -1.55554</pose>
     </model>
     <plugin name='gazebo_occupancy_map' filename='libgazebo_2Dmap_plugin.so'>
-      <map_resolution>0.1</map_resolution>
+      <map_resolution>0.05</map_resolution>
       <map_height>0.3</map_height>
       <map_size_x>100</map_size_x>
       <map_size_y>100</map_size_y>
       <init_robot_x>0</init_robot_x>
       <init_robot_y>0</init_robot_y>
+    </plugin>
+    <plugin name="ActorPosesPlugin" filename="libActorPosesPlugin.so">
     </plugin>
     <model name='aws_robomaker_residential_KitchenTable_01_clone_clone'>
       <link name='link'>

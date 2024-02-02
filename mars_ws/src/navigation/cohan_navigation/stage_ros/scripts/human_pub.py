@@ -56,7 +56,7 @@ class StageHumans(object):
         clear_costmaps_service = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
         while not rospy.is_shutdown():
             try:
-                response = clear_costmaps_service()
+                # response = clear_costmaps_service()
                 rospy.loginfo("Costmaps cleared successfully.")
             except rospy.ServiceException as e:
                 rospy.logerr("Service call failed: %s" % e)

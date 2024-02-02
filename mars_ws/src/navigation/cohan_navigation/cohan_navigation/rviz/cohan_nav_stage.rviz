@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /GlobalCostmap1
         - /LaserScan1
       Splitter Ratio: 0.5
     Tree Height: 820
@@ -56,7 +57,7 @@ Visualization Manager:
       Value: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
-      Color Scheme: map
+      Color Scheme: costmap
       Draw Behind: false
       Enabled: true
       Name: GlobalCostmap
@@ -503,7 +504,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 116.84358215332031
+      Distance: 34.219276428222656
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -511,9 +512,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 5.0806474685668945
-        Y: -8.115056991577148
-        Z: -6.731537818908691
+        X: 0.23683945834636688
+        Y: -2.5013489723205566
+        Z: -0.7638358473777771
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
