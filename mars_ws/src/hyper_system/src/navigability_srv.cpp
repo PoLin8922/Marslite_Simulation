@@ -93,18 +93,18 @@ public:
 int main(int argc, char** argv) {
     ros::init(argc, argv, "navigability_srv__node");
     LocalMapAnalyzer analyzer;
-    // ros::spin();
-    // return 0;
-
-
-    ros::Rate loop_rate(10);
-
-    while (ros::ok()) {
-        float navigability = analyzer.analyzeLocalMap();
-        ROS_INFO("navigability: %.2f", navigability);
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
-
+    ros::spin();
     return 0;
+
+
+    // ros::Rate loop_rate(10);
+
+    // while (ros::ok()) {
+    //     float navigability = analyzer.analyzeLocalMap();
+    //     ROS_INFO("navigability: %.2f", navigability);
+    //     ros::spinOnce();
+    //     loop_rate.sleep();
+    // }
+
+    // return 0;
 }
