@@ -7,8 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /GlobalCostmap1
-        - /LaserScan1
-      Splitter Ratio: 0.5
+      Splitter Ratio: 0.5041666626930237
     Tree Height: 820
   - Class: rviz/Selection
     Name: Selection
@@ -49,12 +48,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: SceneMap
       Topic: /scene_map
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: costmap
@@ -370,14 +369,6 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /move_base/HATebLocalPlannerROS/mode_text
-      Name: ModeText
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
     - Class: rviz/MarkerArray
       Enabled: false
       Marker Topic: /move_base/HATebLocalPlannerROS/local_plan_fp_poses
@@ -390,6 +381,30 @@ Visualization Manager:
       Enabled: false
       Marker Topic: /move_base/HATebLocalPlannerROS/human_local_plans_fp_poses
       Name: HumansTimeVelocityMarkers
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /move_base/HATebLocalPlannerROS/critical_corner_marker
+      Name: CriticalCorner
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /move_base/HATebLocalPlannerROS/mode_text
+      Name: ModeText
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: false
+      Marker Topic: /move_base/HATebLocalPlannerROS/teb_markers
+      Name: TEBMarker
       Namespaces:
         {}
       Queue Size: 100
@@ -504,7 +519,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 34.219276428222656
+      Distance: 42.568260192871094
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

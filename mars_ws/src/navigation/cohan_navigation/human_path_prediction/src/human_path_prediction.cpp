@@ -682,7 +682,7 @@ bool HumanPathPrediction::predictHumansExternal(
           get_plan_srv.request.goal.pose.position.z = ext_goal[human_start_pose_vel.id].pose.position.z;
           get_plan_srv.request.goal.pose.orientation = ext_goal[human_start_pose_vel.id].pose.orientation;
 
-          ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
+          printf("111 human start: x=%.2f, y=%.2f, theta=%.2f, "
                                      "goal: x=%.2f, y=%.2f, theta=%.2f",
                           get_plan_srv.request.start.pose.position.x,
                           get_plan_srv.request.start.pose.position.y,
@@ -843,7 +843,7 @@ bool HumanPathPrediction::predictHumansBehind(
         get_plan_srv.request.goal.pose.position.z = behind_pose.translation.z;
         get_plan_srv.request.goal.pose.orientation = behind_pose.rotation;
 
-        ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
+        printf("222 human start: x=%.2f, y=%.2f, theta=%.2f, "
                                    "goal: x=%.2f, y=%.2f, theta=%.2f",
                         get_plan_srv.request.start.pose.position.x,
                         get_plan_srv.request.start.pose.position.y,
@@ -1003,8 +1003,8 @@ bool HumanPathPrediction::predictHumansGoal(
         // get_plan_srv.request.goal.pose.position.z = predicted_goal_->goal.pose.position.z;
         // get_plan_srv.request.goal.pose.orientation = predicted_goal_->goal.pose.orientation;
 
-        ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
-                                   "goal: x=%.2f, y=%.2f, theta=%.2f",
+        printf("\n333 human start: x=%.2f, y=%.2f, theta=%.2f, "
+                                   "goal: x=%.2f, y=%.2f, theta=%.2f\n",
                         get_plan_srv.request.start.pose.position.x,
                         get_plan_srv.request.start.pose.position.y,
                         tf::getYaw(get_plan_srv.request.start.pose.orientation),

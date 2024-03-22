@@ -138,12 +138,12 @@ void HATebLocalPlannerROS::initialize(std::string name, tf2_ros::Buffer* tf, cos
     // create the planner instance
     if (cfg_.hcp.enable_homotopy_class_planning)
     {
-      planner_ = PlannerInterfacePtr(new HomotopyClassPlanner(cfg_, &obstacles_, robot_model, visualization_, &via_points_, human_model, &humans_via_points_map_));
+      planner_ = PlannerInterfacePtr(new HomotopyClassPlanner(cfg_, &obstacles_, &critical_corners_, robot_model, visualization_, &via_points_, human_model, &humans_via_points_map_));
       ROS_INFO("Parallel planning in distinctive topologies enabled.");
     }
     else
     {
-      planner_ = PlannerInterfacePtr(new TebOptimalPlanner(cfg_, &obstacles_, robot_model, visualization_, &via_points_, human_model, &humans_via_points_map_));
+      planner_ = PlannerInterfacePtr(new TebOptimalPlanner(cfg_, &obstacles_, &critical_corners_, robot_model, visualization_, &via_points_, human_model, &humans_via_points_map_));
       planner_->local_weight_optimaltime_ = cfg_.optim.weight_optimaltime;
       ROS_INFO("Parallel planning in distinctive topologies disabled.");
     }
@@ -193,6 +193,9 @@ void HATebLocalPlannerROS::initialize(std::string name, tf2_ros::Buffer* tf, cos
 
     // setup callback for custom obstacles
     custom_obst_sub_ = nh.subscribe("obstacles", 1, &HATebLocalPlannerROS::customObstacleCB, this);
+    
+    // setup callback for critical corners
+    critical_corners_sub_ = nh.subscribe("critical_corners", 1, &HATebLocalPlannerROS::criticalCornersCB, this);
 
     // setup callback for custom via-points
     via_points_sub_ = nh.subscribe("via_points", 1, &HATebLocalPlannerROS::customViaPointsCB, this);
@@ -661,6 +664,7 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
 
   // clear currently existing obstacles
   obstacles_.clear();
+  critical_corners_.clear();
   auto other_time = ros::Time::now() - other_start_time;
 
   // Update obstacle container with costmap information or polygons provided by a costmap_converter plugin
@@ -672,6 +676,9 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
 
   // also consider custom obstacles (must be called after other updates, since the container is not cleared)
   updateObstacleContainerWithCustomObstacles();
+
+  updateCCContainerWithCriticalCorners();  
+
   auto cc_time = ros::Time::now() - cc_start_time;
 
   // Do not allow config changes during the following optimization step
@@ -1067,6 +1074,7 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
     footprint_spec_ = costmap_ros_->getRobotFootprint();
     costmap_2d::calculateMinAndMaxDistances(footprint_spec_, robot_inscribed_radius_, robot_circumscribed_radius);
   }
+
   bool feasible = planner_->isTrajectoryFeasible(costmap_model_.get(), footprint_spec_, robot_inscribed_radius_, robot_circumscribed_radius, cfg_.trajectory.feasibility_check_no_poses);
   if (!feasible)
   {
@@ -1133,6 +1141,7 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
   auto viz_start_time = ros::Time::now();
   planner_->visualize();
   visualization_->publishObstacles(obstacles_);
+  visualization_->publishCriticalCorners(critical_corners_);
   visualization_->publishViaPoints(via_points_);
   visualization_->publishGlobalPlan(global_plan_);
   if(isDistMax)
@@ -1347,6 +1356,64 @@ void HATebLocalPlannerROS::updateObstacleContainerWithCustomObstacles()
       // Set velocity, if obstacle is moving
       if(!obstacles_.empty())
         obstacles_.back()->setCentroidVelocity(custom_obstacle_msg_.obstacles[i].velocities, custom_obstacle_msg_.obstacles[i].orientation);
+    }
+  }
+}
+
+void HATebLocalPlannerROS::updateCCContainerWithCriticalCorners()
+{
+  // Add custom obstacles obtained via message
+  boost::mutex::scoped_lock l(custom_cc_mutex_);
+  if (!critical_corners_msg_.obstacles.empty())
+  {
+    // We only use the global header to specify the obstacle coordinate system instead of individual ones
+    Eigen::Affine3d obstacle_to_map_eig;
+    try 
+    {
+      geometry_msgs::TransformStamped obstacle_to_map =  tf_->lookupTransform(global_frame_, ros::Time(0),
+        critical_corners_msg_.header.frame_id, ros::Time(0),
+        critical_corners_msg_.header.frame_id, ros::Duration(cfg_.robot.transform_tolerance));
+      obstacle_to_map_eig = tf2::transformToEigen(obstacle_to_map);
+    }
+    catch (tf::TransformException ex)
+    {
+      ROS_ERROR("%s",ex.what());
+      obstacle_to_map_eig.setIdentity();
+    }
+    
+    for (size_t i=0; i<critical_corners_msg_.obstacles.size(); ++i)
+    {
+      if (critical_corners_msg_.obstacles.at(i).polygon.points.size() == 1 && critical_corners_msg_.obstacles.at(i).radius > 0 ) // circle
+      {
+        // circle is not supported as critical corner
+        ROS_WARN("Invalid critical corner received. Circular critical corner is not supported.");
+      }
+      else if (critical_corners_msg_.obstacles.at(i).polygon.points.size() == 1 ) // point
+      {
+        Eigen::Vector3d pos( critical_corners_msg_.obstacles.at(i).polygon.points.front().x,
+                             critical_corners_msg_.obstacles.at(i).polygon.points.front().y,
+                             critical_corners_msg_.obstacles.at(i).polygon.points.front().z );
+        critical_corners_.push_back(ObstaclePtr(new PointObstacle( (obstacle_to_map_eig * pos).head(2) )));
+      }
+      else if (critical_corners_msg_.obstacles.at(i).polygon.points.size() == 2 ) // line
+      {
+        // line is not supported as critial corner 
+        ROS_WARN("Invalid critical corner received. Line critical corner is not supported.");
+      }
+      else if (critical_corners_msg_.obstacles.at(i).polygon.points.empty())
+      {
+        ROS_WARN("Invalid custom obstacle received. List of polygon vertices is empty. Skipping...");
+        continue;
+      }
+      else // polygon
+      {
+        // polygon is not supported as critial corner 
+        ROS_WARN("Invalid critical corner received. Polygon critical corner is not supported.");
+      }
+
+      // Set velocity, if obstacle is moving
+      if(!critical_corners_.empty())
+        critical_corners_.back()->setCentroidVelocity(critical_corners_msg_.obstacles[i].velocities, critical_corners_msg_.obstacles[i].orientation);
     }
   }
 }
@@ -2071,6 +2138,12 @@ void HATebLocalPlannerROS::customObstacleCB(const costmap_converter::ObstacleArr
 {
   boost::mutex::scoped_lock l(custom_obst_mutex_);
   custom_obstacle_msg_ = *obst_msg;
+}
+
+void HATebLocalPlannerROS::criticalCornersCB(const costmap_converter::ObstacleArrayMsg::ConstPtr& cc_msg)
+{
+  boost::mutex::scoped_lock l(custom_cc_mutex_);
+  critical_corners_msg_ = *cc_msg;  
 }
 
 void HATebLocalPlannerROS::customViaPointsCB(const nav_msgs::Path::ConstPtr& via_points_msg)

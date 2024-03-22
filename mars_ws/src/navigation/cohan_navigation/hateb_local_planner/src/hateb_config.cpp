@@ -90,6 +90,8 @@ void HATebConfig::loadRosParamFromNodeHandle(const ros::NodeHandle& nh)
   nh.param("cmd_angle_instead_rotvel", robot.cmd_angle_instead_rotvel, robot.cmd_angle_instead_rotvel);
   nh.param("is_footprint_dynamic", robot.is_footprint_dynamic, robot.is_footprint_dynamic);
   nh.param("is_real", robot.is_real, robot.is_real);
+  nh.param("transform_tolerance", robot.transform_tolerance, robot.transform_tolerance);
+
 
   // Human
   nh.param("human_radius", human.radius, human.radius);
@@ -124,6 +126,10 @@ void HATebConfig::loadRosParamFromNodeHandle(const ros::NodeHandle& nh)
   nh.param("obstacle_association_cutoff_factor", obstacles.obstacle_association_cutoff_factor, obstacles.obstacle_association_cutoff_factor);
   nh.param("costmap_converter_plugin", obstacles.costmap_converter_plugin, obstacles.costmap_converter_plugin);
   nh.param("costmap_converter_spin_thread", obstacles.costmap_converter_spin_thread, obstacles.costmap_converter_spin_thread);
+  nh.param("critical_corner_dist",obstacles.critical_corner_dist, obstacles.critical_corner_dist);
+  nh.param("critical_corner_vel",obstacles.critical_corner_vel, obstacles.critical_corner_vel);
+  nh.param("critical_corner_inclusion_dist",obstacles.critical_corner_inclusion_dist, obstacles.critical_corner_inclusion_dist);
+  nh.param("critical_corner_check_direction",obstacles.critical_corner_check_direction, obstacles.critical_corner_check_direction);
 
   // Optimization
   nh.param("no_inner_iterations", optim.no_inner_iterations, optim.no_inner_iterations);
@@ -152,7 +158,7 @@ void HATebConfig::loadRosParamFromNodeHandle(const ros::NodeHandle& nh)
   nh.param("weight_prefer_rotdir", optim.weight_prefer_rotdir, optim.weight_prefer_rotdir);
   nh.param("weight_adapt_factor", optim.weight_adapt_factor, optim.weight_adapt_factor);
   nh.param("obstacle_cost_exponent", optim.obstacle_cost_exponent, optim.obstacle_cost_exponent);
-
+  nh.param("weight_cc",optim.weight_cc,optim.weight_cc);
 
   nh.param("weight_max_human_vel_x", optim.weight_max_human_vel_x,
            optim.weight_max_human_vel_x);
@@ -370,7 +376,10 @@ void HATebConfig::reconfigure(HATebLocalPlannerReconfigureConfig& cfg)
   obstacles.include_costmap_obstacles = cfg.include_costmap_obstacles;
   obstacles.costmap_obstacles_behind_robot_dist = cfg.costmap_obstacles_behind_robot_dist;
   obstacles.obstacle_poses_affected = cfg.obstacle_poses_affected;
-
+  obstacles.critical_corner_dist = cfg.critical_corner_dist;
+  obstacles.critical_corner_vel = cfg.critical_corner_vel;
+  obstacles.critical_corner_inclusion_dist = cfg.critical_corner_inclusion_dist;
+  obstacles.critical_corner_check_direction = cfg.critical_corner_check_direction;
 
   // Optimization
   optim.no_inner_iterations = cfg.no_inner_iterations;
@@ -398,6 +407,7 @@ void HATebConfig::reconfigure(HATebLocalPlannerReconfigureConfig& cfg)
   optim.weight_viapoint = cfg.weight_viapoint;
   optim.weight_adapt_factor = cfg.weight_adapt_factor;
   optim.obstacle_cost_exponent = cfg.obstacle_cost_exponent;
+  optim.weight_cc = cfg.weight_cc;
 
   optim.weight_max_human_vel_x = cfg.weight_max_human_vel_x;
   optim.weight_max_human_vel_y = cfg.weight_max_human_vel_y;

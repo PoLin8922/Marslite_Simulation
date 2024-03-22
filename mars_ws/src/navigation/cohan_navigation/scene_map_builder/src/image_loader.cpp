@@ -51,9 +51,9 @@
 #define MAP_IDX(sx, i, j) ((sx) * (j) + (i))
 
 // define rviz Map color
-#define RED 98
-#define GREAN 120
-#define BLUE 10 
+#define MALL 98
+#define CORRIDER 120
+#define WAREHOUSE 10 
 
 namespace map_server
 {
@@ -127,17 +127,17 @@ loadMapFromFile(nav_msgs::GetMap::Response* resp,
       
       if(pixel_value < 200 && pixel_value > 150)
         // corrider
-        value = GREAN;  
+        value = CORRIDER;  
       else if(pixel_value < 150 && pixel_value > 20)
         // mall
-        value = RED;
+        value = MALL;
       else if(pixel_value < 20 && pixel_value > 10) 
         // warehouse
-        value = BLUE;
+        value = WAREHOUSE;
       else
         value = -1;
 
-      resp->map.data[MAP_IDX(resp->map.info.width,i,resp->map.info.height - j - 1)] = value;
+      resp->map.data[MAP_IDX(resp->map.info.width, i, resp->map.info.height - j - 1)] = value;
     }
   }
 

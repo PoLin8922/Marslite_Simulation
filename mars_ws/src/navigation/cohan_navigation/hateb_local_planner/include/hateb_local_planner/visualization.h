@@ -196,6 +196,13 @@ public:
   void publishObstacles(const ObstContainer& obstacles) const;
 
   /**
+   * @brief Publish critical corners positions to the ros topic \e ../../teb_markers
+   * @todo Move filling of the marker message to polygon class in order to avoid checking types.
+   * @param critical corners Obstacle container
+   */
+  void publishCriticalCorners(const ObstContainer& critical_corners) const;
+
+  /**
    * @brief Publish via-points to the ros topic \e ../../teb_markers
    * @param via_points via-point container
    */
@@ -308,6 +315,7 @@ protected:
   ros::Publisher robot_next_pose_pub_, human_next_pose_pub_; // Pulishers for pose tracking
   ros::Publisher human_trajs_time_pub_, human_paths_time_pub_;
   ros::Publisher human_marker_pub ,human_arrow_pub;
+  ros::Publisher critical_corner_pub;
   ros::Subscriber tracked_humans_sub_;
   std::vector<double> vel_robot, vel_human;
   tf::TransformListener tf_;

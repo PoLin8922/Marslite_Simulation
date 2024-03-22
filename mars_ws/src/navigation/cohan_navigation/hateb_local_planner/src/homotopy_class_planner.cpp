@@ -43,25 +43,26 @@
 namespace hateb_local_planner
 {
 
-HomotopyClassPlanner::HomotopyClassPlanner() : cfg_(NULL), obstacles_(NULL), via_points_(NULL), robot_model_(new PointRobotFootprint()), initial_plan_(NULL), initialized_(false)
+HomotopyClassPlanner::HomotopyClassPlanner() : cfg_(NULL), obstacles_(NULL), critical_corners_(NULL), via_points_(NULL), robot_model_(new PointRobotFootprint()), initial_plan_(NULL), initialized_(false)
 {
 }
 
-HomotopyClassPlanner::HomotopyClassPlanner(const HATebConfig& cfg, ObstContainer* obstacles, RobotFootprintModelPtr robot_model,
+HomotopyClassPlanner::HomotopyClassPlanner(const HATebConfig& cfg, ObstContainer* obstacles, ObstContainer* critical_corners, RobotFootprintModelPtr robot_model,
                                            TebVisualizationPtr visual, const ViaPointContainer* via_points, CircularRobotFootprintPtr human_model, const std::map<uint64_t, ViaPointContainer> *humans_via_points_map) : initial_plan_(NULL)
 {
-  initialize(cfg, obstacles, robot_model, visual, via_points, human_model, humans_via_points_map);
+  initialize(cfg, obstacles, critical_corners, robot_model, visual, via_points, human_model, humans_via_points_map);
 }
 
 HomotopyClassPlanner::~HomotopyClassPlanner()
 {
 }
 
-void HomotopyClassPlanner::initialize(const HATebConfig& cfg, ObstContainer* obstacles, RobotFootprintModelPtr robot_model,
+void HomotopyClassPlanner::initialize(const HATebConfig& cfg, ObstContainer* obstacles, ObstContainer* critical_corners, RobotFootprintModelPtr robot_model,
                                       TebVisualizationPtr visual, const ViaPointContainer* via_points, CircularRobotFootprintPtr human_model, const std::map<uint64_t, ViaPointContainer> *humans_via_points_map)
 {
   cfg_ = &cfg;
   obstacles_ = obstacles;
+  critical_corners_ = critical_corners;
   via_points_ = via_points;
   robot_model_ = robot_model;
   human_model_ = human_model;
@@ -388,7 +389,7 @@ TebOptimalPlannerPtr HomotopyClassPlanner::addAndInitNewTeb(const PoseSE2& start
 {
   if(tebs_.size() >= cfg_->hcp.max_number_classes)
     return TebOptimalPlannerPtr();
-  TebOptimalPlannerPtr candidate =  TebOptimalPlannerPtr( new TebOptimalPlanner(*cfg_, obstacles_, robot_model_, visualization_,via_points_, human_model_, humans_via_points_map_));
+  TebOptimalPlannerPtr candidate =  TebOptimalPlannerPtr( new TebOptimalPlanner(*cfg_, obstacles_, critical_corners_, robot_model_, visualization_,via_points_, human_model_, humans_via_points_map_));
                                                                                               // cfg_, &obstacles_, robot_model, visualization_, &via_points_, human_model, &humans_via_points_map_))
   // candidate->teb().initTrajectoryToGoal(start, goal, 0, cfg_->robot.max_vel_x, cfg_->trajectory.min_samples, cfg_->trajectory.allow_init_with_backwards_motion);
   candidate->teb().initTEBtoGoal(start, goal, 0, dt_ref, cfg_->trajectory.min_samples);
@@ -413,7 +414,7 @@ TebOptimalPlannerPtr HomotopyClassPlanner::addAndInitNewTeb(const std::vector<ge
 {
   if(tebs_.size() >= cfg_->hcp.max_number_classes)
     return TebOptimalPlannerPtr();
-  TebOptimalPlannerPtr candidate = TebOptimalPlannerPtr( new TebOptimalPlanner(*cfg_, obstacles_, robot_model_, visualization_,via_points_,human_model_,humans_via_points_map_));
+  TebOptimalPlannerPtr candidate = TebOptimalPlannerPtr( new TebOptimalPlanner(*cfg_, obstacles_, critical_corners_, robot_model_, visualization_,via_points_,human_model_,humans_via_points_map_));
 
   // candidate->teb().initTrajectoryToGoal(initial_plan, cfg_->robot.max_vel_x,
     // cfg_->trajectory.global_plan_overwrite_orientation, cfg_->trajectory.min_samples, cfg_->trajectory.allow_init_with_backwards_motion);

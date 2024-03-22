@@ -55,6 +55,7 @@ class PredictGoal(object):
         self.prev_poses = self.current_poses
         self.current_poses = [[] for i in range(self.human_num)]
 
+        track_id = req.human_id -1
         for human in msg.humans:
             for segment in human.segments:
                 if segment.type == TrackedSegmentType.TORSO:
@@ -75,7 +76,7 @@ class PredictGoal(object):
                     self.theta_phi[i][j] = (np.arccos(np.dot(vec1,unit_vec)/np.linalg.norm(vec1)))
                     dist.append(np.linalg.norm([self.current_poses[0][i].position.x - self.goals_x[j],self.current_poses[0][i].position.y - self.goals_y[j]]))
 
-                self.probability_goal_window[i][self.itr] = self.mv_nd.pdf(np.array(self.theta_phi[i]));
+                self.probability_goal_window[i][self.itr] = self.mv_nd.pdf(np.array(self.theta_phi[i]))
 
                 self.probability_goal[i] = np.array([1.0]*self.goal_num)
                 for k in range(0,len(self.probability_goal_window[i])):

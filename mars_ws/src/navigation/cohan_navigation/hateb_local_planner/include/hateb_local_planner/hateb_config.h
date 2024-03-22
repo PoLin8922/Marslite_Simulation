@@ -109,6 +109,7 @@ public:
     bool cmd_angle_instead_rotvel; //!< Substitute the rotational velocity in the commanded velocity message by the corresponding steering angle (check 'axles_distance')
     bool is_footprint_dynamic; //<! If true, updated the footprint before checking trajectory feasibility
     bool is_real; //<! Check if the robot is real (or from gazebo) and uncheck if any other simulator
+    double transform_tolerance = 0.5; //<! Tolerance when querying the TF Tree for a transformation (seconds)
   } robot; //!< Robot related parameters
 
   //! Human related parameters
@@ -157,6 +158,10 @@ public:
     std::string costmap_converter_plugin; //!< Define a plugin name of the costmap_converter package (costmap cells are converted to points/lines/polygons)
     bool costmap_converter_spin_thread; //!< If \c true, the costmap converter invokes its callback queue in a different thread
     int costmap_converter_rate; //!< The rate that defines how often the costmap_converter plugin processes the current costmap (the value should not be much higher than the costmap update rate)
+    double critical_corner_dist; //!< Distance where the corner is in full effect. At the given distance the velocity is bound to critical_corner_vel. The velocity will be further reduced if the robot gets closer to the critical corner. Otherwise it will be increased.
+    double critical_corner_vel; //!< Max. allowed velocity if robot is <critical_corner_dist> m away. The velocity will be further reduced if the robot gets closer to the critical corner. Otherwise it will be increased.
+    double critical_corner_inclusion_dist; //! Distance within the critical corner is considered in the optimization process.
+    double critical_corner_check_direction; //! Flag to select if rel. orientation is considered when selecting poses.
   } obstacles; //!< Obstacle related parameters
 
   //! Optimization related parameters
@@ -188,7 +193,7 @@ public:
     double weight_dynamic_obstacle_inflation; //!< Optimization weight for the inflation penalty of dynamic obstacles (should be small)
     double weight_viapoint; //!< Optimization weight for minimizing the distance to via-points
     double weight_prefer_rotdir; //!< Optimization weight for preferring a specific turning direction (-> currently only activated if an oscillation is detected, see 'oscillation_recovery'
-
+    double weight_cc; //!< Optimization weight for max. velocity at critical corners
     double weight_adapt_factor; //!< Some special weights (currently 'weight_obstacle') are repeatedly scaled by this factor in each outer TEB iteration (weight_new = weight_old*factor); Increasing weights iteratively instead of setting a huge value a-priori leads to better numerical conditions of the underlying optimization problem.
     double obstacle_cost_exponent; //!< Exponent for nonlinear obstacle cost (cost = linear_cost * obstacle_cost_exponent). Set to 1 to disable nonlinear cost (default)
 
@@ -405,6 +410,10 @@ public:
     obstacles.costmap_converter_plugin = "";
     obstacles.costmap_converter_spin_thread = true;
     obstacles.costmap_converter_rate = 5;
+    obstacles.critical_corner_dist = 1;
+    obstacles.critical_corner_vel = 0.5;
+    obstacles.critical_corner_inclusion_dist = 2;
+    obstacles.critical_corner_check_direction = false;
 
     // Optimization
 
@@ -432,6 +441,7 @@ public:
     optim.weight_dynamic_obstacle_inflation = 0.1;
     optim.weight_viapoint = 1;
     optim.weight_prefer_rotdir = 50;
+    optim.weight_cc = 1;
 
     optim.weight_adapt_factor = 2.0;
     optim.obstacle_cost_exponent = 1.0;

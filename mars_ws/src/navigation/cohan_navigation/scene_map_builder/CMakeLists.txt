@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   nav_msgs
   tf2
+  tf2_ros
 )
 
 find_package(Bullet REQUIRED)
@@ -34,6 +35,16 @@ else()
   link_directories(${YAMLCPP_LIBRARY_DIRS})
 endif()
 
+include_directories(
+    include
+    ${BULLET_INCLUDE_DIRS}
+    ${catkin_INCLUDE_DIRS}
+    ${SDL_INCLUDE_DIR}
+    ${SDL_IMAGE_INCLUDE_DIRS}
+    ${YAMLCPP_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
+
 catkin_package(
     INCLUDE_DIRS
         include
@@ -43,16 +54,7 @@ catkin_package(
         roscpp
         nav_msgs
         tf2
-)
-
-include_directories(
-    include
-    ${BULLET_INCLUDE_DIRS}
-    ${catkin_INCLUDE_DIRS}
-    ${SDL_INCLUDE_DIR}
-    ${SDL_IMAGE_INCLUDE_DIRS}
-    ${YAMLCPP_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
+        std_msgs
 )
 
 add_library(scene_map_server_image_loader src/image_loader.cpp)
@@ -70,6 +72,16 @@ target_link_libraries(scene_map_server
     scene_map_server_image_loader
     ${YAMLCPP_LIBRARIES}
     ${catkin_LIBRARIES}
+)
+
+add_executable(scene_publisher src/scene_publisher.cpp)
+add_dependencies(scene_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(scene_publisher
+    ${BULLET_LIBRARIES}
+    ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${tf2_LIBRARIES}
+    ${tf2_ros_LIBRARIES}
 )
 
 ###########

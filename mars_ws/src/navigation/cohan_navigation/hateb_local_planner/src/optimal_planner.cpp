@@ -42,6 +42,17 @@
 
 #define THROTTLE_RATE 1.0 // seconds
 #include <hateb_local_planner/optimal_planner.h>
+// g2o custom edges and vertices for the TEB planner
+#include <hateb_local_planner/g2o_types/edge_velocity.h>
+#include <hateb_local_planner/g2o_types/edge_acceleration.h>
+#include <hateb_local_planner/g2o_types/edge_kinematics.h>
+#include <hateb_local_planner/g2o_types/edge_time_optimal.h>
+#include <hateb_local_planner/g2o_types/edge_shortest_path.h>
+#include <hateb_local_planner/g2o_types/edge_obstacle.h>
+#include <hateb_local_planner/g2o_types/edge_dynamic_obstacle.h>
+#include <hateb_local_planner/g2o_types/edge_via_point.h>
+#include <hateb_local_planner/g2o_types/edge_prefer_rotdir.h>
+#include <hateb_local_planner/g2o_types/edge_critical_corners.h>
 #include <map>
 #include <memory>
 #include <limits>
@@ -54,15 +65,15 @@ namespace hateb_local_planner
 
 // ============== Implementation ===================
 
-TebOptimalPlanner::TebOptimalPlanner() : cfg_(NULL), obstacles_(NULL), via_points_(NULL), cost_(HUGE_VAL), prefer_rotdir_(RotType::none),
+TebOptimalPlanner::TebOptimalPlanner() : cfg_(NULL), obstacles_(NULL), critical_corners_(NULL), via_points_(NULL), cost_(HUGE_VAL), prefer_rotdir_(RotType::none),
                                          robot_model_(new PointRobotFootprint()), human_model_(new CircularRobotFootprint()), initialized_(false), optimized_(false)
 {
 }
 
-TebOptimalPlanner::TebOptimalPlanner(const HATebConfig& cfg, ObstContainer* obstacles, RobotFootprintModelPtr robot_model, TebVisualizationPtr visual, const ViaPointContainer* via_points, CircularRobotFootprintPtr human_model,
+TebOptimalPlanner::TebOptimalPlanner(const HATebConfig& cfg, ObstContainer* obstacles, ObstContainer* critical_corners, RobotFootprintModelPtr robot_model, TebVisualizationPtr visual, const ViaPointContainer* via_points, CircularRobotFootprintPtr human_model,
     const std::map<uint64_t, ViaPointContainer> *humans_via_points_map)
 {
-  initialize(cfg, obstacles, robot_model, visual, via_points,  human_model, humans_via_points_map);
+  initialize(cfg, obstacles, critical_corners, robot_model, visual, via_points,  human_model, humans_via_points_map);
 }
 
 TebOptimalPlanner::~TebOptimalPlanner()
@@ -75,13 +86,14 @@ TebOptimalPlanner::~TebOptimalPlanner()
   //g2o::HyperGraphActionLibrary::destroy();
 }
 
-void TebOptimalPlanner::initialize(const HATebConfig& cfg, ObstContainer* obstacles, RobotFootprintModelPtr robot_model, TebVisualizationPtr visual, const ViaPointContainer* via_points, CircularRobotFootprintPtr human_model, const std::map<uint64_t, ViaPointContainer> *humans_via_points_map)
+void TebOptimalPlanner::initialize(const HATebConfig& cfg, ObstContainer* obstacles, ObstContainer* critical_corners, RobotFootprintModelPtr robot_model, TebVisualizationPtr visual, const ViaPointContainer* via_points, CircularRobotFootprintPtr human_model, const std::map<uint64_t, ViaPointContainer> *humans_via_points_map)
 {
   // init optimizer (set solver and block ordering settings)
   optimizer_ = initOptimizer();
 
   cfg_ = &cfg;
   obstacles_ = obstacles;
+  critical_corners_ = critical_corners;
   robot_model_ = robot_model;
   human_model_ = human_model;
   via_points_ = via_points;
@@ -165,7 +177,7 @@ void TebOptimalPlanner::registerG2OTypes()
   factory->registerType("EDGE_DYNAMIC_OBSTACLE", new g2o::HyperGraphElementCreator<EdgeDynamicObstacle>);
   factory->registerType("EDGE_VIA_POINT", new g2o::HyperGraphElementCreator<EdgeViaPoint>);
   factory->registerType("EDGE_PREFER_ROTDIR", new g2o::HyperGraphElementCreator<EdgePreferRotDir>);
-
+  factory->registerType("EDGE_CRITICAL_CORNERS", new g2o::HyperGraphElementCreator<EdgeCriticalCorners>);
   //Humans
   factory->registerType("EDGE_VELOCITY_HUMAN", new g2o::HyperGraphElementCreator<EdgeVelocityHuman>);
   factory->registerType("EDGE_VELOCITY_HOLONOMIC_HUMAN", new g2o::HyperGraphElementCreator<EdgeVelocityHolonomicHuman>);
@@ -602,6 +614,8 @@ bool TebOptimalPlanner::buildGraph(double weight_multiplier)
 
 
   AddEdgesPreferRotDir();
+
+  AddEdgesCriticalCorners();
 
   switch (cfg_->planning_mode) {
   case 0:
@@ -1252,6 +1266,69 @@ void TebOptimalPlanner::AddEdgesVelocity()
       }
     }
   }
+}
+
+void TebOptimalPlanner::AddEdgesCriticalCorners(){
+
+  if ( cfg_->optim.weight_cc==0 )
+    return; // if weight equals zero skip adding edges!
+
+  int n = teb_.sizePoses();
+  Eigen::Matrix<double,1,1> information;
+  information.fill(0);
+  information(0,0) = cfg_->optim.weight_cc;
+
+  for (int i=0; i < n - 1; ++i)
+  {
+    std::vector<Obstacle*> relevant_critical_corners;
+    
+    const Eigen::Vector2d pose_orient = teb_.Pose(i).orientationUnitVec();
+    
+    // iterate obstacles
+    for (const ObstaclePtr& cc : *critical_corners_)
+    {
+    
+      // calculate distance to robot model
+      double dist_l = robot_model_->calculateDistance(teb_.Pose(i  ), cc.get());
+      double dist_r = robot_model_->calculateDistance(teb_.Pose(i+1), cc.get());
+      double dist = std::min(dist_l, dist_r);
+      
+      // force considering obstacle if really close to the current pose
+      if (dist < cfg_->obstacles.critical_corner_inclusion_dist)
+        {
+          relevant_critical_corners.push_back(cc.get());
+          continue;
+        }
+    }  
+
+    for (const Obstacle* cc : relevant_critical_corners)
+    {
+      
+      // add critical corner only if the cc is not current pose
+      double sim = 1;
+      if (cfg_->obstacles.critical_corner_check_direction)
+      {
+          Eigen::Vector2d dir_pose = teb_.Pose(i+1).position() - teb_.Pose(i).position();
+          Eigen::Vector2d dir_cc = cc->getCentroid() - teb_.Pose(i).position();
+          double sim = dir_pose.dot(dir_cc);
+            //double sim = dir_pose.dot(dir_cc)/(dir_pose.norm()*dir_cc.norm());
+            // compute cosine similarity between these vectors
+        }
+
+      if(sim>0)
+      {
+        EdgeCriticalCorners* cc_edge = new EdgeCriticalCorners;
+        cc_edge->setVertex(0,teb_.PoseVertex(i));
+        cc_edge->setVertex(1,teb_.PoseVertex(i+1));
+        cc_edge->setVertex(2,teb_.TimeDiffVertex(i));
+        cc_edge->setInformation(information);
+        cc_edge->setParameters(*cfg_, robot_model_.get(), cc);
+        optimizer_->addEdge(cc_edge);
+      }
+    } 
+
+  }
+  
 }
 
 void TebOptimalPlanner::AddEdgesVelocityForHumans() {

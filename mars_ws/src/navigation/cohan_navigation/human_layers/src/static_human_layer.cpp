@@ -62,10 +62,11 @@ void StaticHumanLayer::updateBoundsFromHumans(double* min_x, double* min_y, doub
 
   for(uint i=0;i<transformed_humans_.size();i++){
     auto human = transformed_humans_[i];
-    *min_x = std::min(*min_x, human.pose.position.x - radius_);
-    *min_y = std::min(*min_y, human.pose.position.y - radius_);
-    *max_x = std::max(*max_x, human.pose.position.x + radius_);
-    *max_y = std::max(*max_y, human.pose.position.y + radius_);
+    double offset = 3.5;
+    *min_x = std::min(*min_x, human.pose.position.x - radius_ - offset);
+    *min_y = std::min(*min_y, human.pose.position.y - radius_ - offset);
+    *max_x = std::max(*max_x, human.pose.position.x + radius_ + offset);
+    *max_y = std::max(*max_y, human.pose.position.y + radius_ + offset);
   }
 }
 
@@ -80,15 +81,18 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
   costmap_2d::Costmap2D* costmap = layered_costmap_->getCostmap();
   double res = costmap->getResolution();
 
+  double offset = 4.0;
+  double radius_new = radius_ + offset;
+
   for(uint i=0;i<transformed_humans_.size();i++){
     auto human = transformed_humans_[i];
 
-    unsigned int width = std::max(1, static_cast<int>((2*radius_) / res)),
-                 height = std::max(1, static_cast<int>((2*radius_) / res));
+    unsigned int width = std::max(1, static_cast<int>((2*radius_new) / res)),
+                 height = std::max(1, static_cast<int>((2*radius_new) / res));
 
     double cx = human.pose.position.x, cy = human.pose.position.y;
     double vx = human.velocity.linear.x, vy = human.velocity.linear.y;
-    double ox = cx - radius_, oy = cy - radius_;
+    double ox = cx - radius_new, oy = cy - radius_new;
 
     int mx, my;
     costmap->worldToMapNoBounds(ox, oy, mx, my);
@@ -128,15 +132,19 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
           continue;
 
         double x = bx + i * res, y = by + j * res;
+        double v = sqrt(vx * vx + vy * vy);
         double val;
-        // val = Gaussian2D(x, y, cx, cy, amplitude_, var, var);
-        // printf("Gaussian2D result : %f\n", val);
-        val = Asymmetrical_Gaussian(x, y, cx, cy, vx, vy)*100;
-        // printf("Asymmetrical_Gaussian result : %f\n", val);
-        double rad = sqrt(-2*var*log(val/amplitude_));
+        
+        if(v > 0.05)
+          val = Asymmetrical_Gaussian(x, y, cx, cy, vx, vy, var, amplitude_);
+        else
+          val = Gaussian2D(x, y, cx, cy, amplitude_, var, var);
+        // printf("personal space result : %f\n", val);
+        
+        // double rad = sqrt(-2*var*log(val/amplitude_));
+        // if (rad > radius_)
+        //   continue;
 
-        if (rad > radius_)
-          continue;
         unsigned char cvalue = (unsigned char) val;
         costmap->setCost(i + mx, j + my, std::max(cvalue, old_cost));
       }

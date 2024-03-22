@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 mean = np.array([0, 0])
 
 # 协方差矩阵
-covariance = np.array([[0.1, 0.0], [0.0, 180.0]])
+covariance = np.array([[0.07, 0.0], [0.0, 180.0]])
 
 # 创建多变量正态分布对象
 mv_normal = multivariate_normal(mean=mean, cov=covariance)
@@ -23,6 +23,13 @@ print(mv_normal.pdf([0, 0]))
 print(mv_normal.pdf([0.1, 0]))
 print(mv_normal.pdf([0.5, 0]))
 print(mv_normal.pdf([1.5, 0]))
+print(mv_normal.pdf([1.75, 0]))
+print(mv_normal.pdf([3.0, 0]))
+print("-----------")
+print(mv_normal.pdf([1.75, 1]))
+print(mv_normal.pdf([1.75, 3]))
+print(mv_normal.pdf([1.75, 5]))
+print(mv_normal.pdf([1.75, 10]))
 print("-----------")
 print(mv_normal.pdf([0, 0]))
 print(mv_normal.pdf([0.0, 1]))

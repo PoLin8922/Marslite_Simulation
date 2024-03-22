@@ -27,6 +27,18 @@
     <remap from="base_scan" to="scan"/>
   </node>
 
+  <!-- apply corner detection -->
+  <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">
+    <param name="scan_topics" value="/scan"/>
+    <param name="cmd_vel_topic" value="/cmd_vel"/>
+    <param name="output_frame" value="base_link"/>
+    <param name="output_topic" value="/move_base/HATebLocalPlannerROS/critical_corners"/>
+    <param name="base_frame" value="base_link"/>
+    <param name="min_occlusion" value="0.8"/>
+    <param name="dist_threshold" value="1"/>
+    <param name="dist_tolerance" value="0.4"/>
+  </node>
+
   <!-- move_base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find cohan_navigation)/config/stage_pr2_move_base_config/costmap_common_params.yaml" command="load" ns="global_costmap" />

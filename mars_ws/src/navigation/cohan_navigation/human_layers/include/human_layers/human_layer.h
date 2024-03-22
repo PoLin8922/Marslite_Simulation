@@ -95,7 +95,8 @@ protected:
     double d = sqrt(dx * dx + dy * dy);
     double theta = atan2(dy, dx);
     double X = d*cos(theta), Y = d*sin(theta);
-    return A/std::max(d,1.0) * Guassian1D(X,0.0,1.0,varx) * Guassian1D(Y,0.0,1.0,vary);
+    double scale = 4;
+    return (A/2)/std::max(d,1.0) * Guassian1D(X,0.0,1.0,varx/scale) * Guassian1D(Y,0.0,1.0,vary/scale);
   }
 
   double Gaussian2D_skewed(double x, double y, double x0, double y0, double A, double varx, double vary, double skew_ang)
@@ -120,16 +121,17 @@ protected:
       return angle;
   }
 
-  double Asymmetrical_Gaussian(double x, double y, double x0, double y0, double vx, double vy) {
+  double Asymmetrical_Gaussian(double x, double y, double x0, double y0, double vx, double vy, double var, double A) {
       // define parameter
       double v = sqrt(vx * vx + vy * vy);
       double theta = atan2(vy, vx);
-      double sigmaHead = fmax(1.5 * v, 1.0);
+      double sigmaHead = fmax(1.2 * v, 1.0);
+      // printf("sigmaHead: %f, human v: %f\n", sigmaHead, v);
       // double sigmaRear = 2.0 / 7.0;
-      double sigmaRear = 3.0 / 7.0;
-      double sigmaLarge = 3.0 / 5.0;
+      double sigmaRear = var / 7.0;
+      double sigmaLarge = var / 5.0;
       // double sigmaSmall = 2.0 / 7.0;
-      double sigmaSmall = 3.0 / 7.0;
+      double sigmaSmall = var / 7.0;
 
       // compute αmain, αside
       double alphaMain = normalize(atan2(y - y0, x - x0) - theta + PI / 2);
@@ -159,7 +161,7 @@ protected:
       double Gc = (sinTheta * sinTheta) / (2 * sigmaMain * sigmaMain) + (cosTheta * cosTheta) / (2 * sigmaSide * sigmaSide);
 
       // compute social cost
-      double result = exp(-1.0 * (Ga * (x - x0) * (x - x0) + 2 * Gb * (x - x0) * (y - y0) + Gc * (y - y0) * (y - y0)));
+      double result = A*exp(-1.0 * (Ga * (x - x0) * (x - x0) + 2 * Gb * (x - x0) * (y - y0) + Gc * (y - y0) * (y - y0)));
 
       return result;
   }         

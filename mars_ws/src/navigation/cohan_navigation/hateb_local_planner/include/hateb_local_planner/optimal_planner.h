@@ -133,7 +133,7 @@ public:
    * @param visual Shared pointer to the TebVisualization class (optional)
    * @param via_points Container storing via-points (optional)
    */
-  TebOptimalPlanner(const HATebConfig& cfg, ObstContainer* obstacles = NULL,
+  TebOptimalPlanner(const HATebConfig& cfg, ObstContainer* obstacles = NULL, ObstContainer* critical_corners = NULL,
                     RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>(),
                     TebVisualizationPtr visual = TebVisualizationPtr(),
                     const ViaPointContainer* via_points = NULL,
@@ -153,7 +153,7 @@ public:
     * @param visual Shared pointer to the TebVisualization class (optional)
     * @param via_points Container storing via-points (optional)
     */
-  void initialize(const HATebConfig &cfg, ObstContainer *obstacles = NULL,
+  void initialize(const HATebConfig &cfg, ObstContainer *obstacles = NULL, ObstContainer* critical_corners = NULL,
                   RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>(),
                   TebVisualizationPtr visual = TebVisualizationPtr(),
                   const ViaPointContainer *via_points = NULL,
@@ -320,6 +320,12 @@ public:
    * @remarks This method overrids the obstacle container optinally assigned in the constructor.
    */
   void setObstVector(ObstContainer* obst_vector) {obstacles_ = obst_vector;}
+  /**
+   * @brief Assign a new set of critical corneres
+   * @param cc_vector pointer to a critical corners container
+   * @remarks This method overrids the obstacle container optinally assigned in the constructor.
+   */
+  void setCritCornVector(ObstContainer* cc_vector) {critical_corners_ = cc_vector;}
 
   /**
    * @brief Access the internal obstacle container.
@@ -717,7 +723,23 @@ protected:
   void AddEdgesHumanRobotVisibility();
 
   void AddVertexEdgesApproach();
-
+  
+  /**
+   * @brief Add all edges (local cost function) for reducing the velocity of a vertex due to its associated obstacles
+   * @see buildGraph
+   * @see optimizeGraph
+   */
+  void AddEdgesVelocityObstacleRatio();
+  
+  /**
+   * @brief Add all edges (local cost functions) related to keeping a distance from critical corners
+   * @warning do not combine with AddEdgesInflatedObstacles
+   * @see EdgeCriticalCorners
+   * @see buildGraph
+   * @see optimizeGraph
+   */
+  void AddEdgesCriticalCorners();
+  
   //@}
 
 
@@ -729,10 +751,10 @@ protected:
 
 
   // external objects (store weak pointers)
-  const HATebConfig
-      *cfg_; //!< Config class that stores and manages all related parameters
-  ObstContainer *obstacles_; //!< Store obstacles that are relevant for planning
-  const ViaPointContainer *via_points_; //!< Store via points for planning
+  const HATebConfig* cfg_; //!< Config class that stores and manages all related parameters
+  ObstContainer* obstacles_; //!< Store obstacles that are relevant for planning
+  ObstContainer* critical_corners_; //!< Store Critical corners that are relevant for planning
+  const ViaPointContainer* via_points_; //!< Store via points for planning
   const std::map<uint64_t, ViaPointContainer> *humans_via_points_map_;
 
   double cost_; //!< Store cost value of the current hyper-graph

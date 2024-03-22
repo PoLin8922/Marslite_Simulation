@@ -102,10 +102,8 @@ void TebVisualization::initialize(ros::NodeHandle& nh, const HATebConfig& cfg)
       nh.advertise<geometry_msgs::PoseArray>(HUMAN_LOCAL_PLANS_POSES_TOPIC, 1);
   humans_tebs_fp_poses_pub_ = nh.advertise<visualization_msgs::MarkerArray>(
       HUMAN_LOCAL_PLANS_FP_POSES_TOPIC, 1);
-  teb_marker_pub_ =
-      nh.advertise<visualization_msgs::Marker>("teb_markers", 1000);
-  feedback_pub_ =
-      nh.advertise<hateb_local_planner::FeedbackMsg>("teb_feedback", 10);
+  teb_marker_pub_ = nh.advertise<visualization_msgs::Marker>("teb_markers", 1000);
+  feedback_pub_ = nh.advertise<hateb_local_planner::FeedbackMsg>("teb_feedback", 10);
   robot_traj_time_pub_ =
       nh.advertise<human_msgs::TimeToGoal>(ROBOT_TRAJ_TIME_TOPIC, 1);
   robot_path_time_pub_ =
@@ -116,6 +114,7 @@ void TebVisualization::initialize(ros::NodeHandle& nh, const HATebConfig& cfg)
       nh.advertise<human_msgs::HumanTimeToGoalArray>(HUMAN_PATHS_TIME_TOPIC, 1);
   human_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("human_marker", 1);
   human_arrow_pub = nh.advertise<visualization_msgs::MarkerArray>("human_arrow", 1);
+  critical_corner_pub = nh.advertise<visualization_msgs::Marker>("critical_corner_marker", 1);
   mode_text_pub = nh.advertise<visualization_msgs::Marker>("mode_text", 1);
   robot_next_pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("robot_next_pose", 1);
   human_next_pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("human_next_pose", 1);
@@ -969,6 +968,55 @@ void TebVisualization::publishObstacles(const ObstContainer& obstacles) const
       teb_marker_pub_.publish( marker );
     }
   }
+}
+
+
+void TebVisualization::publishCriticalCorners(const ObstContainer& critical_corners) const
+{
+  if ( critical_corners.empty() || printErrorWhenNotInitialized() )
+    return;
+  
+  // Visualize point critical_corners
+  {
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = cfg_->map_frame;
+    marker.header.stamp = ros::Time::now();
+    marker.ns = "CriticalCorners";
+    marker.id = 0;
+    marker.type = visualization_msgs::Marker::LINE_LIST;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.lifetime = ros::Duration(2.0);
+    
+    for (ObstContainer::const_iterator obst = critical_corners.begin(); obst != critical_corners.end(); ++obst)
+    {
+      boost::shared_ptr<PointObstacle> pobst = boost::dynamic_pointer_cast<PointObstacle>(*obst);      
+      if (!pobst)
+        continue;
+
+      geometry_msgs::Point start;
+      start.x = pobst->x();
+      start.y = pobst->y();
+      start.z = 0;
+      marker.points.push_back(start);
+
+      geometry_msgs::Point end;
+      end.x = pobst->x();
+      end.y = pobst->y();
+      end.z = 1;
+      marker.points.push_back(end);
+      
+    }
+    
+    marker.scale.x = 0.1;
+    marker.scale.y = 0.1;
+    marker.color.a = 1.0;
+    marker.color.r = 0.0;
+    marker.color.g = 0.0;
+    marker.color.b = 1.0;
+
+    critical_corner_pub.publish( marker );
+  }
+  
 }
 
 void TebVisualization::publishViaPoints(const std::vector< Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> >& via_points, const std::string& ns) const
