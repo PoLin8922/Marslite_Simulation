@@ -142,6 +142,7 @@ void HumanLayer::updateBounds(double origin_x, double origin_y, double origin_z,
       if(1){
         HumanPoseVel human_pose_vel;
         human_pose_vel.header.frame_id = humans_.header.frame_id;
+        // std::cout << "Frame ID: " << humans_.header.frame_id << std::endl;
         human_pose_vel.header.stamp = humans_.header.stamp;
         geometry_msgs::PoseStamped before_pose, after_pose;
 

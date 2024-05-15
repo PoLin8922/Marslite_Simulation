@@ -39,8 +39,8 @@ catkin_package(
   CATKIN_DEPENDS roscpp
 )
 
-add_executable(navigability_srv src/navigability_srv.cpp)
-add_dependencies(navigability_srv hyper_system_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
-target_link_libraries(navigability_srv ${catkin_LIBRARIES})
-install(TARGETS navigability_srv RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+add_executable(navigability_pub src/navigability_pub.cpp)
+add_dependencies(navigability_pub hyper_system_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+target_link_libraries(navigability_pub ${catkin_LIBRARIES})
+install(TARGETS navigability_pub RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 

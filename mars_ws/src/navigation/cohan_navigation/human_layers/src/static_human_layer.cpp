@@ -135,7 +135,7 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
         double v = sqrt(vx * vx + vy * vy);
         double val;
         
-        if(v > 0.05)
+        if(v > 0.1)
           val = Asymmetrical_Gaussian(x, y, cx, cy, vx, vy, var, amplitude_);
         else
           val = Gaussian2D(x, y, cx, cy, amplitude_, var, var);

@@ -64,6 +64,7 @@
 #include <human_msgs/TrackedHumans.h>
 #include <human_msgs/TrackedSegmentType.h>
 
+
 namespace hateb_local_planner
 {
 
@@ -712,15 +713,40 @@ void TebVisualization::publishTrackedHumans(const human_msgs::TrackedHumansConst
           arrow.action = visualization_msgs::Marker::ADD;
 
           // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-          marker.pose.position.x = segment.pose.pose.position.x;
-          marker.pose.position.y = segment.pose.pose.position.y;
-          marker.pose.position.z = 0.9;
-          marker.pose.orientation = segment.pose.pose.orientation;
+          geometry_msgs::PoseStamped before_pose, after_pose;
+          try
+          {
+            before_pose.pose = segment.pose.pose;
+            before_pose.header.frame_id = humans->header.frame_id;
+            before_pose.header.stamp = humans->header.stamp;
+            tf_.transformPose("map", before_pose, after_pose);
+            marker.pose = after_pose.pose;
+            arrow.pose = after_pose.pose;
+          }
+          catch (tf2::LookupException& ex)
+          {
+            ROS_ERROR("No Transform available Error: %s\n", ex.what());
+            continue;
+          }
+          catch (tf2::ConnectivityException& ex)
+          {
+            ROS_ERROR("Connectivity Error: %s\n", ex.what());
+            continue;
+          }
+          catch (tf2::ExtrapolationException& ex)
+          {
+            ROS_ERROR("Extrapolation Error: %s\n", ex.what());
+            continue;
+          }
+          // marker.pose.position.x = segment.pose.pose.position.x;
+          // marker.pose.position.y = segment.pose.pose.position.y;
+          // marker.pose.position.z = 0.9;
+          // marker.pose.orientation = segment.pose.pose.orientation;
 
-          arrow.pose.position.x = segment.pose.pose.position.x;
-          arrow.pose.position.y = segment.pose.pose.position.y;
-          arrow.pose.position.z = 0.0;
-          arrow.pose.orientation = segment.pose.pose.orientation;
+          // arrow.pose.position.x = segment.pose.pose.position.x;
+          // arrow.pose.position.y = segment.pose.pose.position.y;
+          // arrow.pose.position.z = 0.0;
+          // arrow.pose.orientation = segment.pose.pose.orientation;
 
           // Set the scale of the marker -- 1x1x1 here means 1m on a side
           marker.scale.x = 0.6;

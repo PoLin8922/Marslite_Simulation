@@ -63,7 +63,7 @@ void ObstaclePointCloud::broadcast() {
     std::copy(cells.begin(), cells.end(), std::back_inserter(all_cells));
   }
 
-  constexpr int point_density = 100;
+  constexpr int point_density = 1000;
   const int num_points = all_cells.size() * point_density;
 
   std::default_random_engine generator;

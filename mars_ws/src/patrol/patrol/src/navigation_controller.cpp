@@ -48,7 +48,7 @@ NavigationController::NavigationController(ros::NodeHandle nh)
 
 void NavigationController::nav_cmd_vel_callback(const geometry_msgs::Twist::ConstPtr& twist)
 {
-    double mb_cmd_vel = sqrt(pow(twist->linear.x, 2) + pow(twist->linear.y, 2));
+    double mb_cmd_vel = sqrt(pow(twist->linear.x, 4) + pow(twist->linear.y, 4));
     geometry_msgs::Twist new_cmd_vel;
 
     if(NumOfPeople == 0)

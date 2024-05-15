@@ -28,12 +28,17 @@
         <addwaypoint id="robot_goal"/>
     </agent>
 
+    <agent x="1.5" y="-1.5" n="1" dx="0" dy="0" type="2">
+        <addwaypoint id="robot_start"/>
+        <addwaypoint id="robot_goal"/>
+    </agent>
+
 
         <!--AgentClusters-->
-    <agent x="6.8" y="6.2" n="1" dx="1" dy="1" type="3">
+    <!-- <agent x="6.8" y="6.2" n="1" dx="1" dy="1" type="3">
         <addwaypoint id="enter_bookshop"/>
         <addwaypoint id="leave_bookshop"/>
-    </agent>
+    </agent> -->
 
     
 </scenario>

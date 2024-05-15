@@ -1064,7 +1064,7 @@ bool HumanPathPrediction::predictHumansFromPaths(
         auto now = ros::Time::now();
 
         predicted_poses.poses.resize(poses.size());
-        for (size_t i = 0; i < poses.size(); ++i) {
+        for (size_t i = 0; i < poses.size()-2; ++i) {
           auto &pose = poses[i];
           geometry_msgs::PoseWithCovarianceStamped predicted_pose;
           if (i == 0 || lin_vel == 0.0) {
