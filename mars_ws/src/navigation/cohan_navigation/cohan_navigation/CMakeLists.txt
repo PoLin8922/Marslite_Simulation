@@ -12,7 +12,7 @@ include_directories(
 )
 
 # install
-foreach(dir maps launch/morse_pr2_launch config/morse_pr2_move_base_config launch/pr2_launch config/pr2_move_base_config launch/stage_pr2_launch config/stage_pr2_move_base_config)
+foreach(dir maps launch rviz config/stage_pr2_move_base_config)
    install(DIRECTORY ${dir}/
       DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)

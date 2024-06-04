@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   visualization_msgs
   walker_msgs
+  human_msgs
 )
 
 ## System dependencies are found with CMake's conventions

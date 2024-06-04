@@ -44,3 +44,7 @@ add_dependencies(navigability_pub hyper_system_generate_messages_cpp ${catkin_EX
 target_link_libraries(navigability_pub ${catkin_LIBRARIES})
 install(TARGETS navigability_pub RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
+add_executable(LaserScan_to_MultiEchoLaserScan src/LaserScan_to_MultiEchoLaserScan.cpp)
+target_link_libraries(LaserScan_to_MultiEchoLaserScan ${catkin_LIBRARIES})
+install(TARGETS LaserScan_to_MultiEchoLaserScan RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
