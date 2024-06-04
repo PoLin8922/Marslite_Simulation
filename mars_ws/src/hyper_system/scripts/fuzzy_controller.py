@@ -8,86 +8,45 @@ import numpy as np
 import skfuzzy as fuzz
 import subprocess
 import time
-import matplotlib.pyplot as plt
+import fuzzy_definition
 from skfuzzy import control as ctrl
 from std_msgs.msg import String
 from hyper_system.srv import Navigability
 from actionlib_msgs.msg import GoalStatusArray
 from std_msgs.msg import Float32
 
-# define fuzzy input
-fz_navigability = ctrl.Antecedent(np.arange(0, 1.01, 0.01), 'navigability')
-fz_speed_up_level = ctrl.Antecedent(np.arange(0, 11, 0.1), 'speed_up_level')
-
-# define fuzzy output
-fz_weight_optimaltime = ctrl.Consequent(np.arange(5, 31, 0.1), 'weight_optimaltime')
-
-# define membership function
-fz_navigability['VL'] = fuzz.gaussmf(fz_navigability.universe, 0, 0.2)
-fz_navigability['L'] = fuzz.gaussmf(fz_navigability.universe, 0.25, 0.2)
-fz_navigability['M'] = fuzz.gaussmf(fz_navigability.universe, 0.5, 0.2)
-fz_navigability['H'] = fuzz.gaussmf(fz_navigability.universe, 0.75, 0.2)
-fz_navigability['VH'] = fuzz.gaussmf(fz_navigability.universe, 1, 0.2)
-
-fz_speed_up_level['L'] = fuzz.gaussmf(fz_speed_up_level.universe, 0, 2)
-fz_speed_up_level['M'] = fuzz.gaussmf(fz_speed_up_level.universe, 5, 2)
-fz_speed_up_level['H'] = fuzz.gaussmf(fz_speed_up_level.universe, 10, 2)
-
-fz_weight_optimaltime['VL'] = fuzz.gaussmf(fz_weight_optimaltime.universe, 5, 3)
-fz_weight_optimaltime['L'] = fuzz.gaussmf(fz_weight_optimaltime.universe, 10, 3)
-fz_weight_optimaltime['M'] = fuzz.gaussmf(fz_weight_optimaltime.universe, 15, 3)
-fz_weight_optimaltime['H'] = fuzz.gaussmf(fz_weight_optimaltime.universe, 20, 3)
-fz_weight_optimaltime['VH'] = fuzz.gaussmf(fz_weight_optimaltime.universe, 25, 3)
-
-# define rules
-## fz_navigability, fz_speed_up_level | fz_weight_optimaltime
-rule1 = ctrl.Rule(fz_navigability['VL'] & fz_speed_up_level['L'], fz_weight_optimaltime['VL'])
-rule2 = ctrl.Rule(fz_navigability['VL'] & fz_speed_up_level['M'], fz_weight_optimaltime['L'])
-rule3 = ctrl.Rule(fz_navigability['VL'] & fz_speed_up_level['H'], fz_weight_optimaltime['L'])
-rule4 = ctrl.Rule(fz_navigability['L'] & fz_speed_up_level['L'], fz_weight_optimaltime['L'])
-rule5 = ctrl.Rule(fz_navigability['L'] & fz_speed_up_level['M'], fz_weight_optimaltime['M'])
-rule6 = ctrl.Rule(fz_navigability['L'] & fz_speed_up_level['H'], fz_weight_optimaltime['M'])
-rule7 = ctrl.Rule(fz_navigability['M'] & fz_speed_up_level['L'], fz_weight_optimaltime['L'])
-rule8 = ctrl.Rule(fz_navigability['M'] & fz_speed_up_level['M'], fz_weight_optimaltime['M'])
-rule9 = ctrl.Rule(fz_navigability['M'] & fz_speed_up_level['H'], fz_weight_optimaltime['H'])
-rule10 = ctrl.Rule(fz_navigability['H'] & fz_speed_up_level['L'], fz_weight_optimaltime['M'])
-rule11 = ctrl.Rule(fz_navigability['H'] & fz_speed_up_level['M'], fz_weight_optimaltime['M'])
-rule12 = ctrl.Rule(fz_navigability['H'] & fz_speed_up_level['H'], fz_weight_optimaltime['H'])
-rule13 = ctrl.Rule(fz_navigability['VH'] & fz_speed_up_level['L'], fz_weight_optimaltime['H'])
-rule14 = ctrl.Rule(fz_navigability['VH'] & fz_speed_up_level['M'], fz_weight_optimaltime['H'])
-rule15 = ctrl.Rule(fz_navigability['VH'] & fz_speed_up_level['H'], fz_weight_optimaltime['VH']) 
-
-# tuned parameter
-pa_weight_optimaltime = "/move_base/HATebLocalPlannerROS weight_optimaltime "
-
 
 class FyzzyController:
     def __init__(self):
         rospy.init_node('fuzzy_controller', anonymous=True)
 
-        fz_navigability.view()
-        fz_speed_up_level.view()
-        fz_weight_optimaltime.view()
-        plt.show()
+        # fuzzy controller
+        self.fuzzy_df = fuzzy_definition.FyzzyDefinition()
+        self.optimaltime_controller = self.fuzzy_df.optimaltime_controller
+
 
         # scene semantics levels
-        self.speed_up_level = -1  
-
-        # navigability
-        self.navigability = -1
+        self.speed_up_level = -1    
+        self.robot_invisiable_level = -1
+        self.right_side_level = -1 
+        self.pspace_level = -1 
 
         # parameter
+        self.navigability = -1
         self.robot_move = False
         self.command = "rosrun dynamic_reconfigure dynparam set " 
-
-        # fuzzy controller
-        self.optimaltime_controller = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8,
-                                  rule9, rule10, rule11, rule12, rule13, rule14, rule15])
-
+        self.pa_weight_optimaltime = "/move_base/HATebLocalPlannerROS weight_optimaltime "
+        self.pa_weight_cc = "/move_base/HATebLocalPlannerROS weight_cc "
+        self.pa_hr_safety = "/move_base/HATebLocalPlannerROS weight_human_robot_safety "
+        self.pa_pspace_cov_global= "/move_base/global_costmap/human_layer_static radius "
+        self.pa_pspace_cov_local= "/move_base/local_costmap/human_layer_static radius "
+        self.pa_pspace_r_ratio_global= "/move_base/global_costmap/human_layer_static right_cov_ratio "
+        self.pa_pspace_r_ratio_local= "/move_base/local_costmap/human_layer_static right_cov_ratio "
+        self.pa_use_external_prediction = "/move_base/HATebLocalPlannerROS use_external_prediction "  ## + "true" or "false"
 
         rospy.Subscriber("/scenario", String, self.scenario_callback)
         rospy.Subscriber("/navigability", Float32, self.navigability_callback)
-        rospy.Subscriber("/move_base/status", GoalStatusArray, self.status_callback)
+        rospy.Subscriber("/move_base/status", GoalStatusArray, self.robot_status_callback)
 
         self.speed_up_level_pub = rospy.Publisher("/speed_up_level", Float32, queue_size=10)
         self.weight_optimaltime_pub = rospy.Publisher("/weight_optimaltime", Float32, queue_size=10)
@@ -104,27 +63,34 @@ class FyzzyController:
             rate.sleep()
         rospy.spin()
 
+
     def scenario_callback(self, data):
         # rospy.loginfo("Received scenario data: %s", data.data)
         if data.data == "mall":
             self.speed_up_level = 5
+            self.robot_invisiable_level =10
         elif data.data == "corrider":
             self.speed_up_level = 7
+            self.robot_invisiable_level = 5
         elif data.data == "warehouse":
             self.speed_up_level = 10
+            self.robot_invisiable_level = 0
         else :
             self.speed_up_level = -1
+            self.robot_invisiable_level = -1
 
 
     def navigability_callback(self, data):
         self.navigability = data.data
         # print("Received navigability value: ", self.navigability)
         
-    def status_callback(self, data):
+
+    def robot_status_callback(self, data):
         if data.status_list[-1].text == "Goal reached.":
             self.robot_move = False
         else:
             self.robot_move = True
+    
     
     def update_optimaltime(self):
         simulation = ctrl.ControlSystemSimulation(self.optimaltime_controller)
@@ -133,7 +99,7 @@ class FyzzyController:
         simulation.input['speed_up_level'] = self.speed_up_level
         simulation.compute()
         
-        command = self.command + pa_weight_optimaltime + "{:.3f}".format(simulation.output['weight_optimaltime'])
+        command = self.command + self.pa_weight_optimaltime + "{:.3f}".format(simulation.output['weight_optimaltime'])
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         msg = Float32()
@@ -141,13 +107,9 @@ class FyzzyController:
         self.speed_up_level_pub.publish(msg)
         msg.data = simulation.output['weight_optimaltime']
         self.weight_optimaltime_pub.publish(msg)
-
-        # print('navigability:', self.navigability, 'speed_up_level:', self.speed_up_level, "Weight Optimal Time:", simulation.output['weight_optimaltime'])
         # print(command)
-        # fz_navigability.view()
-        # fz_speed_up_level.view()
-        # fz_weight_optimaltime.view()
-        # plt.show()
+        # print('navigability:', self.navigability, 'speed_up_level:', self.speed_up_level, "Weight Optimal Time:", simulation.output['weight_optimaltime'])
+  
 
 if __name__ == '__main__':
     try:

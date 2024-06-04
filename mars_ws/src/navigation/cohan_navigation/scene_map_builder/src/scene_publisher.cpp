@@ -76,9 +76,10 @@ public:
             tfBuffer_.transform(robot_pose_base, robot_pose_map, "map");
             robot_px = robot_pose_map.pose.position.x;
             robot_py = robot_pose_map.pose.position.y;
-        } catch (tf2::TransformException& ex) {
+        } 
+        catch (tf2::TransformException& ex) {
             // ROS_WARN("Could not transform robot's pose: %s", ex.what());
-            ROS_WARN("Scene publisher could not transform robot's pose");
+            // ROS_WARN("Scene publisher could not transform robot's pose");
         }
     }
 

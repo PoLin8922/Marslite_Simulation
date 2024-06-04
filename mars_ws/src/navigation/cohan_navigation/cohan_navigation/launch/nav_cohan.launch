@@ -16,9 +16,6 @@
   <!-- Scene Map server -->
   <node pkg="scene_map_builder" name="scene_map_server" type="scene_map_server" args="$(find scene_map_builder)/maps/$(arg scene_map_file)"/>
 
-  <!-- Scene Map publisher -->
-  <node pkg="scene_map_builder" name="scene_publisher" type="scene_publisher"/>
-
   <!-- scan filter -->
   <!-- <include file="$(find laser_filters)/launch/my_laser_filter.launch"/>-->
   

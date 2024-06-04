@@ -121,8 +121,6 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
     double bx = ox + res / 2,
            by = oy + res / 2;
 
-    double var = radius_;
-
     for (int i = start_x; i < end_x; i++)
     {
       for (int j = start_y; j < end_y; j++)
@@ -136,9 +134,9 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
         double val;
         
         if(v > 0.1)
-          val = Asymmetrical_Gaussian(x, y, cx, cy, vx, vy, var, amplitude_);
+          val = Asymmetrical_Gaussian(x, y, cx, cy, vx, vy, radius_, r_ratio_, amplitude_);
         else
-          val = Gaussian2D(x, y, cx, cy, amplitude_, var, var);
+          val = Gaussian2D(x, y, cx, cy, amplitude_, radius_, radius_);
         // printf("personal space result : %f\n", val);
         
         // double rad = sqrt(-2*var*log(val/amplitude_));
@@ -156,6 +154,7 @@ void StaticHumanLayer::configure(HumanLayerConfig &config, uint32_t level)
 {
   amplitude_ = config.amplitude;
   radius_ = config.radius;
+  r_ratio_ = config.right_cov_ratio;
   enabled_ = config.enabled;
 }
 };  // namespace human_layers

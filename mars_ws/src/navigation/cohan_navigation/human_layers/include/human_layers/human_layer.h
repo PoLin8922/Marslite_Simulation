@@ -121,7 +121,7 @@ protected:
       return angle;
   }
 
-  double Asymmetrical_Gaussian(double x, double y, double x0, double y0, double vx, double vy, double var, double A) {
+  double Asymmetrical_Gaussian(double x, double y, double x0, double y0, double vx, double vy, double var, double r_ratio, double A) {
       // define parameter
       double v = sqrt(vx * vx + vy * vy);
       double theta = atan2(vy, vx);
@@ -131,7 +131,7 @@ protected:
       double sigmaRear = var / 7.0;
       double sigmaLarge = var / 5.0;
       // double sigmaSmall = 2.0 / 7.0;
-      double sigmaSmall = var / 7.0;
+      double sigmaSmall = var * r_ratio;
 
       // compute αmain, αside
       double alphaMain = normalize(atan2(y - y0, x - x0) - theta + PI / 2);
@@ -175,7 +175,7 @@ protected:
   bool first_time_, reset;
   ros::Time last_time;
   double last_min_x_, last_min_y_, last_max_x_, last_max_y_;
-  double radius_, amplitude_, covar_, cutoff_;
+  double radius_, amplitude_, r_ratio_, covar_, cutoff_;
   // double v_cutoff_, v_amplitude_, v_covar_;
 
 };

@@ -1,0 +1,7 @@
+<launch>
+    <!-- Scene Map publisher -->
+    <node pkg="scene_map_builder" name="scene_publisher" type="scene_publisher"/>
+
+    <!-- Navigability publisher -->
+    <node pkg="hyper_system" name="navigability_pub" type="navigability_pub"/>
+</launch>
