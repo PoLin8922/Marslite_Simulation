@@ -9,5 +9,5 @@
       <param name="dist_threshold" value="1"/>
       <param name="dist_tolerance" value="0.4"/>
 	  </node>
-    <node type="rviz" name="rviz" pkg="rviz" />
+    <!-- <node type="rviz" name="rviz" pkg="rviz" /> -->
 </launch>
