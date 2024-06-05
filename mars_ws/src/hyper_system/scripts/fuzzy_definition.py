@@ -15,16 +15,15 @@ class FyzzyDefinition:
         self.fz_speed_up_level = ctrl.Antecedent(np.arange(0, 11, 0.1), 'speed_up_level')
         self.fz_pspace_level = ctrl.Antecedent(np.arange(0, 11, 0.1), 'pspace_level')                                        
         self.fz_right_side_level = ctrl.Antecedent(np.arange(0, 11, 0.1), 'right_side_level')                             
-        self.fz_robot_invisible_level = ctrl.Antecedent(np.arange(0, 11, 0.1), 'robot_invisible_level')                   
+        self.fz_robot_invisible_level = ctrl.Antecedent(np.arange(0, 11, 0.1), 'robot_invisiable_level')                   
 
 
         # define fuzzy output
         self.fz_weight_optimaltime = ctrl.Consequent(np.arange(5, 31, 0.1), 'weight_optimaltime')
-        self.fz_weight_hr_safety = ctrl.Consequent(np.arange(5, 31, 0.1), 'weight_hr_safety')                  #### range not yet 
         self.fz_weight_cc = ctrl.Consequent(np.arange(0, 21, 0.1), 'weight_cc')                               
-        self.fz_pspace_cov = ctrl.Consequent(np.arange(5, 31, 0.1), 'pspace_cov')                              #### range not yet 
-        self.fz_pspace_r_ratio = ctrl.Consequent(np.arange(5, 31, 0.1), 'pspace_r_ratio')                      #### range not yet 
-        self.fz_use_external_prediction = ctrl.Consequent(np.arange(5, 31, 0.1), 'use_external_prediction')    #### range not yet 
+        self.fz_pspace_cov = ctrl.Consequent(np.arange(0.4, 1.21, 0.005), 'pspace_cov')                             
+        self.fz_pspace_r_ratio = ctrl.Consequent(np.arange(0.6, 1.01, 0.005), 'pspace_r_ratio')                     
+        self.fz_use_external_prediction = ctrl.Consequent(np.arange(0, 1.01, 0.01), 'use_external_prediction')    #### range not yet 
 
 
         # define membership function
@@ -65,6 +64,21 @@ class FyzzyDefinition:
         self.fz_weight_cc['H'] = fuzz.gaussmf(self.fz_weight_cc.universe, 15, 2)
         self.fz_weight_cc['VH'] = fuzz.gaussmf(self.fz_weight_cc.universe, 20, 2)
 
+        self.fz_pspace_cov['VL'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.4, 0.1)
+        self.fz_pspace_cov['L'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.6, 0.1)
+        self.fz_pspace_cov['M'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.8, 0.1)
+        self.fz_pspace_cov['H'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 1.0, 0.1)
+        self.fz_pspace_cov['VH'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 1.2, 0.1)
+
+        self.fz_pspace_r_ratio['VL'] = fuzz.gaussmf(self.fz_pspace_r_ratio.universe, 0.6, 0.05)
+        self.fz_pspace_r_ratio['L'] = fuzz.gaussmf(self.fz_pspace_r_ratio.universe, 0.7, 0.05)
+        self.fz_pspace_r_ratio['M'] = fuzz.gaussmf(self.fz_pspace_r_ratio.universe, 0.8, 0.05)
+        self.fz_pspace_r_ratio['H'] = fuzz.gaussmf(self.fz_pspace_r_ratio.universe, 0.9, 0.05)
+        self.fz_pspace_r_ratio['VH'] = fuzz.gaussmf(self.fz_pspace_r_ratio.universe, 1.0, 0.05)
+
+        self.fz_use_external_prediction['S'] = fuzz.trimf(self.fz_use_external_prediction.universe, [0, 0.4, 0.8])
+        self.fz_use_external_prediction['L'] = fuzz.trimf(self.fz_use_external_prediction.universe, [0.6, 0.8, 1.0])
+
 
         # define rules
         ## fz_navigability, fz_speed_up_level | fz_weight_optimaltime
@@ -87,12 +101,73 @@ class FyzzyDefinition:
                                   self.rule9, self.rule10, self.rule11, self.rule12, self.rule13, self.rule14, self.rule15])
 
         ## fz_navigability, fz_robot_invisible_level | fz_weight_cc
+        self.rule16 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_robot_invisible_level['L'], self.fz_weight_cc['VL'])
+        self.rule17 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_robot_invisible_level['M'], self.fz_weight_cc['L'])
+        self.rule18 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_robot_invisible_level['H'], self.fz_weight_cc['L'])
+        self.rule19 = ctrl.Rule(self.fz_navigability['L'] & self.fz_robot_invisible_level['L'], self.fz_weight_cc['L'])
+        self.rule20 = ctrl.Rule(self.fz_navigability['L'] & self.fz_robot_invisible_level['M'], self.fz_weight_cc['M'])
+        self.rule21 = ctrl.Rule(self.fz_navigability['L'] & self.fz_robot_invisible_level['H'], self.fz_weight_cc['M'])
+        self.rule22 = ctrl.Rule(self.fz_navigability['M'] & self.fz_robot_invisible_level['L'], self.fz_weight_cc['L'])
+        self.rule23 = ctrl.Rule(self.fz_navigability['M'] & self.fz_robot_invisible_level['M'], self.fz_weight_cc['M'])
+        self.rule24 = ctrl.Rule(self.fz_navigability['M'] & self.fz_robot_invisible_level['H'], self.fz_weight_cc['H'])
+        self.rule25 = ctrl.Rule(self.fz_navigability['H'] & self.fz_robot_invisible_level['L'], self.fz_weight_cc['M'])
+        self.rule26 = ctrl.Rule(self.fz_navigability['H'] & self.fz_robot_invisible_level['M'], self.fz_weight_cc['M'])
+        self.rule27 = ctrl.Rule(self.fz_navigability['H'] & self.fz_robot_invisible_level['H'], self.fz_weight_cc['H'])
+        self.rule28 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_robot_invisible_level['L'], self.fz_weight_cc['H'])
+        self.rule29 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_robot_invisible_level['M'], self.fz_weight_cc['H'])
+        self.rule30 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_robot_invisible_level['H'], self.fz_weight_cc['VH'])
+        self.critical_corner_controller = ctrl.ControlSystem([self.rule16, self.rule17, self.rule18, self.rule19, self.rule20, self.rule21, self.rule22, self.rule23,
+                                                        self.rule24, self.rule25, self.rule26, self.rule27, self.rule28, self.rule29, self.rule30])
 
+        ## fz_navigability, fz_pspace_level | fz_pspace_cov
+        self.rule31 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_pspace_level['L'], self.fz_pspace_cov['VL'])
+        self.rule32 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_pspace_level['M'], self.fz_pspace_cov['VL'])
+        self.rule33 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_pspace_level['H'], self.fz_pspace_cov['VL'])
+        self.rule34 = ctrl.Rule(self.fz_navigability['L'] & self.fz_pspace_level['L'], self.fz_pspace_cov['L'])
+        self.rule35 = ctrl.Rule(self.fz_navigability['L'] & self.fz_pspace_level['M'], self.fz_pspace_cov['L'])
+        self.rule36 = ctrl.Rule(self.fz_navigability['L'] & self.fz_pspace_level['H'], self.fz_pspace_cov['L'])
+        self.rule37 = ctrl.Rule(self.fz_navigability['M'] & self.fz_pspace_level['L'], self.fz_pspace_cov['M'])
+        self.rule38 = ctrl.Rule(self.fz_navigability['M'] & self.fz_pspace_level['M'], self.fz_pspace_cov['M'])
+        self.rule39 = ctrl.Rule(self.fz_navigability['M'] & self.fz_pspace_level['H'], self.fz_pspace_cov['M'])
+        self.rule40 = ctrl.Rule(self.fz_navigability['H'] & self.fz_pspace_level['L'], self.fz_pspace_cov['H'])
+        self.rule41 = ctrl.Rule(self.fz_navigability['H'] & self.fz_pspace_level['M'], self.fz_pspace_cov['H'])
+        self.rule42 = ctrl.Rule(self.fz_navigability['H'] & self.fz_pspace_level['H'], self.fz_pspace_cov['H'])
+        self.rule43 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_pspace_level['L'], self.fz_pspace_cov['VH'])
+        self.rule44 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_pspace_level['M'], self.fz_pspace_cov['VH'])
+        self.rule45 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_pspace_level['H'], self.fz_pspace_cov['VH'])
+        self.pspace_cov_controller = ctrl.ControlSystem([self.rule31, self.rule32, self.rule33, self.rule34, self.rule35, self.rule36, self.rule37, self.rule38,
+                                                            self.rule39, self.rule40, self.rule41, self.rule42, self.rule43, self.rule44, self.rule45])
 
+        ## fz_navigability, fz_right_side_level | fz_pspace_r_ratio
+        self.rule46 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['VH'])
+        self.rule47 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['H'])
+        self.rule48 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['H'])
+        self.rule49 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['H'])
+        self.rule50 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
+        self.rule51 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['M'])
+        self.rule52 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['H'])
+        self.rule53 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
+        self.rule54 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
+        self.rule55 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['M'])
+        self.rule56 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
+        self.rule57 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
+        self.rule58 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['L'])
+        self.rule59 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['L'])
+        self.rule60 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['VL'])
+        self.pspace_r_ratio_controller = ctrl.ControlSystem([self.rule46, self.rule47, self.rule48, self.rule49, self.rule50, self.rule51, self.rule52, self.rule53,
+                                                            self.rule54, self.rule55, self.rule56, self.rule57, self.rule58, self.rule59, self.rule60])
+
+        ## fz_navigability | fz_use_external_prediction
+        self.rule61 = ctrl.Rule(self.fz_navigability['VL'], self.fz_use_external_prediction['S'])
+        self.rule62 = ctrl.Rule(self.fz_navigability['L'], self.fz_use_external_prediction['S'])
+        self.rule63 = ctrl.Rule(self.fz_navigability['M'], self.fz_use_external_prediction['S'])
+        self.rule64 = ctrl.Rule(self.fz_navigability['H'], self.fz_use_external_prediction['L'])
+        self.rule65 = ctrl.Rule(self.fz_navigability['VH'], self.fz_use_external_prediction['L'])
+        self.human_path_prediction_controller = ctrl.ControlSystem([self.rule61, self.rule62, self.rule63, self.rule64, self.rule65])
 
         # visulization
         # self.fz_navigability.view()
         # self.fz_speed_up_level.view()
-        self.fz_weight_optimaltime.view()
-        self.fz_weight_cc.view()
-        plt.show()
+        # self.fz_weight_optimaltime.view()
+        # self.fz_weight_cc.view()
+        # plt.show()

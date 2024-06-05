@@ -11,8 +11,8 @@
   <include file="$(find pedsim_simulator)/launch/simulator.launch">
     <arg name="kbd_teleop" value="$(arg kbd_teleop)"/>
     <arg name="rqt_teleop" value="$(arg rqt_teleop)"/>
-    <!-- <arg name="scene_file" value="$(find pedsim_simulator)scenarios/Scene3.xml"/> -->
-    <arg name="scene_file" value="$(find pedsim_simulator)scenarios/singleagent.xml"/> 
+    <arg name="scene_file" value="$(find pedsim_simulator)scenarios/Scene3.xml"/>
+    <!-- <arg name="scene_file" value="$(find pedsim_simulator)scenarios/singleagent.xml"/>  -->
     <arg name="with_robot" value="$(arg with_robot)"/>
     <arg name="simulation_factor" value="$(arg simulation_factor)"/>
     <arg name="update_rate" value="$(arg update_rate)"/>

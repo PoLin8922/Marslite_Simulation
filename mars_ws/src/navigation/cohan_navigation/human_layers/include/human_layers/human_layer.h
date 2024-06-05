@@ -95,8 +95,7 @@ protected:
     double d = sqrt(dx * dx + dy * dy);
     double theta = atan2(dy, dx);
     double X = d*cos(theta), Y = d*sin(theta);
-    double scale = 4;
-    return (A/2)/std::max(d,1.0) * Guassian1D(X,0.0,1.0,varx/scale) * Guassian1D(Y,0.0,1.0,vary/scale);
+    return (A/2)/std::max(d,1.0) * Guassian1D(X,0.0,1.0,varx) * Guassian1D(Y,0.0,1.0,vary);
   }
 
   double Gaussian2D_skewed(double x, double y, double x0, double y0, double A, double varx, double vary, double skew_ang)
@@ -126,11 +125,10 @@ protected:
       double v = sqrt(vx * vx + vy * vy);
       double theta = atan2(vy, vx);
       double sigmaHead = fmax(1.2 * v, 1.0);
-      // printf("sigmaHead: %f, human v: %f\n", sigmaHead, v);
-      // double sigmaRear = 2.0 / 7.0;
-      double sigmaRear = var / 7.0;
-      double sigmaLarge = var / 5.0;
-      // double sigmaSmall = 2.0 / 7.0;
+      // double sigmaRear = var / 7.0;
+      // double sigmaLarge = var / 5.0;
+      double sigmaRear = var * 0.7;
+      double sigmaLarge = var ;
       double sigmaSmall = var * r_ratio;
 
       // compute αmain, αside

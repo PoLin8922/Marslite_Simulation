@@ -62,7 +62,7 @@ void StaticHumanLayer::updateBoundsFromHumans(double* min_x, double* min_y, doub
 
   for(uint i=0;i<transformed_humans_.size();i++){
     auto human = transformed_humans_[i];
-    double offset = 3.5;
+    double offset = 5.0;
     *min_x = std::min(*min_x, human.pose.position.x - radius_ - offset);
     *min_y = std::min(*min_y, human.pose.position.y - radius_ - offset);
     *max_x = std::max(*max_x, human.pose.position.x + radius_ + offset);
@@ -81,7 +81,7 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
   costmap_2d::Costmap2D* costmap = layered_costmap_->getCostmap();
   double res = costmap->getResolution();
 
-  double offset = 4.0;
+  double offset = 5.0;
   double radius_new = radius_ + offset;
 
   for(uint i=0;i<transformed_humans_.size();i++){
