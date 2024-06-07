@@ -22,6 +22,9 @@ private:
     int room_space_threshold_ =  95;
     int navigable_space_threshold_ = 10;
     int map_size_;
+    std::deque<float> navigability_history_;
+    const size_t history_size_ = 20;
+    float alpha_ = 0.1;
 
 public:
     LocalMapAnalyzer() : map_received_(false) {
@@ -37,8 +40,23 @@ public:
 
     void publishNavigabilityRatio() {
         float navigability = analyzeLocalMap();
+        if (navigability_history_.size() >= history_size_) {
+            navigability_history_.pop_front();
+        }
+        navigability_history_.push_back(navigability);
+
+        float sum = 0.0;
+        float weight_sum = 0.0;
+        int t = navigability_history_.size();
+        for (int i = 0; i < t; ++i) {
+            float weight = std::exp(-alpha_ * ((i - t + 1)));
+            sum += navigability_history_[i] * weight;
+            weight_sum += weight;
+        }
+        float weighted_average_navigability = sum / weight_sum;
+
         std_msgs::Float32 msg;
-        msg.data = navigability;
+        msg.data = weighted_average_navigability;
         navigability_pub_.publish(msg);
     }
 
@@ -96,7 +114,7 @@ int main(int argc, char** argv) {
 
     ros::Rate loop_rate(10);
     while (ros::ok()) {
-        analyzer.publishNavigabilityRatio(); // 每个循环迭代发布 navigability 比例
+        analyzer.publishNavigabilityRatio(); 
         ros::spinOnce();
         loop_rate.sleep();
     }

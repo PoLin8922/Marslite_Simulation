@@ -54,8 +54,8 @@ max_human_vel_theta: 1.1
 human_acc_lim_x: 0.6
 human_acc_lim_y: 0.3
 human_acc_lim_theta: 0.8
-# use_external_prediction: True
-use_external_prediction: False
+use_external_prediction: True
+# use_external_prediction: False
 # predict_human_behind_robot: True
 predict_human_behind_robot: False
 predict_human_goal: True

@@ -20,7 +20,8 @@
   </node>
   
   <!-- <node pkg="human_path_prediction" type="predict_goal.py" name="human_goal_predict" output="screen"/> -->
-  <node pkg="human_path_prediction" type="predict_goal_srv.py" name="human_goal_predict" output="screen"/>
+  <!-- <node pkg="human_path_prediction" type="predict_goal_srv.py" name="human_goal_predict" output="screen"/> -->
+  <node pkg="human_path_prediction" type="predicted_goals_pub.py" name="human_goal_predict" output="screen"/>
 
   <!-- Filter the humans from laser scan -->
   <node pkg="human_layers" type="human_filter.py" name="human_filter_laser" output="screen">

@@ -51,6 +51,7 @@
 #include <human_path_prediction/HumanPosePredict.h>
 #include <human_path_prediction/HumanGoalPredict.h> //// added
 #include <human_path_prediction/PredictedGoal.h>
+#include <human_path_prediction/PredictedGoals.h> /// added
 #include <human_path_prediction/HumanGoal.h>
 #include <human_path_prediction/HumanPose.h>
 #include <tf/transform_listener.h>
@@ -76,7 +77,7 @@ public:
 
 private:
   // ros subscribers and publishers
-  ros::Subscriber tracked_humans_sub_, external_paths_sub_, external_trajs_sub_,robot_pos_sub_, predicted_goal_sub_;
+  ros::Subscriber tracked_humans_sub_, external_paths_sub_, external_trajs_sub_,robot_pos_sub_, predicted_goal_sub_,predicted_goals_sub_;
   ros::Publisher predicted_humans_pub_;
   bool done_cfg;
 
@@ -126,6 +127,7 @@ private:
   human_msgs::TrackedHumans tracked_humans_;
   human_msgs::HumanPathArray::ConstPtr external_paths_;
   human_path_prediction::PredictedGoal::ConstPtr predicted_goal_;
+  human_path_prediction::PredictedGoals::ConstPtr predicted_goals_;
   human_msgs::HumanPathArray external_paths2_;
   human_msgs::HumanTrajectoryArrayConstPtr external_trajs_;
   std::vector<human_path_prediction::HumanPose> external_goals_;
@@ -170,6 +172,7 @@ private:
   void externalTrajsCB(const human_msgs::HumanTrajectoryArrayConstPtr &traj_array);
 
   void predictedGoalCB(const human_path_prediction::PredictedGoal::ConstPtr& predicted_goal);
+  void predictedGoalsCB(const human_path_prediction::PredictedGoals::ConstPtr& predicted_goals);
 
   double checkdist(geometry_msgs::Pose human, geometry_msgs::Pose robot);
 

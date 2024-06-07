@@ -112,15 +112,14 @@ void HumanPathPrediction::initialize() {
   external_trajs_sub_ = private_nh.subscribe("external_human_trajs", 1, &HumanPathPrediction::externalTrajsCB, this);
 
   predicted_goal_sub_ = private_nh.subscribe("/human_goal_predict/predicted_goal", 1, &HumanPathPrediction::predictedGoalCB, this);
+  predicted_goals_sub_ = private_nh.subscribe("/human_goals_publisher/predicted_goals", 1, &HumanPathPrediction::predictedGoalsCB, this);
 
   predicted_humans_pub_ = private_nh.advertise<visualization_msgs::MarkerArray>(
       predicted_humans_markers_pub_topic_, 1);
 
   // set-up dynamic reconfigure
-  dsrv_ =
-      new dynamic_reconfigure::Server<HumanPathPredictionConfig>(private_nh);
-  dynamic_reconfigure::Server<HumanPathPredictionConfig>::CallbackType cb =
-      boost::bind(&HumanPathPrediction::reconfigureCB, this, _1, _2);
+  dsrv_ = new dynamic_reconfigure::Server<HumanPathPredictionConfig>(private_nh);
+  dynamic_reconfigure::Server<HumanPathPredictionConfig>::CallbackType cb = boost::bind(&HumanPathPrediction::reconfigureCB, this, _1, _2);
   dsrv_->setCallback(cb);
 
   // initialize services
@@ -197,6 +196,10 @@ void HumanPathPrediction::predictedGoalCB(const human_path_prediction::Predicted
   // got_new_goal = true;
 }
 
+void HumanPathPrediction::predictedGoalsCB(const human_path_prediction::PredictedGoals::ConstPtr &predicted_goals){
+  ROS_INFO_ONCE_NAMED(NODE_NAME, "human_path_prediction: received predicted goals");
+  predicted_goals_ = predicted_goals;
+}
 
 void HumanPathPrediction::externalTrajsCB(
     const human_msgs::HumanTrajectoryArrayConstPtr &traj_array) {
@@ -682,7 +685,7 @@ bool HumanPathPrediction::predictHumansExternal(
           get_plan_srv.request.goal.pose.position.z = ext_goal[human_start_pose_vel.id].pose.position.z;
           get_plan_srv.request.goal.pose.orientation = ext_goal[human_start_pose_vel.id].pose.orientation;
 
-          printf("111 human start: x=%.2f, y=%.2f, theta=%.2f, "
+          ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
                                      "goal: x=%.2f, y=%.2f, theta=%.2f",
                           get_plan_srv.request.start.pose.position.x,
                           get_plan_srv.request.start.pose.position.y,
@@ -843,7 +846,7 @@ bool HumanPathPrediction::predictHumansBehind(
         get_plan_srv.request.goal.pose.position.z = behind_pose.translation.z;
         get_plan_srv.request.goal.pose.orientation = behind_pose.rotation;
 
-        printf("222 human start: x=%.2f, y=%.2f, theta=%.2f, "
+        ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
                                    "goal: x=%.2f, y=%.2f, theta=%.2f",
                         get_plan_srv.request.start.pose.position.x,
                         get_plan_srv.request.start.pose.position.y,
@@ -986,25 +989,47 @@ bool HumanPathPrediction::predictHumansGoal(
 
         get_plan_srv.request.goal.header.frame_id = map_frame_id_;
         get_plan_srv.request.goal.header.stamp = now;
-        
-    
-        human_path_prediction::HumanGoalPredict predict_goal;
-        predict_goal.request.human_id = human_start_pose_vel.id;
-        if (human_goal_predict_srv_.call(predict_goal)) {
-          get_plan_srv.request.goal.pose.position.x = predict_goal.response.human_goal.goal.pose.position.x;
-          get_plan_srv.request.goal.pose.position.y = predict_goal.response.human_goal.goal.pose.position.y;
-          get_plan_srv.request.goal.pose.position.z = predict_goal.response.human_goal.goal.pose.position.z;
-          get_plan_srv.request.goal.pose.orientation = predict_goal.response.human_goal.goal.pose.orientation;
+
+        // human_path_prediction::HumanGoalPredict predict_goal;
+        // predict_goal.request.human_id = human_start_pose_vel.id;
+        // if (human_goal_predict_srv_.call(predict_goal)) {
+        //   get_plan_srv.request.goal.pose.position.x = predict_goal.response.human_goal.goal.pose.position.x;
+        //   get_plan_srv.request.goal.pose.position.y = predict_goal.response.human_goal.goal.pose.position.y;
+        //   get_plan_srv.request.goal.pose.position.z = predict_goal.response.human_goal.goal.pose.position.z;
+        //   get_plan_srv.request.goal.pose.orientation = predict_goal.response.human_goal.goal.pose.orientation;
+        // }
+        // else {
+        //   ROS_WARN("Failed to call human goal predict service for human id %d", human_start_pose_vel.id);
+        // }
+
+        if(human_start_pose_vel.id>0 && predicted_goals_->goals[human_start_pose_vel.id-1].id == human_start_pose_vel.id){
+            get_plan_srv.request.goal.pose.position.x = predicted_goals_->goals[human_start_pose_vel.id-1].goal.pose.position.x;
+            get_plan_srv.request.goal.pose.position.y = predicted_goals_->goals[human_start_pose_vel.id-1].goal.pose.position.y;
+            get_plan_srv.request.goal.pose.position.z = predicted_goals_->goals[human_start_pose_vel.id-1].goal.pose.position.z;
+            get_plan_srv.request.goal.pose.orientation = predicted_goals_->goals[human_start_pose_vel.id-1].goal.pose.orientation;
         }
-
-
+        else {
+          ROS_WARN("Failed to get human goal for human id %d", human_start_pose_vel.id);
+        }
+        
         // get_plan_srv.request.goal.pose.position.x = predicted_goal_->goal.pose.position.x;
         // get_plan_srv.request.goal.pose.position.y = predicted_goal_->goal.pose.position.y;
         // get_plan_srv.request.goal.pose.position.z = predicted_goal_->goal.pose.position.z;
         // get_plan_srv.request.goal.pose.orientation = predicted_goal_->goal.pose.orientation;
+        
+        // if(human_start_pose_vel.id>0)
+        //   printf("human id:%d\n", predicted_goals_->goals[human_start_pose_vel.id-1].id);
+        // printf("\npredict_goal : start position: x=%.2f, y=%.2f, theta=%.2f, "
+        //                            "goal: x=%.2f, y=%.2f, theta=%.2f\n",
+        //                 get_plan_srv.request.start.pose.position.x,
+        //                 get_plan_srv.request.start.pose.position.y,
+        //                 tf::getYaw(get_plan_srv.request.start.pose.orientation),
+        //                 get_plan_srv.request.goal.pose.position.x,
+        //                 get_plan_srv.request.goal.pose.position.y,
+        //                 tf::getYaw(get_plan_srv.request.goal.pose.orientation));
 
-        printf("\n333 human start: x=%.2f, y=%.2f, theta=%.2f, "
-                                   "goal: x=%.2f, y=%.2f, theta=%.2f\n",
+        ROS_DEBUG_NAMED(NODE_NAME, "human start: x=%.2f, y=%.2f, theta=%.2f, "
+                                   "goal: x=%.2f, y=%.2f, theta=%.2f",
                         get_plan_srv.request.start.pose.position.x,
                         get_plan_srv.request.start.pose.position.y,
                         tf::getYaw(get_plan_srv.request.start.pose.orientation),
@@ -1064,7 +1089,7 @@ bool HumanPathPrediction::predictHumansFromPaths(
         auto now = ros::Time::now();
 
         predicted_poses.poses.resize(poses.size());
-        for (size_t i = 0; i < poses.size()-2; ++i) {
+        for (size_t i = 0; i < poses.size(); ++i) {
           auto &pose = poses[i];
           geometry_msgs::PoseWithCovarianceStamped predicted_pose;
           if (i == 0 || lin_vel == 0.0) {
@@ -1199,8 +1224,6 @@ bool HumanPathPrediction::setExternalGoal(human_path_prediction::HumanGoal::Requ
 
   res.success=true;
   res.message="Goal has been set.";
-
-  return true;
 }
 
 bool HumanPathPrediction::checkExternalGoal(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res){

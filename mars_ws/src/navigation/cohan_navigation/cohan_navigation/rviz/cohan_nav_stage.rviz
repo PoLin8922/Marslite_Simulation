@@ -136,6 +136,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         left_wheel:
           Alpha: 1
           Show Axes: false
@@ -358,7 +362,7 @@ Visualization Manager:
       Marker Topic: /move_base/HATebLocalPlannerROS/human_marker
       Name: HumanMarker
       Namespaces:
-        {}
+        body: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -366,7 +370,7 @@ Visualization Manager:
       Marker Topic: /move_base/HATebLocalPlannerROS/human_arrow
       Name: HumanDirection
       Namespaces:
-        {}
+        direction: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -390,7 +394,7 @@ Visualization Manager:
       Marker Topic: /move_base/HATebLocalPlannerROS/critical_corner_marker
       Name: CriticalCorner
       Namespaces:
-        {}
+        CriticalCorners: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -398,7 +402,7 @@ Visualization Manager:
       Marker Topic: /move_base/HATebLocalPlannerROS/mode_text
       Name: ModeText
       Namespaces:
-        {}
+        mode: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -491,6 +495,14 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /human_path_predict/predicted_human_poses
+      Name: MarkerArray
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -519,7 +531,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 42.568260192871094
+      Distance: 31.106704711914062
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
