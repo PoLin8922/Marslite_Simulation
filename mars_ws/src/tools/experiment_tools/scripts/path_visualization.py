@@ -1,84 +1,117 @@
 #!/usr/bin/env python3
 
+import rospy
 import json
-import matplotlib.pyplot as plt
 import math
 import numpy as np
-import cv2
+from nav_msgs.msg import Path
+from geometry_msgs.msg import PoseStamped
+from scipy.interpolate import UnivariateSpline
 
-# Load map metadata
-map_file = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/maps/shoppingmall_v3.pgm'
-resolution = 0.050000
-origin = [-50.000000, -50.000000, 0.000000]
+teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_27.json'
+hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_27.json'
+our_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_18.json'
 
-def load_positions(file_name):
-    with open(file_name, 'r') as f:
-        positions = json.load(f)
-    return positions
+class PathVisualizer:
+    def __init__(self):
+        rospy.init_node('path_visualizer')
 
-def calculate_path_length(positions):
-    path_length = 0.0
-    for i in range(1, len(positions)):
-        x1, y1 = positions[i-1]['x'], positions[i-1]['y']
-        x2, y2 = positions[i]['x'], positions[i]['y']
-        distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-        path_length += distance
-    return path_length
+        self.teb_path_pub = rospy.Publisher('/teb_path', Path, queue_size=10)
+        self.hateb_path_pub = rospy.Publisher('/hateb_path', Path, queue_size=10)
+        self.our_path_pub = rospy.Publisher('/our_path', Path, queue_size=10)
 
-def transform_positions(positions, resolution, origin):
-    x = [(pos['x'] - origin[0]) / resolution for pos in positions]
-    y = [(pos['y'] - origin[1]) / resolution for pos in positions]
-    return x, y
+        self.teb_path_data, self.teb_path = self.load_and_smooth_path(teb_file_name)
+        self.hateb_path_data,self.hateb_path = self.load_path_from_file(hateb_file_name)
+        self.our_path_data,self.our_path = self.load_and_smooth_path(our_file_name)
 
-def plot_path_on_map(positions, map_file, resolution, origin):
-    # Load the map image
-    map_img = cv2.imread(map_file, cv2.IMREAD_GRAYSCALE)
-    map_img = cv2.cvtColor(map_img, cv2.COLOR_GRAY2BGR)
-    
-    # Transform positions to map image coordinates
-    x, y = transform_positions(positions, resolution, origin)
-    
-    # Calculate the bounding box
-    min_x, max_x = min(x), max(x)
-    min_y, max_y = min(y), max(y)
-    
-    # Determine the side length of the square bounding box
-    bias = 100
-    side_length = max(max_x - min_x, max_y - min_y) + bias
-    
-    # Adjust the bounding box to make the axes equal
-    center_x = (min_x + max_x) / 2
-    center_y = (min_y + max_y) / 2
-    min_x = center_x - side_length / 2
-    max_x = center_x + side_length / 2
-    min_y = center_y - side_length / 2
-    max_y = center_y + side_length / 2
-    
-    # Crop the map image
-    min_x_img, min_y_img = int(min_x), int(map_img.shape[0] - max_y)
-    max_x_img, max_y_img = int(max_x), int(map_img.shape[0] - min_y)
-    cropped_map = map_img[min_y_img:max_y_img, min_x_img:max_x_img]
-    
-    # Transform the cropped positions
-    x_cropped = [(pos - min_x) for pos in x]
-    y_cropped = [((map_img.shape[0] - pos) - min_y_img) for pos in y]
+        rospy.loginfo("Path Visualizer node started and publishing path.")
 
-    path_img = np.zeros_like(cropped_map)
+        print("teb path length:", self.calculate_path_length(self.teb_path_data))
+        print("hateb path length:", self.calculate_path_length(self.hateb_path_data))
+        print("our path length:", self.calculate_path_length(self.our_path_data))
+
+        rospy.Timer(rospy.Duration(1.0), self.publish_teb_path)
+        rospy.Timer(rospy.Duration(1.0), self.publish_hateb_path)
+        rospy.Timer(rospy.Duration(1.0), self.publish_our_path)
+
     
-    # Plot the path on the cropped map
-    for i in range(1, len(x_cropped)):
-        cv2.line(cropped_map, (int(x_cropped[i-1]), int(y_cropped[i-1])), (int(x_cropped[i]), int(y_cropped[i])), (0, 0, 255), 2)
+    def load_path_from_file(self, file_name):
+        with open(file_name, 'r') as f:
+            path_data = json.load(f)
+        
+        path_msg = Path()
+        path_msg.header.frame_id = "map"
+        path_msg.poses = []
+        for point in path_data:
+            pose_stamped = PoseStamped()
+            pose_stamped.header.frame_id = "map"
+            pose_stamped.header.stamp = rospy.Time.now()
+            pose_stamped.pose.position.x = point['x']
+            pose_stamped.pose.position.y = point['y']
+            pose_stamped.pose.position.z = 0.0  
+            
+            path_msg.poses.append(pose_stamped)
+        
+        return path_data, path_msg
     
-    # Display the image with the path
-    plt.figure(figsize=(10, 10))
-    plt.imshow(cropped_map)
-    plt.title('Robot Path on Map')
-    plt.axis('off')
-    plt.show()
+    def load_and_smooth_path(self, file_name):
+        with open(file_name, 'r') as f:
+            path_data = json.load(f)
+        
+        x = [point['x'] for point in path_data]
+        y = [point['y'] for point in path_data]
+
+        x = np.array(x)
+        y = np.array(y)
+
+        indices = np.arange(len(x))
+        s = 0.1  # Small smoothing factor
+        spline_x = UnivariateSpline(indices, x, s=s)
+        spline_y = UnivariateSpline(indices, y, s=s)
+
+        x_smooth = spline_x(indices)
+        y_smooth = spline_y(indices)
+
+        path_msg = Path()
+        path_msg.header.frame_id = "map"
+        path_msg.poses = []
+        for i in range(len(x_smooth)):
+            pose_stamped = PoseStamped()
+            pose_stamped.header.frame_id = "map"
+            pose_stamped.header.stamp = rospy.Time.now()
+            pose_stamped.pose.position.x = x_smooth[i]
+            pose_stamped.pose.position.y = y_smooth[i]
+            pose_stamped.pose.position.z = 0.0
+            pose_stamped.pose.orientation.w = 1.0  
+            
+            path_msg.poses.append(pose_stamped)
+        
+        return path_data, path_msg
+            
+    def calculate_path_length(self, path_data):
+        path_length = 0.0
+        for i in range(1, len(path_data)):
+            x1, y1 = path_data[i-1]['x'], path_data[i-1]['y']
+            x2, y2 = path_data[i]['x'], path_data[i]['y']
+            distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+            path_length += distance
+        return path_length
+    
+    def publish_teb_path(self, event):
+        self.teb_path.header.stamp = rospy.Time.now()  
+        self.teb_path_pub.publish(self.teb_path)
+
+    def publish_hateb_path(self, event):
+        self.hateb_path.header.stamp = rospy.Time.now()  
+        self.hateb_path_pub.publish(self.hateb_path)
+
+    def publish_our_path(self, event):
+        self.our_path.header.stamp = rospy.Time.now()  
+        self.our_path_pub.publish(self.our_path)
 
 if __name__ == '__main__':
-    file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_19.json'
-    positions = load_positions(file_name)
-    path_length = calculate_path_length(positions)
-    print(f"Path length: {path_length:.2f} meters")
-    plot_path_on_map(positions, map_file, resolution, origin)
+    try:
+        path_visualizer = PathVisualizer()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Path Visualizer node terminated.")
