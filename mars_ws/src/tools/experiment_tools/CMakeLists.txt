@@ -164,10 +164,10 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 catkin_install_python(PROGRAMS
-  scripts/usedTime.py
-  scripts/navigation_state_monitor.py
   scripts/path_recorder.py
   scripts/path_visualization.py
+  scripts/min_dist_calculator.py
+  scripts/simulation.py
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 

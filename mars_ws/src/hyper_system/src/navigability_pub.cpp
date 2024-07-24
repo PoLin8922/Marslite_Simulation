@@ -23,7 +23,7 @@ private:
     int navigable_space_threshold_ = 10;
     int map_size_;
     std::deque<float> navigability_history_;
-    const size_t history_size_ = 20;
+    const size_t history_size_ = 35;
     float alpha_ = 0.1;
 
 public:
@@ -57,6 +57,7 @@ public:
 
         std_msgs::Float32 msg;
         msg.data = weighted_average_navigability;
+        // msg.data = navigability;
         navigability_pub_.publish(msg);
     }
 

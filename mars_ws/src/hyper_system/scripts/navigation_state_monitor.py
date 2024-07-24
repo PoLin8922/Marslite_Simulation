@@ -14,7 +14,7 @@ class NavigationStateMonitor:
         self.non_zero_velocity_count = 0
         self.zero_velocity_count = 0
         self.start_threshold = 5
-        self.end_threshold = 10
+        self.end_threshold = 2
         self.is_navigating = False
 
         rospy.loginfo("Navigation State Monitor node started")

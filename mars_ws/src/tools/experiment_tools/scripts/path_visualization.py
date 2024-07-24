@@ -8,9 +8,9 @@ from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 from scipy.interpolate import UnivariateSpline
 
-teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_27.json'
-hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_27.json'
-our_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_18.json'
+teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_8.json'
+hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_8.json'
+our_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path_8.json'
 
 class PathVisualizer:
     def __init__(self):

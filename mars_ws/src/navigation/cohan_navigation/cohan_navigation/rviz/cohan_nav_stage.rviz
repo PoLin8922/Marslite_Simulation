@@ -26,7 +26,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -48,22 +48,22 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: SceneMap
       Topic: /scene_map
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: GlobalCostmap
       Topic: /move_base/global_costmap/costmap
       Unreliable: false
       Use Timestamp: false
-      Value: false
+      Value: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
@@ -362,7 +362,7 @@ Visualization Manager:
       Marker Topic: /move_base/HATebLocalPlannerROS/human_marker
       Name: HumanMarker
       Namespaces:
-        {}
+        body: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -370,7 +370,7 @@ Visualization Manager:
       Marker Topic: /move_base/HATebLocalPlannerROS/human_arrow
       Name: HumanDirection
       Namespaces:
-        {}
+        direction: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -390,13 +390,13 @@ Visualization Manager:
       Queue Size: 100
       Value: false
     - Class: rviz/Marker
-      Enabled: false
+      Enabled: true
       Marker Topic: /move_base/HATebLocalPlannerROS/critical_corner_marker
       Name: CriticalCorner
       Namespaces:
-        {}
+        CriticalCorners: true
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: false
       Marker Topic: /move_base/HATebLocalPlannerROS/mode_text
@@ -556,10 +556,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 71.65760803222656
+      Scale: 21.034557342529297
       Target Frame: <Fixed Frame>
-      X: 23.114301681518555
-      Y: 3.155179500579834
+      X: 18.12006187438965
+      Y: -2.5725879669189453
     Saved: ~
 Window Geometry:
   Displays:

@@ -11,12 +11,13 @@ import tf2_geometry_msgs
 
 class PositionRecorder:
     def __init__(self):
-        rospy.init_node('path_recorder')
+        # rospy.init_node('path_recorder')
 
-        self.nav_state_sub = rospy.Subscriber('nav_state', Bool, self.nav_state_callback)
+        # self.nav_state_sub = rospy.Subscriber('nav_state', Bool, self.nav_state_callback)
         self.path_pub = rospy.Publisher('/robot_path', Path, queue_size=10)
         self.timer = rospy.Timer(rospy.Duration(0.3), self.timer_callback)
         
+        self.base_name = 'path'
         self.positions = []
         self.is_navigating = False
         self.file_name = self.get_next_file_name()
@@ -63,20 +64,20 @@ class PositionRecorder:
             rospy.logwarn("Could not transform robot's pose: %s", ex)
             return None, None
 
-    def nav_state_callback(self, msg):
-        if msg.data:  # If navigation is active
-            if not self.is_navigating:
-                self.is_navigating = True
-                rospy.loginfo("Navigation started.")
-                self.positions = []  # Start a new path
-                self.file_name = self.get_next_file_name()  # Get new file name
-                self.path_msg = Path()  # Reset the path
-                self.path_msg.header.frame_id = "map"
-        else:  # If navigation is not active
-            if self.is_navigating:
-                self.is_navigating = False
-                self.save_to_json()
-                rospy.loginfo("Navigation ended.")
+    # def nav_state_callback(self, msg):
+    #     if msg.data:  # If navigation is active
+    #         if not self.is_navigating:
+    #             self.is_navigating = True
+    #             rospy.loginfo("Navigation started.")
+    #             self.positions = []  # Start a new path
+    #             self.file_name = self.get_next_file_name()  # Get new file name
+    #             self.path_msg = Path()  # Reset the path
+    #             self.path_msg.header.frame_id = "map"
+    #     else:  # If navigation is not active
+    #         if self.is_navigating:
+    #             self.is_navigating = False
+    #             self.save_to_json()
+    #             rospy.loginfo("Navigation ended.")
     
     def save_to_json(self):
         with open(self.file_name, 'w') as f:
@@ -84,16 +85,15 @@ class PositionRecorder:
         rospy.loginfo(f"Positions saved to {self.file_name}")
 
     def get_next_file_name(self):
-        base_name = 'path'
         i = 1
         directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files' # docker
-        while os.path.isfile(os.path.join(directory, f"{base_name}_{i}.json")):
+        while os.path.isfile(os.path.join(directory, f"{self.base_name}_{i}.json")):
             i += 1
-        return os.path.join(directory, f"{base_name}_{i}.json")
+        return os.path.join(directory, f"{self.base_name}_{i}.json")
 
-if __name__ == '__main__':
-    try:
-        PositionRecorder()
-        rospy.spin()
-    except rospy.ROSInterruptException:
-        rospy.loginfo("Position Recorder node terminated.")
+# if __name__ == '__main__':
+#     try:
+#         PositionRecorder()
+#         rospy.spin()
+#     except rospy.ROSInterruptException:
+#         rospy.loginfo("Position Recorder node terminated.")

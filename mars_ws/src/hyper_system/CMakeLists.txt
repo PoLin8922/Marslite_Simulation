@@ -44,3 +44,10 @@ add_dependencies(navigability_pub hyper_system_generate_messages_cpp ${catkin_EX
 target_link_libraries(navigability_pub ${catkin_LIBRARIES})
 install(TARGETS navigability_pub RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
+catkin_install_python(PROGRAMS
+  scripts/fuzzy_controller.py
+  scripts/fuzzy_definition.py
+  scripts/navigation_state_monitor.py
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+

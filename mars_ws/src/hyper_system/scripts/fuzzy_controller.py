@@ -8,6 +8,7 @@ import numpy as np
 import skfuzzy as fuzz
 import time
 import fuzzy_definition
+from std_msgs.msg import Bool
 from skfuzzy import control as ctrl
 from std_msgs.msg import String
 from hyper_system.srv import Navigability
@@ -21,7 +22,8 @@ class FyzzyController:
 
         rospy.Subscriber("/scenario", String, self.scenario_callback)
         rospy.Subscriber("/navigability", Float32, self.navigability_callback)
-        rospy.Subscriber("/move_base/status", GoalStatusArray, self.robot_status_callback)
+        # rospy.Subscriber("/move_base/status", GoalStatusArray, self.robot_status_callback)
+        rospy.Subscriber('nav_state', Bool, self.nav_state_callback)
 
         self.speed_up_level_pub = rospy.Publisher("/speed_up_level", Float32, queue_size=10)
         self.robot_invisiable_level_pub = rospy.Publisher("/robot_invisiable_level", Float32, queue_size=10)
@@ -48,6 +50,7 @@ class FyzzyController:
 
         # fuzzy controller
         self.fuzzy_df = fuzzy_definition.FyzzyDefinition()
+        # self.fuzzy_df = FyzzyDefinition()
         self.optimaltime_controller = self.fuzzy_df.optimaltime_controller
         self.critical_corner_controller = self.fuzzy_df.critical_corner_controller
         self.pspace_cov_controller = self.fuzzy_df.pspace_cov_controller
@@ -98,11 +101,21 @@ class FyzzyController:
         # print("Received navigability value: ", self.navigability)
         
 
-    def robot_status_callback(self, data):
-        if not data.status_list or data.status_list[-1].text == "Goal reached.":
-            self.robot_move = False
-        else:
-            self.robot_move = True
+    # def robot_status_callback(self, data):
+    #     if not data.status_list or data.status_list[-1].text == "Goal reached.":
+    #         self.robot_move = False
+    #     else:
+    #         self.robot_move = True
+    
+    def nav_state_callback(self, msg):
+        if msg.data: 
+            if not self.robot_move:
+                self.robot_move = True
+                rospy.loginfo("Navigation started.")
+        else:  # If navigation is not active
+            if self.robot_move:
+                self.robot_move = False
+                rospy.loginfo("Navigation ended.")
     
     
     def update_optimaltime(self):
