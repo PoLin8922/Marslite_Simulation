@@ -90,7 +90,7 @@
     <state world_name='default'>
       <sim_time>149274 926000000</sim_time>
       <real_time>0 0</real_time>
-      <wall_time>1706345563 889013048</wall_time>
+      <wall_time>1721883612 459842803</wall_time>
       <iterations>0</iterations>
       <model name='Building'>
         <pose>0.746899 -1.50406 0 0 -0 1.57073</pose>
@@ -1353,26 +1353,6 @@
         <scale>1 1 1</scale>
         <link name='link'>
           <pose>3.70677 -12.2545 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='aws_robomaker_retail_BookshelfC_01_0_clone_0'>
-        <pose>1.12159 -12.2545 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>1.12159 -12.2545 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='aws_robomaker_retail_BookshelfC_01_0_clone_1'>
-        <pose>-1.55167 -12.3426 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>-1.55167 -12.3426 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -2804,7 +2784,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>21.9296 -54.3393 102.001 -0 1.0908 1.81118</pose>
+        <pose>2.62276 -21.3568 47.377 0 1.2188 1.57518</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -24740,108 +24720,6 @@
       <static>1</static>
       <pose>3.70677 -12.2545 0 0 -0 0</pose>
     </model>
-    <model name='aws_robomaker_retail_BookshelfC_01_0_clone_0'>
-      <link name='link'>
-        <inertial>
-          <mass>50</mass>
-          <inertia>
-            <ixx>5.5865</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>5.47324</iyy>
-            <iyz>0</iyz>
-            <izz>6.23277</izz>
-          </inertia>
-        </inertial>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <uri>file://models/aws_robomaker_retail_BookshelfC_01/meshes/aws_BookshelfC_01_collision.DAE</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>file://models/aws_robomaker_retail_BookshelfC_01/meshes/aws_BookshelfC_01_visual.DAE</uri>
-            </mesh>
-          </geometry>
-          <meta>
-            <layer>1</layer>
-          </meta>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <static>1</static>
-      <pose>1.12159 -12.2545 0 0 -0 0</pose>
-    </model>
-    <model name='aws_robomaker_retail_BookshelfC_01_0_clone_1'>
-      <link name='link'>
-        <inertial>
-          <mass>50</mass>
-          <inertia>
-            <ixx>5.5865</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>5.47324</iyy>
-            <iyz>0</iyz>
-            <izz>6.23277</izz>
-          </inertia>
-        </inertial>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <uri>file://models/aws_robomaker_retail_BookshelfC_01/meshes/aws_BookshelfC_01_collision.DAE</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>file://models/aws_robomaker_retail_BookshelfC_01/meshes/aws_BookshelfC_01_visual.DAE</uri>
-            </mesh>
-          </geometry>
-          <meta>
-            <layer>1</layer>
-          </meta>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <static>1</static>
-      <pose>-1.55167 -12.3426 0 0 -0 0</pose>
-    </model>
     <model name='aws_robomaker_retail_BookshelfC_01_0_clone_2'>
       <link name='link'>
         <inertial>
@@ -26947,16 +26825,7 @@
       </link>
       <pose>12.2751 -15.5447 0 4.8e-05 5.5e-05 -1.55554</pose>
     </model>
-    <plugin name='gazebo_occupancy_map' filename='libgazebo_2Dmap_plugin.so'>
-      <map_resolution>0.05</map_resolution>
-      <map_height>0.3</map_height>
-      <map_size_x>100</map_size_x>
-      <map_size_y>100</map_size_y>
-      <init_robot_x>0</init_robot_x>
-      <init_robot_y>0</init_robot_y>
-    </plugin>
-    <plugin name="ActorPosesPlugin" filename="libActorPosesPlugin.so">
-    </plugin>
+    <plugin name='ActorPosesPlugin' filename='libActorPosesPlugin.so'/>
     <model name='aws_robomaker_residential_KitchenTable_01_clone_clone'>
       <link name='link'>
         <inertial>
@@ -29460,5 +29329,13 @@
       <static>1</static>
       <pose>-31.9069 -30.4724 0 0 -0 0</pose>
     </model>
+    <plugin name='gazebo_occupancy_map' filename='libgazebo_2d_map_plugin.so'>
+      <map_resolution>0.2</map_resolution>
+      <map_height>0.1</map_height>
+      <map_size_x>100</map_size_x>
+      <map_size_y>100</map_size_y>
+      <init_robot_x>0</init_robot_x>
+      <init_robot_y>0</init_robot_y>
+    </plugin>
   </world>
 </sdf>

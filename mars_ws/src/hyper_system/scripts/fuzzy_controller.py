@@ -15,6 +15,7 @@ from hyper_system.srv import Navigability
 from actionlib_msgs.msg import GoalStatusArray
 from std_msgs.msg import Float32
 from dynamic_reconfigure.client import Client
+from collections import deque
 
 class FyzzyController:
     def __init__(self):
@@ -22,7 +23,6 @@ class FyzzyController:
 
         rospy.Subscriber("/scenario", String, self.scenario_callback)
         rospy.Subscriber("/navigability", Float32, self.navigability_callback)
-        # rospy.Subscriber("/move_base/status", GoalStatusArray, self.robot_status_callback)
         rospy.Subscriber('nav_state', Bool, self.nav_state_callback)
 
         self.speed_up_level_pub = rospy.Publisher("/speed_up_level", Float32, queue_size=10)
@@ -39,6 +39,15 @@ class FyzzyController:
         self.navigability = -1
         self.robot_move = False
         self.command = "rosrun dynamic_reconfigure dynparam set " 
+
+        # Initialize the moving averages
+        self.moving_average_window = 5
+        self.weight_optimaltime_deque = deque(maxlen=self.moving_average_window)
+        self.weight_cc_deque = deque(maxlen=self.moving_average_window)
+        self.pspace_cov_deque = deque(maxlen=self.moving_average_window)
+        self.pspace_r_ratio_deque = deque(maxlen=self.moving_average_window)
+        self.external_predict_deque = deque(maxlen=self.moving_average_window)
+
         self.pa_weight_optimaltime = "/move_base/HATebLocalPlannerROS weight_optimaltime "
         self.pa_weight_cc = "/move_base/HATebLocalPlannerROS weight_cc "
         self.pa_pspace_cov_global= "/move_base/global_costmap/human_layer_static radius "
@@ -65,7 +74,7 @@ class FyzzyController:
         
         rate = rospy.Rate(5) # unit : HZ
         while not rospy.is_shutdown():
-            if  self.navigability != -1 and self.robot_move: 
+            if self.navigability != -1 and self.robot_move: 
                 self.main_control()
             rate.sleep()
             
@@ -76,7 +85,7 @@ class FyzzyController:
         # rospy.loginfo("Received scenario data: %s", data.data)
         if data.data == "mall":
             self.speed_up_level = 5
-            self.robot_invisiable_level =10
+            self.robot_invisiable_level = 10
             self.right_side_level = 5
             self.pspace_level = 10
         elif data.data == "corrider":
@@ -89,7 +98,7 @@ class FyzzyController:
             self.robot_invisiable_level = 0
             self.right_side_level = 0
             self.pspace_level = 0
-        else :
+        else:
             self.speed_up_level = -1
             self.robot_invisiable_level = -1
             self.right_side_level = -1
@@ -100,12 +109,6 @@ class FyzzyController:
         self.navigability = data.data
         # print("Received navigability value: ", self.navigability)
         
-
-    # def robot_status_callback(self, data):
-    #     if not data.status_list or data.status_list[-1].text == "Goal reached.":
-    #         self.robot_move = False
-    #     else:
-    #         self.robot_move = True
     
     def nav_state_callback(self, msg):
         if msg.data: 
@@ -117,73 +120,84 @@ class FyzzyController:
                 self.robot_move = False
                 rospy.loginfo("Navigation ended.")
     
-    
+    def smooth_output(self, deque, value):
+        deque.append(value)
+        return sum(deque) / len(deque)
+
     def update_optimaltime(self):
         simulation = ctrl.ControlSystemSimulation(self.optimaltime_controller)
-
         simulation.input['navigability'] = self.navigability
         simulation.input['speed_up_level'] = self.speed_up_level
         simulation.compute()
 
+        raw_output = simulation.output['weight_optimaltime']
+        smoothed_output = self.smooth_output(self.weight_optimaltime_deque, raw_output)
+
         msg = Float32()
         msg.data = self.speed_up_level
         self.speed_up_level_pub.publish(msg)
-        msg.data = simulation.output['weight_optimaltime']
+        msg.data = smoothed_output
         self.weight_optimaltime_pub.publish(msg)
         print("updated optimaltime: ", msg.data)
 
-        return simulation.output['weight_optimaltime']
+        return smoothed_output
   
 
     def update_weight_cc(self):
-            simulation = ctrl.ControlSystemSimulation(self.critical_corner_controller)
+        simulation = ctrl.ControlSystemSimulation(self.critical_corner_controller)
+        simulation.input['navigability'] = self.navigability
+        simulation.input['robot_invisiable_level'] = self.robot_invisiable_level
+        simulation.compute()
 
-            simulation.input['navigability'] = self.navigability
-            simulation.input['robot_invisiable_level'] = self.robot_invisiable_level
-            simulation.compute()
+        raw_output = simulation.output['weight_cc']
+        smoothed_output = self.smooth_output(self.weight_cc_deque, raw_output)
 
-            msg = Float32()
-            msg.data = self.robot_invisiable_level
-            self.robot_invisiable_level_pub.publish(msg)
-            msg.data = simulation.output['weight_cc']
-            self.weight_cc_pub.publish(msg)
-            print("updated weight_cc: ", msg.data)
+        msg = Float32()
+        msg.data = self.robot_invisiable_level
+        self.robot_invisiable_level_pub.publish(msg)
+        msg.data = smoothed_output
+        self.weight_cc_pub.publish(msg)
+        print("updated weight_cc: ", msg.data)
 
-            return simulation.output['weight_cc']
+        return smoothed_output
     
 
     def update_pspace_cov(self):
-            simulation = ctrl.ControlSystemSimulation(self.pspace_cov_controller)
+        simulation = ctrl.ControlSystemSimulation(self.pspace_cov_controller)
+        simulation.input['navigability'] = self.navigability
+        simulation.input['pspace_level'] = self.pspace_level
+        simulation.compute()
 
-            simulation.input['navigability'] = self.navigability
-            simulation.input['pspace_level'] = self.pspace_level
-            simulation.compute()
+        raw_output = simulation.output['pspace_cov']
+        smoothed_output = self.smooth_output(self.pspace_cov_deque, raw_output)
 
-            msg = Float32()
-            msg.data = self.pspace_level
-            self.pspace_level_pub.publish(msg)
-            msg.data = simulation.output['pspace_cov']
-            self.pspace_cov_pub.publish(msg)
-            print("updated pspace_cov: ", msg.data)
+        msg = Float32()
+        msg.data = self.pspace_level
+        self.pspace_level_pub.publish(msg)
+        msg.data = smoothed_output
+        self.pspace_cov_pub.publish(msg)
+        print("updated pspace_cov: ", msg.data)
 
-            return simulation.output['pspace_cov']
+        return smoothed_output
     
 
     def update_pspace_r_ratio(self):
-            simulation = ctrl.ControlSystemSimulation(self.pspace_r_ratio_controller)
+        simulation = ctrl.ControlSystemSimulation(self.pspace_r_ratio_controller)
+        simulation.input['navigability'] = self.navigability
+        simulation.input['right_side_level'] = self.right_side_level
+        simulation.compute()
 
-            simulation.input['navigability'] = self.navigability
-            simulation.input['right_side_level'] = self.right_side_level
-            simulation.compute()
-        
-            msg = Float32()
-            msg.data = self.right_side_level
-            self.right_side_level_pub.publish(msg)
-            msg.data = simulation.output['pspace_r_ratio']
-            self.pspace_r_ratio_pub.publish(msg)
-            print("updated pspace_r_ratio: ", msg.data)
+        raw_output = simulation.output['pspace_r_ratio']
+        smoothed_output = self.smooth_output(self.pspace_r_ratio_deque, raw_output)
 
-            return simulation.output['pspace_r_ratio']
+        msg = Float32()
+        msg.data = self.right_side_level
+        self.right_side_level_pub.publish(msg)
+        msg.data = smoothed_output
+        self.pspace_r_ratio_pub.publish(msg)
+        print("updated pspace_r_ratio: ", msg.data)
+
+        return smoothed_output
 
     
     def update_human_path_predict(self):

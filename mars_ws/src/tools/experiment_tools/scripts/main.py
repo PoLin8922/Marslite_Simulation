@@ -49,6 +49,7 @@ class MainNode:
                 self.position_recorder.is_navigating = False
                 self.position_recorder.save_to_json()
                 print("-----------------------------------------")
+                print(f"{self.base_name} path planning result:")
                 print(f"time taken: {navigation_time:.2f} seconds")
                 print(f"path minimum distance to humans: {self.distance_calculator.min_distance:.2f} meters")
                 path_data = self.load_path_from_file(self.position_recorder.file_name)

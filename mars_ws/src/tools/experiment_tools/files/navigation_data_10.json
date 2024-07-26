@@ -1,0 +1,54 @@
+{
+    "time": [
+        0.08573031425476074,
+        0.24038434028625488
+    ],
+    "navigability": [
+        null,
+        null
+    ],
+    "speed_up_level": [
+        null,
+        null
+    ],
+    "robot_invisiable_level": [
+        null,
+        null
+    ],
+    "right_side_level": [
+        null,
+        null
+    ],
+    "pspace_level": [
+        null,
+        null
+    ],
+    "weight_optimaltime": [
+        null,
+        null
+    ],
+    "weight_cc": [
+        null,
+        null
+    ],
+    "pspace_cov": [
+        null,
+        null
+    ],
+    "pspace_r_ratio": [
+        null,
+        null
+    ],
+    "use_external_prediction": [
+        null,
+        null
+    ],
+    "cmd_vel_linear": [
+        -0.227715942780799,
+        0.0
+    ],
+    "cmd_vel_angular": [
+        -0.09076510160574279,
+        0.0
+    ]
+}
