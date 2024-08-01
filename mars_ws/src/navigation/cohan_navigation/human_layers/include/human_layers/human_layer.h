@@ -124,7 +124,8 @@ protected:
       // define parameter
       double v = sqrt(vx * vx + vy * vy);
       double theta = atan2(vy, vx);
-      double sigmaHead = fmax(1.2 * v, 1.0);
+      double sigmaHead = fmax(1.2 * v, var);
+      // double sigmaHead = fmax(1.2 * v, 1.0);
       // double sigmaRear = var / 7.0;
       // double sigmaLarge = var / 5.0;
       double sigmaRear = var * 0.7;
@@ -175,6 +176,10 @@ protected:
   double last_min_x_, last_min_y_, last_max_x_, last_max_y_;
   double radius_, amplitude_, r_ratio_, covar_, cutoff_;
   // double v_cutoff_, v_amplitude_, v_covar_;
+
+  ros::Timer timeout_timer_;
+  ros::Time last_update_time_;
+  void timeoutCheck(const ros::TimerEvent& event);
 
 };
 }  // namespace human_layers

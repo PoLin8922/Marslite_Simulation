@@ -53,7 +53,7 @@ def main():
     parser.add_argument('file_number', type=int, help='The number of the navigation data file to open')
     args = parser.parse_args()
 
-    file = f'/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/navigation_data_{args.file_number}.json'
+    file = f'/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/data/simulation1_data_{args.file_number}.json'
     
     with open(file, 'r') as f:
         data = json.load(f)
@@ -70,8 +70,8 @@ def main():
     plot_data(axs[4, 0], data, "pspace_level", "Pspace Level")
     plot_data(axs[0, 1], data, "weight_optimaltime", "Weight Optimal Time", smooth=True, window_size=smooth_window_size)
     plot_data(axs[1, 1], data, "weight_cc", "Weight CC", smooth=True, window_size=smooth_window_size)
-    plot_data(axs[2, 1], data, "pspace_cov", "Pspace Coverage", smooth=True, window_size=smooth_window_size)
-    plot_data(axs[3, 1], data, "pspace_r_ratio", "Pspace R Ratio", smooth=True, window_size=smooth_window_size)
+    plot_data(axs[2, 1], data, "pspace_cov", "Pspace Overall Variance", smooth=True, window_size=smooth_window_size)
+    plot_data(axs[3, 1], data, "pspace_r_ratio", "Pspace Right Ratio", smooth=True, window_size=smooth_window_size)
     plot_data(axs[4, 1], data, "use_external_prediction", "Use External Prediction")
 
     plt.show()

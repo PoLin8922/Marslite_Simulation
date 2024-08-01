@@ -54,6 +54,7 @@ void HumanLayer::onInitialize()
   ros::NodeHandle nh("~/" + name_), g_nh;
   humans_sub_ = nh.subscribe(TRACKED_HUMAN_SUB, 1, &HumanLayer::humansCB, this);
   humans_states_sub_ = nh.subscribe(HUMANS_STATES_SUB, 1, &HumanLayer::statesCB, this);
+  timeout_timer_ = nh.createTimer(ros::Duration(0.1), &HumanLayer::timeoutCheck, this);
 
   current_ = true;
   first_time_ = true;
@@ -63,6 +64,7 @@ void HumanLayer::humansCB(const human_msgs::TrackedHumans& humans)
 {
   boost::recursive_mutex::scoped_lock lock(lock_);
   humans_ = humans;
+  last_update_time_ = ros::Time::now();
 }
 
 void HumanLayer::statesCB(const human_msgs::StateArray& states){
@@ -72,6 +74,14 @@ void HumanLayer::statesCB(const human_msgs::StateArray& states){
   last_time = ros::Time::now();
 }
 
+void HumanLayer::timeoutCheck(const ros::TimerEvent&)
+{
+  boost::recursive_mutex::scoped_lock lock(lock_);
+  if ((ros::Time::now() - last_update_time_).toSec() > 1.0)
+  {
+    humans_.humans.clear();
+  }
+}
 
 void HumanLayer::updateBounds(double origin_x, double origin_y, double origin_z, double* min_x, double* min_y,
                                double* max_x, double* max_y)

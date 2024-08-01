@@ -23,10 +23,12 @@ def parse_static_humans(static_humans_str):
     return humans
 
 class StageHumans(object):
-    def __init__(self, static_human_positions):
+    def __init__(self, static_human_positions, pub_tracked_human):
         self.tracked_humans_pub = rospy.Publisher("/tracked_humans", TrackedHumans, queue_size=1)
+        self.ground_truth__humans_pub = rospy.Publisher("/ground_truth_humans", TrackedHumans, queue_size=1)
         self.Segment_Type = TrackedSegmentType.TORSO
         self.static_human_positions = static_human_positions
+        self.pub_tracked_human = pub_tracked_human
 
         rospy.Subscriber("/pedsim_simulator/simulated_agents", AgentStates, self.agent_states_callback)
 
@@ -81,10 +83,12 @@ class StageHumans(object):
         if tracked_humans.humans:
             tracked_humans.header.stamp = rospy.Time.now()
             tracked_humans.header.frame_id = 'map'
-            self.tracked_humans_pub.publish(tracked_humans)
+            if self.pub_tracked_human:
+                self.tracked_humans_pub.publish(tracked_humans)
+            self.ground_truth__humans_pub.publish(tracked_humans)
 
     def HumansPub(self):
-        rate = rospy.Rate(0.8)
+        rate = rospy.Rate(0.1)
         clear_costmaps_service = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
         while not rospy.is_shutdown():
             try:
@@ -100,10 +104,15 @@ if __name__ == '__main__':
         "--static_human", type=str, required=True,
         help="Static human positions in the format 'x1,y1;x2,y2;...'"
     )
+    parser.add_argument(
+        "--pub_tracked_human", type=int, choices=[0, 1], required=True,
+        help="Boolean flag to publish tracked humans (1 for True, 0 for False)"
+    )
     args = parser.parse_args()
 
     static_human_positions = parse_static_humans(args.static_human)
+    pub_tracked_human = bool(args.pub_tracked_human)
 
     rospy.init_node('Stage_Humans', anonymous=True)
-    humans = StageHumans(static_human_positions)
+    humans = StageHumans(static_human_positions, pub_tracked_human)
     humans.HumansPub()

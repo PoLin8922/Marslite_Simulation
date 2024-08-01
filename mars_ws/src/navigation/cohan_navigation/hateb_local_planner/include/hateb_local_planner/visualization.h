@@ -155,6 +155,7 @@ public:
 
 
   void publishTrackedHumans(const human_msgs::TrackedHumansConstPtr &humans);
+  void publishGroundTruthHumans(const human_msgs::TrackedHumansConstPtr &humans);
 
   /**
    * @brief Publish Timed_Elastic_Band related stuff (local plan, pose sequence).
@@ -314,9 +315,9 @@ protected:
   ros::Publisher robot_traj_time_pub_, robot_path_time_pub_;
   ros::Publisher robot_next_pose_pub_, human_next_pose_pub_; // Pulishers for pose tracking
   ros::Publisher human_trajs_time_pub_, human_paths_time_pub_;
-  ros::Publisher human_marker_pub ,human_arrow_pub;
+  ros::Publisher human_marker_ground_turth_pub, human_marker_pub ,human_arrow_pub;
   ros::Publisher critical_corner_pub;
-  ros::Subscriber tracked_humans_sub_;
+  ros::Subscriber tracked_humans_sub_, ground_truth_humans_sub_;
   std::vector<double> vel_robot, vel_human;
   tf::TransformListener tf_;
 

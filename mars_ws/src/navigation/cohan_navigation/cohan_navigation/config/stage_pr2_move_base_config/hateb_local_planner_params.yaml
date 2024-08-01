@@ -22,11 +22,12 @@ shrink_horizon_backup: True
 # max_vel_x: 1.2
 max_vel_x: 1.5
 min_vel_x: 0.08
-max_vel_x_backwards: 0.5
+# max_vel_x_backwards: 0.5
+max_vel_x_backwards: 0.0001
 # max_vel_theta: 1.5
-max_vel_theta: 0.8
+max_vel_theta: 1.5
 # min_vel_theta: -1.5
-min_vel_theta: -0.8
+min_vel_theta: -1.5
 acc_lim_x: 0.8
 # acc_lim_x: 0.0
 acc_lim_theta: 0.4
@@ -138,8 +139,8 @@ no_inner_iterations: 5
 no_outer_iterations: 4
 optimization_activate: True
 optimization_verbose: False
-# penalty_epsilon: 0.01
-penalty_epsilon: 0.1
+penalty_epsilon: 0.01
+# penalty_epsilon: 0.1
 # weight_max_vel_x: 2
 weight_max_vel_x: 1
 weight_max_vel_y: 2
@@ -157,7 +158,7 @@ weight_human_acc_lim_theta: 2
 # weight_kinematics_nh: 1.0
 weight_kinematics_nh: 1000
 # weight_kinematics_forward_drive: 300.0
-weight_kinematics_forward_drive: 500.0
+weight_kinematics_forward_drive: 1000.0
 weight_kinematics_turning_radius: 1
 # weight_optimaltime: 1.0
 weight_optimaltime: 20.0

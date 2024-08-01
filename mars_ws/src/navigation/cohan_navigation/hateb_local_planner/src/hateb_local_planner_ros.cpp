@@ -560,14 +560,15 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
         change_mode++;
         isMode = 1;
 
-        if(change_mode>20){
-          if(!stuck)
-            ROS_INFO("I am stuck");
-          stuck = true;
-          humans_states_.states[visible_human_ids[0]-1] = hateb_local_planner::HumanState::BLOCKED;
-          stuck_human_id = visible_human_ids[0];
-          isMode = 2;
-        }
+        // not doing backoff recovery
+        // if(change_mode>20){
+        //   if(!stuck)
+        //     ROS_INFO("I am stuck");
+        //   stuck = true;
+        //   humans_states_.states[visible_human_ids[0]-1] = hateb_local_planner::HumanState::BLOCKED;
+        //   stuck_human_id = visible_human_ids[0];
+        //   isMode = 2;
+        // }
       }
     }
   }
@@ -975,16 +976,19 @@ uint32_t HATebLocalPlannerROS::computeVelocityCommands(const geometry_msgs::Pose
 
   std::string mode;
   if(isMode==-1 || isDistMax){
-    mode = "SingleBand";
+    // mode = "SingleBand";
+    mode = "VelObs";
   }
   else if(isMode==0){
-    mode = "DualBand";
+    // mode = "DualBand";
+    mode = "VelObs";
   }
   else if(isMode == 1){
     mode = "VelObs";
   }
   else if(isMode == 2){
-    mode = "Backoff";
+    // mode = "Backoff";
+    mode = "VelObs";
   }
   logs+="Mode: " + mode+", ";
 

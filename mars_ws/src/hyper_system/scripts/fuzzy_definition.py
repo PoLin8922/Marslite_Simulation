@@ -19,7 +19,8 @@ class FyzzyDefinition:
 
 
         # define fuzzy output
-        self.fz_weight_optimaltime = ctrl.Consequent(np.arange(5, 31, 0.1), 'weight_optimaltime')
+        # self.fz_weight_optimaltime = ctrl.Consequent(np.arange(5, 31, 0.1), 'weight_optimaltime')
+        self.fz_weight_optimaltime = ctrl.Consequent(np.arange(0, 25, 0.1), 'weight_optimaltime')
         self.fz_weight_cc = ctrl.Consequent(np.arange(0, 21, 0.1), 'weight_cc')                               
         self.fz_pspace_cov = ctrl.Consequent(np.arange(0.4, 1.21, 0.005), 'pspace_cov')                             
         self.fz_pspace_r_ratio = ctrl.Consequent(np.arange(0.6, 1.01, 0.005), 'pspace_r_ratio')                     
@@ -28,11 +29,11 @@ class FyzzyDefinition:
 
         # define membership function
         ## input
-        self.fz_navigability['VL'] = fuzz.gaussmf(self.fz_navigability.universe, 0, 0.2)
-        self.fz_navigability['L'] = fuzz.gaussmf(self.fz_navigability.universe, 0.25, 0.2)
-        self.fz_navigability['M'] = fuzz.gaussmf(self.fz_navigability.universe, 0.5, 0.2)
-        self.fz_navigability['H'] = fuzz.gaussmf(self.fz_navigability.universe, 0.75, 0.2)
-        self.fz_navigability['VH'] = fuzz.gaussmf(self.fz_navigability.universe, 1, 0.2)
+        self.fz_navigability['VL'] = fuzz.gaussmf(self.fz_navigability.universe, 0, 0.1)
+        self.fz_navigability['L'] = fuzz.gaussmf(self.fz_navigability.universe, 0.25, 0.1)
+        self.fz_navigability['M'] = fuzz.gaussmf(self.fz_navigability.universe, 0.5, 0.1)
+        self.fz_navigability['H'] = fuzz.gaussmf(self.fz_navigability.universe, 0.75, 0.1)
+        self.fz_navigability['VH'] = fuzz.gaussmf(self.fz_navigability.universe, 1, 0.1)
 
         self.fz_speed_up_level['L'] = fuzz.gaussmf(self.fz_speed_up_level.universe, 0, 2)
         self.fz_speed_up_level['M'] = fuzz.gaussmf(self.fz_speed_up_level.universe, 5, 2)
@@ -52,22 +53,22 @@ class FyzzyDefinition:
 
 
         # output
-        self.fz_weight_optimaltime['VL'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 5, 3)
-        self.fz_weight_optimaltime['L'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 10, 3)
-        self.fz_weight_optimaltime['M'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 15, 3)
-        self.fz_weight_optimaltime['H'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 20, 3)
-        self.fz_weight_optimaltime['VH'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 25, 3)
+        self.fz_weight_optimaltime['VL'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 0, 2.5)
+        self.fz_weight_optimaltime['L'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 6, 2.5)
+        self.fz_weight_optimaltime['M'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 12.5, 2.5)
+        self.fz_weight_optimaltime['H'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 18, 2.5)
+        self.fz_weight_optimaltime['VH'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 25, 2.5)
 
         self.fz_weight_cc['VL'] = fuzz.gaussmf(self.fz_weight_cc.universe, 0, 2)
-        self.fz_weight_cc['L'] = fuzz.gaussmf(self.fz_weight_cc.universe, 5, 2)
-        self.fz_weight_cc['M'] = fuzz.gaussmf(self.fz_weight_cc.universe, 10, 2)
+        self.fz_weight_cc['L'] = fuzz.gaussmf(self.fz_weight_cc.universe, 3.0, 2)
+        self.fz_weight_cc['M'] = fuzz.gaussmf(self.fz_weight_cc.universe, 9, 2)
         self.fz_weight_cc['H'] = fuzz.gaussmf(self.fz_weight_cc.universe, 15, 2)
         self.fz_weight_cc['VH'] = fuzz.gaussmf(self.fz_weight_cc.universe, 20, 2)
 
         self.fz_pspace_cov['VL'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.4, 0.1)
-        self.fz_pspace_cov['L'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.6, 0.1)
+        self.fz_pspace_cov['L'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.55, 0.1)
         self.fz_pspace_cov['M'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 0.8, 0.1)
-        self.fz_pspace_cov['H'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 1.0, 0.1)
+        self.fz_pspace_cov['H'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 1.05, 0.1)
         self.fz_pspace_cov['VH'] = fuzz.gaussmf(self.fz_pspace_cov.universe, 1.2, 0.1)
 
         self.fz_pspace_r_ratio['VL'] = fuzz.gaussmf(self.fz_pspace_r_ratio.universe, 0.6, 0.05)
@@ -86,16 +87,16 @@ class FyzzyDefinition:
         self.rule2 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['L'])
         self.rule3 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['H'])
         self.rule4 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['L'], self.fz_weight_optimaltime['L'])
-        self.rule5 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['M'])
+        self.rule5 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['L'])
         self.rule6 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['H'])
         self.rule7 = ctrl.Rule(self.fz_navigability['M'] & self.fz_speed_up_level['L'], self.fz_weight_optimaltime['L'])
         self.rule8 = ctrl.Rule(self.fz_navigability['M'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['M'])
         self.rule9 = ctrl.Rule(self.fz_navigability['M'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['VH'])
         self.rule10 = ctrl.Rule(self.fz_navigability['H'] & self.fz_speed_up_level['L'], self.fz_weight_optimaltime['M'])
-        self.rule11 = ctrl.Rule(self.fz_navigability['H'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['H'])
+        self.rule11 = ctrl.Rule(self.fz_navigability['H'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['M'])
         self.rule12 = ctrl.Rule(self.fz_navigability['H'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['VH'])
         self.rule13 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_speed_up_level['L'], self.fz_weight_optimaltime['H'])
-        self.rule14 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['VH'])
+        self.rule14 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['H'])
         self.rule15 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['VH']) 
         self.optimaltime_controller = ctrl.ControlSystem([self.rule1, self.rule2, self.rule3, self.rule4, self.rule5, self.rule6, self.rule7, self.rule8,
                                   self.rule9, self.rule10, self.rule11, self.rule12, self.rule13, self.rule14, self.rule15])
@@ -139,21 +140,21 @@ class FyzzyDefinition:
                                                             self.rule39, self.rule40, self.rule41, self.rule42, self.rule43, self.rule44, self.rule45])
 
         ## fz_navigability, fz_right_side_level | fz_pspace_r_ratio
-        self.rule46 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['VH'])
-        self.rule47 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['H'])
-        self.rule48 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['H'])
+        self.rule46 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['M'])
+        self.rule47 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['L'])
+        self.rule48 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['VL'])
         self.rule49 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['H'])
         self.rule50 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
-        self.rule51 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['M'])
+        self.rule51 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
         self.rule52 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['H'])
         self.rule53 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
         self.rule54 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
-        self.rule55 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['M'])
-        self.rule56 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
-        self.rule57 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
-        self.rule58 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['L'])
-        self.rule59 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['L'])
-        self.rule60 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['VL'])
+        self.rule55 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['VH'])
+        self.rule56 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['H'])
+        self.rule57 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['M'])
+        self.rule58 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['VH'])
+        self.rule59 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['H'])
+        self.rule60 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['M'])
         self.pspace_r_ratio_controller = ctrl.ControlSystem([self.rule46, self.rule47, self.rule48, self.rule49, self.rule50, self.rule51, self.rule52, self.rule53,
                                                             self.rule54, self.rule55, self.rule56, self.rule57, self.rule58, self.rule59, self.rule60])
 
@@ -166,8 +167,8 @@ class FyzzyDefinition:
         self.human_path_prediction_controller = ctrl.ControlSystem([self.rule61, self.rule62, self.rule63, self.rule64, self.rule65])
 
         # visulization
-        # self.fz_navigability.view()
+        # self.fz_speed_up_level.view()
         # self.fz_speed_up_level.view()
         # self.fz_weight_optimaltime.view()
-        # self.fz_weight_cc.view()
-        # plt.show()
+        # self.fz_weight_optimaltime.view()
+        plt.show()

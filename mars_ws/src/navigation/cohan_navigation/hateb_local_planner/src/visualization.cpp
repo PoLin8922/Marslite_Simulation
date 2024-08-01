@@ -114,6 +114,7 @@ void TebVisualization::initialize(ros::NodeHandle& nh, const HATebConfig& cfg)
   human_paths_time_pub_ =
       nh.advertise<human_msgs::HumanTimeToGoalArray>(HUMAN_PATHS_TIME_TOPIC, 1);
   human_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("human_marker", 1);
+  human_marker_ground_turth_pub = nh.advertise<visualization_msgs::MarkerArray>("human_marker_ground_turth", 1);
   human_arrow_pub = nh.advertise<visualization_msgs::MarkerArray>("human_arrow", 1);
   critical_corner_pub = nh.advertise<visualization_msgs::Marker>("critical_corner_marker", 1);
   mode_text_pub = nh.advertise<visualization_msgs::Marker>("mode_text", 1);
@@ -137,6 +138,7 @@ void TebVisualization::initialize(ros::NodeHandle& nh, const HATebConfig& cfg)
       cfg_->visualization.publish_human_local_plan_fp_poses;
 
   tracked_humans_sub_ = nh.subscribe("/tracked_humans",10, &TebVisualization::publishTrackedHumans, this);
+  ground_truth_humans_sub_ = nh.subscribe("/ground_truth_humans",10, &TebVisualization::publishGroundTruthHumans, this);
 
   clearing_timer_ = nh.createTimer(ros::Duration(CLEARING_TIMER_DURATION),
                                    &TebVisualization::clearingTimerCB, this);
@@ -777,6 +779,92 @@ void TebVisualization::publishTrackedHumans(const human_msgs::TrackedHumansConst
     }
     human_marker_pub.publish(marker_arr);
     human_arrow_pub.publish(arrow_arr);
+  }
+
+  void TebVisualization::publishGroundTruthHumans(const human_msgs::TrackedHumansConstPtr &humans){
+  visualization_msgs::MarkerArray marker_arr,arrow_arr;
+
+    int i=0;
+    for(auto &human : humans->humans)
+    {  visualization_msgs::Marker marker,arrow;
+        // Set the frame ID and timestamp.  See the TF tutorials for information on these.
+        marker.header.frame_id = "map";
+        marker.header.stamp = ros::Time::now();
+        arrow.header.frame_id = "map";
+        arrow.header.stamp = ros::Time::now();
+
+      for(auto segment : human.segments)
+      {          // Set the namespace and id for this marker.  This serves to create a unique ID
+          // Any marker sent with the same namespace and id will overwrite the old one
+          marker.ns = "body";
+          marker.id = i;
+          arrow.ns = "direction";
+          arrow.id = i;
+
+          // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
+          marker.type = visualization_msgs::Marker::CYLINDER;
+          arrow.type = visualization_msgs::Marker::ARROW;
+
+          // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+          marker.action = visualization_msgs::Marker::ADD;
+          arrow.action = visualization_msgs::Marker::ADD;
+
+          // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+          geometry_msgs::PoseStamped before_pose, after_pose;
+          try
+          {
+            before_pose.pose = segment.pose.pose;
+            before_pose.header.frame_id = humans->header.frame_id;
+            before_pose.header.stamp = humans->header.stamp;
+            tf_.transformPose("map", before_pose, after_pose);
+            marker.pose = after_pose.pose;
+            arrow.pose = after_pose.pose;
+          }
+          catch (tf2::LookupException& ex)
+          {
+            ROS_ERROR("No Transform available Error: %s\n", ex.what());
+            continue;
+          }
+          catch (tf2::ConnectivityException& ex)
+          {
+            ROS_ERROR("Connectivity Error: %s\n", ex.what());
+            continue;
+          }
+          catch (tf2::ExtrapolationException& ex)
+          {
+            ROS_ERROR("Extrapolation Error: %s\n", ex.what());
+            continue;
+          }
+
+          // Set the scale of the marker -- 1x1x1 here means 1m on a side
+          marker.scale.x = 0.6;
+          marker.scale.y = 0.6;
+          marker.scale.z = 1.8;
+
+          arrow.scale.x = 0.8;
+          arrow.scale.y = 0.05;
+          arrow.scale.z = 0.05;
+
+          // Set the color -- be sure to set alpha to something non-zero!
+          marker.color.r = 0.0f;
+          marker.color.g = 1.0f;
+          marker.color.b = 0.0f;
+          marker.color.a = 1.0;
+
+          arrow.color.r = 1.0f;
+          arrow.color.g = 1.0f;
+          arrow.color.b = 0.0f;
+          arrow.color.a = 1.0;
+
+          marker.lifetime = ros::Duration(2.0);
+          arrow.lifetime = ros::Duration(2.0);
+          marker_arr.markers.push_back(marker);
+          arrow_arr.markers.push_back(arrow);
+          i++;
+        }
+    }
+    human_marker_ground_turth_pub.publish(marker_arr);
+    // human_arrow_pub.publish(arrow_arr);
   }
 
   void TebVisualization::setMarkerColour(visualization_msgs::Marker &marker, double itr, double n){

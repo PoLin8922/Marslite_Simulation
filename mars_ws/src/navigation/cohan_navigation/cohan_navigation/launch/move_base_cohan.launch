@@ -32,7 +32,7 @@
   <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">
     <param name="scan_topics" value="/scan"/>
     <param name="cmd_vel_topic" value="/cmd_vel"/>
-    <param name="output_frame" value="base_link"/>
+    <param name="output_frame" value="map"/>
     <param name="output_topic" value="/move_base/HATebLocalPlannerROS/critical_corners"/>
     <param name="base_frame" value="base_link"/>
     <param name="min_occlusion" value="0.8"/>

@@ -15,7 +15,7 @@ class PositionRecorder:
         self.path_pub = rospy.Publisher('/robot_path', Path, queue_size=10)
         self.timer = rospy.Timer(rospy.Duration(0.3), self.timer_callback)
         
-        self.base_name = 'path'
+        self.base_name = 'simulation1'
         self.positions = []
         self.is_navigating = False
         self.file_name = self.get_next_file_name()
@@ -69,7 +69,7 @@ class PositionRecorder:
 
     def get_next_file_name(self):
         i = 1
-        directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files' # docker
+        directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path' # docker
         while os.path.isfile(os.path.join(directory, f"{self.base_name}_{i}.json")):
             i += 1
         return os.path.join(directory, f"{self.base_name}_{i}.json")

@@ -35,6 +35,7 @@ double dist_threshold, dist_tolerance, min_occlusion;
 string scan_topic_, base_frame_, output_topic_, output_frame_,
     pointcloud_topic_, cmd_vel_topic_, laserscan_topics_;;
 int counter = 0;
+int k_death = 15;
 
 /********************************class definition********************************/
 class Detector {
@@ -53,6 +54,7 @@ public:
   vector<bool> clouds_modified;
 
   vector<pcl::PointCloud<pcl::PointXYZ> > cc_clouds;
+  vector<int> cc_lifetimes;
 
   double theta_vel;
 
@@ -73,6 +75,7 @@ Detector::Detector(ros::NodeHandle *nodehandle) : nh_(*nodehandle) {
   pub = nh_.advertise<costmap_converter::ObstacleArrayMsg>(
       output_topic_.c_str(), 10);
   pub_vis = nh_.advertise<sensor_msgs::PointCloud2>("/cc_vis", 1);
+  cc_lifetimes.resize(100, k_death);
 
   this->laserscan_topic_parser();
 
@@ -139,25 +142,24 @@ void Detector::cmdVelCallback(const geometry_msgs::TwistConstPtr &msg) {
   this->theta_vel -= 2*M_PI * floor(this->theta_vel*(1/2*M_PI));  
 }
 
-void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::string topic) {
 
+void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::string topic) {
   float x1, x2, y1, y2, inbetween_dist, prev_dist, dist1, dist2, x_temp, y_temp;
   float occlusion = 0;
   bool negativ_jump = 0;
+  vector<int> new_cc_lifetimes;
+  pcl::PointCloud<pcl::PointXYZ> new_cc_cloud;
   tf::StampedTransform transform;
-  pcl::PointCloud<pcl::PointXYZ> cc_cloud;
   tf2::Quaternion q;
 
   // transform
   try {
-    listener.lookupTransform(output_frame_, msg->header.frame_id, ros::Time(),
-                             this->transform);
+    listener.lookupTransform(output_frame_, msg->header.frame_id, ros::Time(), this->transform);
   } catch (tf::TransformException ex) {
     ROS_ERROR("%s", ex.what());
   }
   try {
-    listener.lookupTransform(base_frame_, msg->header.frame_id, ros::Time(),
-                             this->transform_to_base);
+    listener.lookupTransform(base_frame_, msg->header.frame_id, ros::Time(), this->transform_to_base);
   } catch (tf::TransformException ex) {
     ROS_ERROR("%s", ex.what());
   }
@@ -169,22 +171,18 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
   // transform point cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_base(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_output(
-      new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_output(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(cloud_ros, *cloud);
 
   pcl_ros::transformPointCloud(*cloud, *cloud_output, this->transform);
   pcl_ros::transformPointCloud(*cloud, *cloud_base, this->transform_to_base);
 
   // save modification state of current scan
-  for(int j=0; j<input_topics.size(); ++j)
-  {
-    if(topic.compare(input_topics[j]) == 0)
-    {
-      cc_clouds[j].clear();
+  for(int j=0; j<input_topics.size(); ++j) {
+    if(topic.compare(input_topics[j]) == 0) {
+      new_cc_cloud.clear();
       // ------- actually processing steps --------- //
       for (int i = 1; i < cloud->points.size(); i++) {
-
         x1 = cloud->points[i - 1].x;
         x2 = cloud->points[i].x;
         y1 = cloud->points[i - 1].y;
@@ -195,7 +193,7 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
         dist1 = sqrt(pow(x1, 2) + pow(y1, 2));
         dist2 = sqrt(pow(x2, 2) + pow(y2, 2));
 
-        //------------ detect positiv jumps and evaluate these ----------------//
+        //------------ detect positive jumps and evaluate these ----------------//
 
         // check if there is a positive jump between the points and enough occlusion
         // by previous points
@@ -205,26 +203,20 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
           float y = cloud_output->points[i - 1].y;
           
           // check if point is not behind the velocity vector 
-          float theta_sens = atan2(cloud_base->points[i].y+this->transform.getOrigin().y(),cloud_base->points[i].x+this->transform_to_base.getOrigin().x());
-          float theta_diff = this->theta_vel-theta_sens;
+          float theta_sens = atan2(cloud_base->points[i].y + this->transform.getOrigin().y(), cloud_base->points[i].x + this->transform_to_base.getOrigin().x());
+          float theta_diff = this->theta_vel - theta_sens;
           // wrap to [-pi,pi]
-          theta_diff = abs(atan2(sin(theta_diff),cos(theta_diff)));
+          theta_diff = abs(atan2(sin(theta_diff), cos(theta_diff)));
 
-          if(theta_diff<1.6)
-          {
-            cc_clouds[j].push_back(pcl::PointXYZ(x, y, 0)); 
+          if(theta_diff < 1.6) {
+            new_cc_cloud.push_back(pcl::PointXYZ(x, y, 0));
           }
-          
         }
 
         //------------ accumulate occlusion ----------------//
 
-        // count points with small distance tolerance (like from a shelve)
-        if (abs(inbetween_dist) < dist_tolerance) // increments occlusion
-                                                      // distance; if distance is
-                                                      // small --> point are
-                                                      // probably from a line
-        {
+        // count points with small distance tolerance (like from a shelf)
+        if (abs(inbetween_dist) < dist_tolerance) { // increments occlusion distance; if distance is small --> point are probably from a line
           occlusion += inbetween_dist;
         } else {
           occlusion = 0;
@@ -233,30 +225,54 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
 
         //------------ detect negative jumps and evaluate these ----------------//
 
-        // check if there is a negativ jump between the points and enough occlusion
+        // check if there is a negative jump between the points and enough occlusion
         // by subsequent points
         if ((dist1 - dist2) > dist_threshold) {
           negativ_jump = 1;
           x_temp = cloud_output->points[i].x;
           y_temp = cloud_output->points[i].y;
         }
-        // if negativ jump appears and the subsequent points have a min occlusion,
+        // if negative jump appears and the subsequent points have a min occlusion,
         // add temp point to critical corners
         if (negativ_jump == 1 && occlusion > min_occlusion) {          
           negativ_jump = 0;
 
           // check if point is not behind the velocity vector 
-          float theta_sens = atan2(cloud_base->points[i].y+this->transform.getOrigin().y(),cloud_base->points[i].x+this->transform_to_base.getOrigin().x());
-          float theta_diff=this->theta_vel-theta_sens;
+          float theta_sens = atan2(cloud_base->points[i].y + this->transform.getOrigin().y(), cloud_base->points[i].x + this->transform_to_base.getOrigin().x());
+          float theta_diff = this->theta_vel - theta_sens;
           // wrap to [-pi,pi]
-          theta_diff = abs(atan2(sin(theta_diff),cos(theta_diff)));
+          theta_diff = abs(atan2(sin(theta_diff), cos(theta_diff)));
 
-          if(theta_diff<1.6)
-          {
-            cc_clouds[j].push_back(pcl::PointXYZ(x_temp, y_temp, 0));
+          if(theta_diff < 1.6) {
+            new_cc_cloud.push_back(pcl::PointXYZ(x_temp, y_temp, 0));
           }
-          
         }
+      }
+
+      // Initialize lifetimes if not already done
+      double finding_tolerance = 0.5;
+      new_cc_lifetimes.clear();
+      new_cc_lifetimes.resize(new_cc_cloud.size() + cc_clouds[j].points.size(), k_death);
+
+      // update cc_clouds and cc_lifetimes
+      int index = 0;
+      for (const auto& point : cc_clouds[j].points) {
+        bool found = false;
+        for (const auto& new_point : new_cc_cloud.points) {
+          if (sqrt(pow(point.x - new_point.x, 2) + pow(point.y - new_point.y, 2)) < finding_tolerance) {
+            found = true;
+            break;
+          }
+        }
+        if (!found && index < cc_lifetimes.size() && cc_lifetimes[index]-1> 0) {
+          new_cc_cloud.push_back(point);
+          new_cc_lifetimes[new_cc_cloud.size()] = cc_lifetimes[index]-1;
+          // printf("find cc with life time : %d\n", new_cc_lifetimes[new_cc_cloud.size()]);
+        } 
+        index ++;
+      }
+      cc_clouds[j] = std::move(new_cc_cloud);  
+      cc_lifetimes = std::move(new_cc_lifetimes);  
 
       clouds_modified[j] = true;
     }
@@ -264,13 +280,12 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
 
   // Count how many scans we have
   int totalClouds = 0;
-  for(int i=0; i<clouds_modified.size(); ++i)
+  for(int i = 0; i < clouds_modified.size(); ++i)
     if(clouds_modified[i])
       ++totalClouds;
 
   // Go ahead only if all subscribed scans have arrived
-  if(totalClouds == clouds_modified.size())
-  {
+  if(totalClouds == clouds_modified.size()) {
     pcl::PointCloud<pcl::PointXYZ> cc_cloud;
   
     // clear the cc obstacle message
@@ -279,10 +294,8 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
     this->critical_corners.header.frame_id = output_frame_;
     this->critical_corners.header.stamp = ros::Time::now();
 
-    for(int i=0; i<clouds_modified.size(); ++i)
-    {
-      for(int n=0; n<cc_clouds[i].points.size();n++)
-      {
+    for(int i = 0; i < clouds_modified.size(); ++i) {
+      for(int n = 0; n < cc_clouds[i].points.size(); n++) {
         cc_cloud.push_back(cc_clouds[i].points[n]);
 
         // write cc from clouds to obstacle message
@@ -299,19 +312,15 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
         this->critical_corners.obstacles.push_back(corner);
       }
 
-      clouds_modified[i] = false;
+      clouds_modified[i] = false; // reset
     }
-
     // visualize critical corners as point cloud (not obstacles)
     sensor_msgs::PointCloud2 cloud_vis;
     pcl::toROSMsg(cc_cloud, cloud_vis);
     cloud_vis.header.frame_id = output_frame_;
     cloud_vis.header.stamp = ros::Time::now();
-    pub_vis.publish(cloud_vis);
-
+    pub_vis.publish(cloud_vis);  
   }
-
-}
 }
 
 /********************************main************************************/

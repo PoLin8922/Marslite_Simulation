@@ -43,7 +43,7 @@ class DataCollector:
         # rospy.Subscriber("/cmd_vel", Twist, self.cmd_vel_callback)
         
         self.start_time = time.time()
-        self.base_name = "navigation_data"
+        self.base_name = "simulation1_data"
 
         self.current_data = {
             "navigability": None,
@@ -66,7 +66,7 @@ class DataCollector:
 
     def get_next_file_name(self):
         i = 1
-        directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files' # docker
+        directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/data' # docker
         while os.path.isfile(os.path.join(directory, f"{self.base_name}_{i}.json")):
             i += 1
         return os.path.join(directory, f"{self.base_name}_{i}.json")

@@ -14,7 +14,7 @@ class DistanceCalculator:
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer)
 
-        self.human_sub = rospy.Subscriber('/tracked_humans', TrackedHumans, self.human_callback)
+        self.human_sub = rospy.Subscriber('/ground_truth_humans', TrackedHumans, self.human_callback)
 
         self.min_distance = float('inf')
         self.current_human_positions = []
@@ -51,7 +51,7 @@ class DistanceCalculator:
                     if distance < self.min_distance:
                         self.min_distance = distance
 
-                # print(f"Current minimum distance to humans: {self.min_distance:.2f} meters")
+                print(f"Current minimum distance to humans: {self.min_distance:.2f} meters")
 
     @staticmethod
     def calculate_distance(p1, p2):
