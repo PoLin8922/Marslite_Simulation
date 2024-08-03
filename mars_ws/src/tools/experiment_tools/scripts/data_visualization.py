@@ -44,8 +44,8 @@ def plot_data(ax, data, key, ylabel, smooth=False, window_size=5):
         plot_data_values = raw_data
 
     ax.plot(time_data[:len(plot_data_values)], plot_data_values, label=f"{'Smoothed ' if smooth else ''}{key}")
-    ax.set_xlabel('Time (s)')
-    ax.set_ylabel(ylabel)
+    ax.set_xlabel('Time (s)', fontsize=12)
+    ax.set_ylabel(ylabel, fontsize=12)
     ax.grid(True)
 
 def main():
@@ -72,7 +72,7 @@ def main():
     plot_data(axs[1, 1], data, "weight_cc", "Weight CC", smooth=True, window_size=smooth_window_size)
     plot_data(axs[2, 1], data, "pspace_cov", "Pspace Overall Variance", smooth=True, window_size=smooth_window_size)
     plot_data(axs[3, 1], data, "pspace_r_ratio", "Pspace Right Ratio", smooth=True, window_size=smooth_window_size)
-    plot_data(axs[4, 1], data, "use_external_prediction", "Use External Prediction")
+    plot_data(axs[4, 1], data, "use_external_prediction", "Long-trem Prediction")
 
     plt.show()
 

@@ -3,13 +3,13 @@
   <!--Obstacles-->
   <!--Pedestrians-->
   <!--Pedestrians number49-->
-  <waypoint id="waypoint49_4" x="25.76" y="-9.27" r="1" />
-  <agent x="17.97" y="-1.0" n="1" dx="0.1" dy="0.1" type="0">
-    <addwaypoint id="waypoint49_4" />
+  <waypoint id="waypoint49_3" x="22.10" y="-13.80" r="1" />
+  <agent x="19.97" y="3.19" n="1" dx="0.27" dy="0.27" type="0">
+    <addwaypoint id="waypoint49_3" />
   </agent>
   <!--Pedestrians number50-->
   <waypoint id="waypoint50_4" x="21.63" y="-12.41" r="1" />
-  <agent x="22.00" y="11.44" n="1" dx="0.1" dy="0.1" type="0">
+  <agent x="22.00" y="11.44" n="1" dx="0.27" dy="0.27" type="0">
     <addwaypoint id="waypoint50_4" />
   </agent>
   <!--Robot-->

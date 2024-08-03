@@ -15,7 +15,7 @@ class NavigationStateMonitor:
         self.zero_velocity_count = 0
         self.low_velocity_count = 0
         self.start_threshold = 5
-        self.end_threshold = 2
+        self.end_threshold = 4
         self.low_velocity_threshold = 30
         self.low_velocity_limit = 0.001
         self.is_navigating = False
