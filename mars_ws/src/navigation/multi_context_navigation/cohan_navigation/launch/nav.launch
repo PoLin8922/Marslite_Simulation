@@ -25,9 +25,9 @@
   </include>
   
   <!-- move_base -->
-  <!-- <include file="$(find cohan_navigation)/launch/move_base_teb.launch"></include> -->
+  <include file="$(find cohan_navigation)/launch/move_base_teb.launch"></include>
   <!-- <include file="$(find cohan_navigation)/launch/move_base_cohan.launch"></include> -->
-  <include file="$(find cohan_navigation)/launch/move_base_muti_context.launch"></include>
+  <!-- <include file="$(find cohan_navigation)/launch/move_base_muti_context.launch"></include> -->
 
   <!-- rviz -->
   <group if="$(arg open_rviz)"> 

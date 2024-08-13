@@ -9,18 +9,26 @@ class NavigationStateMonitor:
         rospy.init_node('navigation_state_monitor')
 
         self.velocity_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
+        self.navigation_done_sub = rospy.Subscriber('/navigation_done', Bool, self.navigation_done_callback)
         self.nav_state_pub = rospy.Publisher('/nav_state', Bool, queue_size=1)
         
         self.non_zero_velocity_count = 0
         self.zero_velocity_count = 0
         self.low_velocity_count = 0
         self.start_threshold = 5
-        self.end_threshold = 4
+        self.end_threshold = 2
         self.low_velocity_threshold = 30
         self.low_velocity_limit = 0.001
         self.is_navigating = False
 
         rospy.loginfo("Navigation State Monitor node started")
+
+    def navigation_done_callback(self, msg):
+        if msg.data:
+            if self.is_navigating:
+                self.is_navigating = False
+                rospy.loginfo("Navigation ended due to /navigation_done signal.")
+                self.publish_nav_state()
     
     def cmd_vel_callback(self, msg):
         linear_velocity = msg.linear

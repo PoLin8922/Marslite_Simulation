@@ -87,11 +87,10 @@ bool Simulator::initializeSimulation() {
       "pause_simulation", &Simulator::onPauseSimulation, this);
   srv_unpause_simulation_ = nh_.advertiseService(
       "unpause_simulation", &Simulator::onUnpauseSimulation, this);
-  srv_gym_reset_ = nh_.advertiseService(
-      "gym_reset", &Simulator::GymResetCb, this);
 
   // setup TF listener and other pointers
-  transform_listener_.reset(new tf::TransformListener());
+  // changed by xzt:
+  //transform_listener_.reset(new tf::TransformListener());
   robot_ = nullptr;
 
   // load additional parameters
@@ -154,6 +153,16 @@ void Simulator::runSimulation() {
 
     if (!paused_) {
       updateRobotPositionFromTF();
+      // renew the robot position in the scene: added by xzt
+      for (Agent* agent : SCENE.getAgents()) {
+          if (agent->getType() == Ped::Tagent::ROBOT) 
+          {
+            robot_->setType(Ped::Tagent::ROBOT);
+            SCENE.agents[agent->getId()] = robot_;
+            break;
+          }
+       }  
+
       SCENE.moveAllAgents();
 
       publishAgents();
@@ -194,76 +203,13 @@ void Simulator::reconfigureCB(pedsim_simulator::PedsimSimulatorConfig& config,
 
 bool Simulator::onPauseSimulation(std_srvs::Empty::Request& request,
                                   std_srvs::Empty::Response& response) {
-  ROS_INFO("Pause simulation!");
   paused_ = true;
   return true;
 }
 
 bool Simulator::onUnpauseSimulation(std_srvs::Empty::Request& request,
                                     std_srvs::Empty::Response& response) {
-  ROS_INFO("Unpause imulation!");
   paused_ = false;
-  return true;
-}
-
-bool Simulator::GymResetCb(pedsim_srvs::GymReset::Request& request,
-                           pedsim_srvs::GymReset::Response& response) {
-  // Collect all agents into a list except the robot agent.
-  QList<Agent*> scene_agents;
-  for(auto const & tmp_agent_ptr : SCENE.getAgents())
-    if (tmp_agent_ptr->getType() != Ped::Tagent::ROBOT)
-      scene_agents.push_back(tmp_agent_ptr);
-
-  // Check if the number of current agents and request agents is matched.
-  if(request.agents_list.size() != scene_agents.size()){
-    ROS_ERROR("The number of current agents and request agents is not matched");
-    response.success = false;
-    return false;
-  }
-
-  SCENE.removeAllWaypoint();
-  uint8_t idx_req_agent = 0;
-  for(auto const & req_agent : request.agents_list){
-    // SOP
-    // 1. Let agent arrive waypoint --> 2. Remove all waypoints -->
-    // 3. Add new waypoint          --> 4. Update agent state --> Done
-    Ped::Twaypoint* cur_wp_ptr1 = scene_agents[idx_req_agent]->getCurrentWaypoint();
-    scene_agents[idx_req_agent]->setPosition(cur_wp_ptr1->getx(), cur_wp_ptr1->gety());
-    scene_agents[idx_req_agent]->removeAllWaypoint();
-
-    uint8_t idx_wp = 0;
-    for(auto const & wp : req_agent.waypoints_list){
-      // Weird thing 2: I cannot create "Waypoint" directly. Just create "AreaWaypoint"
-      //                then convert to "Waypoint" pointer.
-      Ped::Tvector wp_xy(wp.x, wp.y);
-      QString wp_name = QString::fromStdString("gym_wp_" +
-                                               std::to_string(idx_req_agent) +
-                                               "_" +
-                                               std::to_string(idx_wp));
-      AreaWaypoint* area_wp = new AreaWaypoint(wp_name, wp.x, wp.y, 0.5);
-      Waypoint* wp_ptr = dynamic_cast<Waypoint*>(area_wp);
-      SCENE.addWaypoint(wp_ptr);
-      scene_agents[idx_req_agent]->addWaypoint(wp_ptr);
-      scene_agents[idx_req_agent]->updateState();
-      idx_wp++;
-    }
-    scene_agents[idx_req_agent]->setPosition(req_agent.init_pose2d.x,
-                                            req_agent.init_pose2d.y);
-    // Set agent direction toward the goal
-    scene_agents[idx_req_agent]->setvx(std::cos(req_agent.init_pose2d.theta) * 0.1);
-    scene_agents[idx_req_agent]->setvy(std::sin(req_agent.init_pose2d.theta) * 0.1);
-    idx_req_agent++;
-  }
-
-  // Pause simulation
-  publishAgents();
-  publishGroups();
-  publishRobotPosition();
-  publishObstacles();
-  publishWaypoints();
-  paused_ = true;
-  
-  response.success = true;
   return true;
 }
 
@@ -291,6 +237,32 @@ void Simulator::updateRobotPositionFromTF() {
     robot_->setTeleop(true);
     robot_->setVmax(2 * CONFIG.max_robot_speed);
 
+    // get the real robot position from the gazebo world: added by xzt
+    ros::ServiceClient client = nh_.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
+    gazebo_msgs::GetModelState getmodelstate;
+    getmodelstate.request.model_name = "mars_lite";
+    getmodelstate.request.relative_entity_name = "world"; 
+    client.call(getmodelstate);
+
+    last_robot_orientation_ = getmodelstate.response.pose.orientation;
+
+    const double x = getmodelstate.response.pose.position.x;
+    const double y = getmodelstate.response.pose.position.y;
+    double vx = getmodelstate.response.twist.linear.x;
+    double vy = getmodelstate.response.twist.linear.y;
+
+    if (!std::isfinite(vx)) vx = 0;
+    if (!std::isfinite(vy)) vy = 0;
+
+    robot_->setX(x+0.0);
+    robot_->setY(y+0.0);
+    robot_->setvx(vx);
+    robot_->setvy(vy);
+
+    // Print robot state information
+  
+  
+    /*
     // Get robot position via TF
     tf::StampedTransform tfTransform;
     try {
@@ -326,6 +298,7 @@ void Simulator::updateRobotPositionFromTF() {
     ROS_DEBUG_STREAM("Robot speed: " << std::hypot(vx, vy) << " dt: " << dt);
 
     last_robot_pose_ = tfTransform;
+    */
   }
 }
 
@@ -338,13 +311,17 @@ void Simulator::publishRobotPosition() {
 
   robot_location.pose.pose.position.x = robot_->getx();
   robot_location.pose.pose.position.y = robot_->gety();
-  if (std::hypot(robot_->getvx(), robot_->getvy()) < 0.05) {
+  // changed by xzt:
+  /*
+  if (hypot(robot_->getvx(), robot_->getvy()) < 0.05) {
     robot_location.pose.pose.orientation = last_robot_orientation_;
   } else {
     robot_location.pose.pose.orientation =
         poseFrom2DVelocity(robot_->getvx(), robot_->getvy());
     last_robot_orientation_ = robot_location.pose.pose.orientation;
   }
+  */
+  robot_location.pose.pose.orientation = last_robot_orientation_;
 
   robot_location.twist.twist.linear.x = robot_->getvx();
   robot_location.twist.twist.linear.y = robot_->getvy();
@@ -384,8 +361,6 @@ void Simulator::publishAgents() {
     state.twist.linear.y = a->getvy();
     state.twist.linear.z = a->getvz();
 
-
-	
     AgentStateMachine::AgentState sc = a->getStateMachine()->getCurrentState();
     state.social_state = agentStateToActivity(sc);
     if (a->getType() == Ped::Tagent::ELDER) {

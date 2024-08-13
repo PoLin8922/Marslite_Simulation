@@ -28,64 +28,155 @@
   <obstacle x1="-0.7239209" y1="-11.33228" x2="-0.7239209" y2="-11.33228" />
   <obstacle x1="-0.6743631" y1="-11.28272" x2="-0.6743631" y2="-11.28272" />
   <obstacle x1="-0.6000263" y1="-11.25794" x2="-0.6000263" y2="-11.25794" />
+  <obstacle x1="6.83463" y1="-18.0342" x2="15.98463" y2="-18.3842" />
+  <obstacle x1="1.03463" y1="-22.9342" x2="23.33463" y2="-23.23421" />
+  <obstacle x1="-20.93065" y1="-22.70041" x2="1.719348" y2="-23.15041" />
+  <obstacle x1="-18.28065" y1="-18.50041" x2="-8.380652" y2="-18.45041" />
+  <obstacle x1="-8.627696" y1="-16.85041" x2="6.922306" y2="-16.85041" />
+  <obstacle x1="-8.834849" y1="-18.25699" x2="7.11515" y2="-17.307" />
+  <obstacle x1="8.815151" y1="-18.207" x2="4.915151" y2="-17.35699" />
   <!--Pedestrians-->
-  <!--Pedestrians number21-->
-  <waypoint id="waypoint21_0" x="3.63" y="-6.24" r="1" />
-  <waypoint id="waypoint21_1" x="5.48" y="-7.24" r="1" />
-  <waypoint id="waypoint21_2" x="5.48" y="-14.84" r="1" />
-  <waypoint id="waypoint21_3" x="-6.22" y="-14.49" r="1" />
-  <waypoint id="waypoint21_4" x="-7.02" y="-6.14" r="1" />
-  <agent x="-6.77" y="-6.39" n="2" dx="0.4" dy="0.4" type="0">
-    <addwaypoint id="waypoint21_0" />
-    <addwaypoint id="waypoint21_1" />
-    <addwaypoint id="waypoint21_2" />
-    <addwaypoint id="waypoint21_3" />
-    <addwaypoint id="waypoint21_4" />
+  <!--Pedestrians number214-->
+  <waypoint id="waypoint214_0" x="3.63" y="-6.24" r="1" />
+  <waypoint id="waypoint214_1" x="5.48" y="-7.24" r="1" />
+  <waypoint id="waypoint214_2" x="5.48" y="-14.84" r="1" />
+  <waypoint id="waypoint214_3" x="-6.22" y="-14.49" r="1" />
+  <waypoint id="waypoint214_4" x="-7.02" y="-6.14" r="1" />
+  <agent x="-6.77" y="-6.39" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint214_0" />
+    <addwaypoint id="waypoint214_1" />
+    <addwaypoint id="waypoint214_2" />
+    <addwaypoint id="waypoint214_3" />
+    <addwaypoint id="waypoint214_4" />
   </agent>
-  <!--Pedestrians number22-->
-  <waypoint id="waypoint22_0" x="-5.78" y="-14.61" r="1" />
-  <waypoint id="waypoint22_1" x="-7.13" y="-5.96" r="1" />
-  <waypoint id="waypoint22_2" x="3.72" y="-6.36" r="1" />
-  <waypoint id="waypoint22_3" x="5.32" y="-7.06" r="1" />
-  <waypoint id="waypoint22_4" x="5.77" y="-14.81" r="1" />
-  <agent x="5.57" y="-14.91" n="2" dx="0.4" dy="0.4" type="0">
-    <addwaypoint id="waypoint22_0" />
-    <addwaypoint id="waypoint22_1" />
-    <addwaypoint id="waypoint22_2" />
-    <addwaypoint id="waypoint22_3" />
-    <addwaypoint id="waypoint22_4" />
+  <!--Pedestrians number215-->
+  <waypoint id="waypoint215_0" x="-5.78" y="-14.61" r="1" />
+  <waypoint id="waypoint215_1" x="-7.13" y="-5.96" r="1" />
+  <waypoint id="waypoint215_2" x="3.72" y="-6.36" r="1" />
+  <waypoint id="waypoint215_3" x="5.32" y="-7.06" r="1" />
+  <waypoint id="waypoint215_4" x="5.77" y="-14.81" r="1" />
+  <agent x="5.57" y="-14.91" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint215_0" />
+    <addwaypoint id="waypoint215_1" />
+    <addwaypoint id="waypoint215_2" />
+    <addwaypoint id="waypoint215_3" />
+    <addwaypoint id="waypoint215_4" />
   </agent>
-  <!--Pedestrians number23-->
-  <waypoint id="waypoint23_0" x="-4.61" y="-9.54" r="1" />
-  <waypoint id="waypoint23_1" x="-4.57" y="-11.18" r="1" />
-  <waypoint id="waypoint23_2" x="-2.52" y="-11.49" r="1" />
-  <waypoint id="waypoint23_3" x="-2.39" y="-13.45" r="1" />
-  <waypoint id="waypoint23_4" x="2.59" y="-13.94" r="1" />
-  <waypoint id="waypoint23_5" x="2.33" y="-11.14" r="1" />
-  <waypoint id="waypoint23_6" x="3.71" y="-10.83" r="1" />
-  <waypoint id="waypoint23_7" x="3.80" y="-9.58" r="1" />
-  <agent x="3.71" y="-9.49" n="2" dx="0.4" dy="0.4" type="0">
-    <addwaypoint id="waypoint23_0" />
-    <addwaypoint id="waypoint23_1" />
-    <addwaypoint id="waypoint23_2" />
-    <addwaypoint id="waypoint23_3" />
-    <addwaypoint id="waypoint23_4" />
-    <addwaypoint id="waypoint23_5" />
-    <addwaypoint id="waypoint23_6" />
-    <addwaypoint id="waypoint23_7" />
+  <!--Pedestrians number216-->
+  <waypoint id="waypoint216_0" x="-4.61" y="-9.54" r="1" />
+  <waypoint id="waypoint216_1" x="-4.57" y="-11.18" r="1" />
+  <waypoint id="waypoint216_2" x="-0.17" y="-12.41" r="1" />
+  <waypoint id="waypoint216_3" x="3.65" y="-10.70" r="1" />
+  <waypoint id="waypoint216_4" x="3.84" y="-9.46" r="1" />
+  <agent x="3.71" y="-9.49" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint216_0" />
+    <addwaypoint id="waypoint216_1" />
+    <addwaypoint id="waypoint216_2" />
+    <addwaypoint id="waypoint216_3" />
+    <addwaypoint id="waypoint216_4" />
   </agent>
-  <!--Pedestrians number24-->
-  <waypoint id="waypoint24_0" x="-6.88" y="-6.29" r="1" />
-  <waypoint id="waypoint24_1" x="3.72" y="-6.29" r="1" />
-  <waypoint id="waypoint24_2" x="5.52" y="-6.94" r="1" />
-  <waypoint id="waypoint24_3" x="5.67" y="-14.59" r="1" />
-  <waypoint id="waypoint24_4" x="-6.03" y="-14.59" r="1" />
-  <agent x="-6.23" y="-14.19" n="2" dx="0.4" dy="0.4" type="0">
-    <addwaypoint id="waypoint24_0" />
-    <addwaypoint id="waypoint24_1" />
-    <addwaypoint id="waypoint24_2" />
-    <addwaypoint id="waypoint24_3" />
-    <addwaypoint id="waypoint24_4" />
+  <!--Pedestrians number217-->
+  <waypoint id="waypoint217_0" x="-6.88" y="-6.29" r="1" />
+  <waypoint id="waypoint217_1" x="3.72" y="-6.29" r="1" />
+  <waypoint id="waypoint217_2" x="5.52" y="-6.94" r="1" />
+  <waypoint id="waypoint217_3" x="5.67" y="-14.59" r="1" />
+  <waypoint id="waypoint217_4" x="-6.03" y="-14.59" r="1" />
+  <agent x="-6.23" y="-14.19" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint217_0" />
+    <addwaypoint id="waypoint217_1" />
+    <addwaypoint id="waypoint217_2" />
+    <addwaypoint id="waypoint217_3" />
+    <addwaypoint id="waypoint217_4" />
+  </agent>
+  <!--Pedestrians number218-->
+  <waypoint id="waypoint218_0" x="19.78" y="-18.90" r="1" />
+  <waypoint id="waypoint218_1" x="0.95" y="-18.66" r="1" />
+  <waypoint id="waypoint218_2" x="-18.14" y="-19.51" r="1" />
+  <waypoint id="waypoint218_3" x="-17.73" y="-22.05" r="1" />
+  <waypoint id="waypoint218_4" x="3.03" y="-21.85" r="1" />
+  <waypoint id="waypoint218_5" x="19.63" y="-22.03" r="1" />
+  <agent x="20.10" y="-22.35" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint218_0" />
+    <addwaypoint id="waypoint218_1" />
+    <addwaypoint id="waypoint218_2" />
+    <addwaypoint id="waypoint218_3" />
+    <addwaypoint id="waypoint218_4" />
+    <addwaypoint id="waypoint218_5" />
+  </agent>
+  <!--Pedestrians number219-->
+  <waypoint id="waypoint219_0" x="-16.87" y="-21.97" r="1" />
+  <waypoint id="waypoint219_1" x="3.51" y="-22.13" r="1" />
+  <waypoint id="waypoint219_2" x="19.93" y="-22.25" r="1" />
+  <waypoint id="waypoint219_3" x="19.38" y="-19.15" r="1" />
+  <waypoint id="waypoint219_4" x="4.08" y="-18.95" r="1" />
+  <waypoint id="waypoint219_5" x="-17.43" y="-19.85" r="1" />
+  <agent x="-17.60" y="-19.80" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint219_0" />
+    <addwaypoint id="waypoint219_1" />
+    <addwaypoint id="waypoint219_2" />
+    <addwaypoint id="waypoint219_3" />
+    <addwaypoint id="waypoint219_4" />
+    <addwaypoint id="waypoint219_5" />
+  </agent>
+  <!--Pedestrians number220-->
+  <waypoint id="waypoint220_0" x="3.60" y="-22.15" r="1" />
+  <waypoint id="waypoint220_1" x="20.03" y="-22.30" r="1" />
+  <waypoint id="waypoint220_2" x="19.58" y="-19.05" r="1" />
+  <waypoint id="waypoint220_3" x="3.75" y="-19.10" r="1" />
+  <waypoint id="waypoint220_4" x="-17.32" y="-19.77" r="1" />
+  <waypoint id="waypoint220_5" x="-17.02" y="-21.72" r="1" />
+  <agent x="-17.20" y="-21.75" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint220_0" />
+    <addwaypoint id="waypoint220_1" />
+    <addwaypoint id="waypoint220_2" />
+    <addwaypoint id="waypoint220_3" />
+    <addwaypoint id="waypoint220_4" />
+    <addwaypoint id="waypoint220_5" />
+  </agent>
+  <!--Pedestrians number221-->
+  <waypoint id="waypoint221_0" x="-17.92" y="-19.95" r="1" />
+  <waypoint id="waypoint221_1" x="-17.12" y="-22.10" r="1" />
+  <waypoint id="waypoint221_2" x="3.09" y="-22.20" r="1" />
+  <waypoint id="waypoint221_3" x="20.13" y="-22.46" r="1" />
+  <waypoint id="waypoint221_4" x="19.88" y="-19.31" r="1" />
+  <waypoint id="waypoint221_5" x="3.71" y="-19.47" r="1" />
+  <agent x="3.71" y="-19.44" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint221_0" />
+    <addwaypoint id="waypoint221_1" />
+    <addwaypoint id="waypoint221_2" />
+    <addwaypoint id="waypoint221_3" />
+    <addwaypoint id="waypoint221_4" />
+    <addwaypoint id="waypoint221_5" />
+  </agent>
+  <!--Pedestrians number222-->
+  <waypoint id="waypoint222_0" x="-17.40" y="-19.65" r="1" />
+  <waypoint id="waypoint222_1" x="-16.70" y="-21.65" r="1" />
+  <waypoint id="waypoint222_2" x="3.51" y="-22.30" r="1" />
+  <waypoint id="waypoint222_3" x="20.50" y="-22.46" r="1" />
+  <waypoint id="waypoint222_4" x="20.40" y="-19.26" r="1" />
+  <waypoint id="waypoint222_5" x="-4.85" y="-19.71" r="1" />
+  <agent x="-5.04" y="-19.65" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint222_0" />
+    <addwaypoint id="waypoint222_1" />
+    <addwaypoint id="waypoint222_2" />
+    <addwaypoint id="waypoint222_3" />
+    <addwaypoint id="waypoint222_4" />
+    <addwaypoint id="waypoint222_5" />
+  </agent>
+  <!--Pedestrians number223-->
+  <waypoint id="waypoint223_0" x="19.55" y="-22.27" r="1" />
+  <waypoint id="waypoint223_1" x="20.90" y="-19.47" r="1" />
+  <waypoint id="waypoint223_2" x="3.90" y="-19.67" r="1" />
+  <waypoint id="waypoint223_3" x="-16.48" y="-20.22" r="1" />
+  <waypoint id="waypoint223_4" x="-16.48" y="-21.62" r="1" />
+  <waypoint id="waypoint223_5" x="11.12" y="-21.65" r="1" />
+  <agent x="11.30" y="-22.17" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint223_0" />
+    <addwaypoint id="waypoint223_1" />
+    <addwaypoint id="waypoint223_2" />
+    <addwaypoint id="waypoint223_3" />
+    <addwaypoint id="waypoint223_4" />
+    <addwaypoint id="waypoint223_5" />
   </agent>
   <!--Robot-->
   <agent x="0.00" y="-4.00" r="0.000000" n="1" dx="0" dy="0" type="2" />

@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+  <!--Obstacles-->
+  <obstacle x1="-5.404985" y1="-7.277721" x2="-5.404985" y2="-7.277721" />
+  <obstacle x1="-1.954985" y1="-7.527721" x2="-1.954985" y2="-7.527721" />
+  <obstacle x1="-5.304985" y1="-7.377721" x2="-1.954985" y2="-7.377721" />
+  <obstacle x1="0.5450153" y1="-7.327721" x2="4.145015" y2="-7.377721" />
+  <obstacle x1="-5.404985" y1="-8.227721" x2="-1.954985" y2="-8.177721" />
+  <obstacle x1="0.5450153" y1="-8.27772" x2="4.345016" y2="-8.27772" />
+  <obstacle x1="-5.304985" y1="-7.377721" x2="-5.304985" y2="-8.327721" />
+  <obstacle x1="-1.904985" y1="-7.377721" x2="-1.854985" y2="-7.977722" />
+  <obstacle x1="0.5950153" y1="-7.327721" x2="0.5950153" y2="-8.127721" />
+  <obstacle x1="4.045015" y1="-7.277721" x2="4.045015" y2="-8.077721" />
+  <obstacle x1="-4.154985" y1="-5.027721" x2="-2.504985" y2="-5.077721" />
+  <obstacle x1="1.345015" y1="-4.777721" x2="3.095015" y2="-4.927721" />
+  <obstacle x1="3.328061" y1="-11.81546" x2="3.328061" y2="-12.53016" />
+  <obstacle x1="0.8695225" y1="-12.30146" x2="0.8695225" y2="-12.30146" />
+  <obstacle x1="0.7837595" y1="-12.50157" x2="0.7837595" y2="-12.50157" />
+  <obstacle x1="0.7837595" y1="-12.47298" x2="0.7837595" y2="-12.47298" />
+  <obstacle x1="-0.02055574" y1="-16.30777" x2="-0.02055574" y2="-16.65976" />
+  <obstacle x1="1.246596" y1="-16.41337" x2="1.281795" y2="-16.65976" />
+  <obstacle x1="6.478672" y1="-7.767106" x2="6.439994" y2="-16.0054" />
+  <obstacle x1="-8.368047" y1="-6.172643" x2="-8.290692" y2="-15.22316" />
+  <obstacle x1="-8.112944" y1="-15.75791" x2="-2.706516" y2="-15.79571" />
+  <obstacle x1="2.132804" y1="-15.87133" x2="4.854921" y2="-15.83352" />
+  <obstacle x1="-4.890746" y1="-11.88352" x2="-4.940303" y2="-12.77556" />
+  <obstacle x1="-4.118633" y1="-11.87742" x2="-4.118633" y2="-12.81901" />
+  <obstacle x1="-0.7239209" y1="-11.33228" x2="-0.7239209" y2="-11.33228" />
+  <obstacle x1="-0.6743631" y1="-11.28272" x2="-0.6743631" y2="-11.28272" />
+  <obstacle x1="-0.6000263" y1="-11.25794" x2="-0.6000263" y2="-11.25794" />
+  <obstacle x1="6.83463" y1="-18.0342" x2="15.98463" y2="-18.3842" />
+  <obstacle x1="1.03463" y1="-22.9342" x2="23.33463" y2="-23.23421" />
+  <obstacle x1="-20.93065" y1="-22.70041" x2="1.719348" y2="-23.15041" />
+  <obstacle x1="-18.28065" y1="-18.50041" x2="-8.380652" y2="-18.45041" />
+  <obstacle x1="-8.627696" y1="-16.85041" x2="6.922306" y2="-16.85041" />
+  <obstacle x1="-9.550033" y1="-19.03576" x2="7.349968" y2="-18.88576" />
+  <obstacle x1="4.849968" y1="-24.18575" x2="4.849968" y2="-24.18575" />
+  <obstacle x1="5.749969" y1="-24.18575" x2="5.749969" y2="-24.18575" />
+  <obstacle x1="5.599968" y1="-23.83575" x2="5.599968" y2="-23.83575" />
+  <obstacle x1="5.599968" y1="-24.03576" x2="5.599968" y2="-24.03576" />
+  <obstacle x1="7.267446" y1="-18.78576" x2="15.06745" y2="-18.58575" />
+  <obstacle x1="-9.191972" y1="-18.85298" x2="-19.14197" y2="-18.70298" />
+  <obstacle x1="-4.916415" y1="-11.89365" x2="-4.087372" y2="-11.86506" />
+  <obstacle x1="-4.859239" y1="-12.77987" x2="-4.11596" y2="-12.75128" />
+  <obstacle x1="3.316832" y1="-11.83647" x2="4.088699" y2="-11.86506" />
+  <obstacle x1="3.288244" y1="-12.66552" x2="4.203049" y2="-12.75128" />
+  <obstacle x1="4.145874" y1="-11.83647" x2="4.174461" y2="-12.60834" />
+  <obstacle x1="16.12708" y1="-9.80588" x2="16.09716" y2="-18.39259" />
+  <obstacle x1="-8.466316" y1="-16.73462" x2="-8.334813" y2="-18.50991" />
+  <obstacle x1="6.207609" y1="-16.93964" x2="6.930876" y2="-18.12317" />
+  <obstacle x1="-18.38603" y1="-10.20629" x2="-18.33603" y2="-18.85629" />
+  <obstacle x1="-23.03603" y1="-11.00629" x2="-22.88603" y2="-23.15629" />
+  <obstacle x1="-22.93603" y1="-22.70629" x2="-14.98603" y2="-22.80629" />
+  <!--Pedestrians-->
+  <!--Pedestrians number54-->
+  <waypoint id="waypoint54_0" x="3.63" y="-6.24" r="1" />
+  <waypoint id="waypoint54_1" x="5.48" y="-7.24" r="1" />
+  <waypoint id="waypoint54_2" x="5.48" y="-14.84" r="1" />
+  <waypoint id="waypoint54_3" x="-6.22" y="-14.49" r="1" />
+  <waypoint id="waypoint54_4" x="-7.02" y="-6.14" r="1" />
+  <agent x="-6.77" y="-6.39" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint54_0" />
+    <addwaypoint id="waypoint54_1" />
+    <addwaypoint id="waypoint54_2" />
+    <addwaypoint id="waypoint54_3" />
+    <addwaypoint id="waypoint54_4" />
+  </agent>
+  <!--Pedestrians number55-->
+  <waypoint id="waypoint55_0" x="-5.78" y="-14.61" r="1" />
+  <waypoint id="waypoint55_1" x="-7.13" y="-5.96" r="1" />
+  <waypoint id="waypoint55_2" x="3.72" y="-6.36" r="1" />
+  <waypoint id="waypoint55_3" x="5.32" y="-7.06" r="1" />
+  <waypoint id="waypoint55_4" x="5.77" y="-14.81" r="1" />
+  <agent x="5.57" y="-14.91" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint55_0" />
+    <addwaypoint id="waypoint55_1" />
+    <addwaypoint id="waypoint55_2" />
+    <addwaypoint id="waypoint55_3" />
+    <addwaypoint id="waypoint55_4" />
+  </agent>
+  <!--Pedestrians number68-->
+  <waypoint id="waypoint68_0" x="-4.78" y="-9.56" r="1" />
+  <waypoint id="waypoint68_1" x="-5.18" y="-11.06" r="1" />
+  <waypoint id="waypoint68_2" x="-2.73" y="-11.66" r="1" />
+  <waypoint id="waypoint68_3" x="-3.18" y="-14.31" r="1" />
+  <waypoint id="waypoint68_4" x="2.77" y="-14.41" r="1" />
+  <waypoint id="waypoint68_5" x="2.77" y="-11.51" r="1" />
+  <waypoint id="waypoint68_6" x="3.72" y="-9.71" r="1" />
+  <agent x="3.62" y="-9.81" n="3" dx="0.68" dy="0.68" type="0">
+    <addwaypoint id="waypoint68_0" />
+    <addwaypoint id="waypoint68_1" />
+    <addwaypoint id="waypoint68_2" />
+    <addwaypoint id="waypoint68_3" />
+    <addwaypoint id="waypoint68_4" />
+    <addwaypoint id="waypoint68_5" />
+    <addwaypoint id="waypoint68_6" />
+  </agent>
+  <!--Pedestrians number57-->
+  <waypoint id="waypoint57_0" x="-6.88" y="-6.29" r="1" />
+  <waypoint id="waypoint57_1" x="3.72" y="-6.29" r="1" />
+  <waypoint id="waypoint57_2" x="5.52" y="-6.94" r="1" />
+  <waypoint id="waypoint57_3" x="5.67" y="-14.59" r="1" />
+  <waypoint id="waypoint57_4" x="-6.03" y="-14.59" r="1" />
+  <agent x="-6.23" y="-14.19" n="3" dx="0.68" dy="0.68" type="0">
+    <addwaypoint id="waypoint57_0" />
+    <addwaypoint id="waypoint57_1" />
+    <addwaypoint id="waypoint57_2" />
+    <addwaypoint id="waypoint57_3" />
+    <addwaypoint id="waypoint57_4" />
+  </agent>
+  <!--Pedestrians number58-->
+  <waypoint id="waypoint58_0" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint58_1" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint58_2" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint58_3" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint58_4" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint58_5" x="19.98" y="-22.33" r="1" />
+  <agent x="20.10" y="-22.35" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint58_0" />
+    <addwaypoint id="waypoint58_1" />
+    <addwaypoint id="waypoint58_2" />
+    <addwaypoint id="waypoint58_3" />
+    <addwaypoint id="waypoint58_4" />
+    <addwaypoint id="waypoint58_5" />
+  </agent>
+  <!--Pedestrians number59-->
+  <waypoint id="waypoint59_0" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint59_1" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint59_2" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint59_3" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint59_4" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint59_5" x="-1.15" y="-20.05" r="1" />
+  <agent x="-11.60" y="-19.95" n="3" dx="0.68" dy="0.68" type="0">
+    <addwaypoint id="waypoint59_0" />
+    <addwaypoint id="waypoint59_1" />
+    <addwaypoint id="waypoint59_2" />
+    <addwaypoint id="waypoint59_3" />
+    <addwaypoint id="waypoint59_4" />
+    <addwaypoint id="waypoint59_5" />
+  </agent>
+  <!--Pedestrians number60-->
+  <waypoint id="waypoint60_0" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint60_1" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint60_2" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint60_3" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint60_4" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint60_5" x="-20.51" y="-19.88" r="1" />
+  <agent x="-20.37" y="-19.89" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint60_0" />
+    <addwaypoint id="waypoint60_1" />
+    <addwaypoint id="waypoint60_2" />
+    <addwaypoint id="waypoint60_3" />
+    <addwaypoint id="waypoint60_4" />
+    <addwaypoint id="waypoint60_5" />
+  </agent>
+  <!--Pedestrians number61-->
+  <waypoint id="waypoint61_0" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint61_1" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint61_2" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint61_3" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint61_4" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint61_5" x="-20.31" y="-22.48" r="1" />
+  <agent x="-20.37" y="-21.79" n="3" dx="0.68" dy="0.68" type="0">
+    <addwaypoint id="waypoint61_0" />
+    <addwaypoint id="waypoint61_1" />
+    <addwaypoint id="waypoint61_2" />
+    <addwaypoint id="waypoint61_3" />
+    <addwaypoint id="waypoint61_4" />
+    <addwaypoint id="waypoint61_5" />
+  </agent>
+  <!--Pedestrians number62-->
+  <waypoint id="waypoint62_0" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint62_1" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint62_2" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint62_3" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint62_4" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint62_5" x="-20.31" y="-22.48" r="1" />
+  <agent x="-10.82" y="-21.89" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint62_0" />
+    <addwaypoint id="waypoint62_1" />
+    <addwaypoint id="waypoint62_2" />
+    <addwaypoint id="waypoint62_3" />
+    <addwaypoint id="waypoint62_4" />
+    <addwaypoint id="waypoint62_5" />
+  </agent>
+  <!--Pedestrians number63-->
+  <waypoint id="waypoint63_0" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint63_1" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint63_2" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint63_3" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint63_4" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint63_5" x="-1.10" y="-21.98" r="1" />
+  <agent x="-1.22" y="-21.74" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint63_0" />
+    <addwaypoint id="waypoint63_1" />
+    <addwaypoint id="waypoint63_2" />
+    <addwaypoint id="waypoint63_3" />
+    <addwaypoint id="waypoint63_4" />
+    <addwaypoint id="waypoint63_5" />
+  </agent>
+  <!--Pedestrians number64-->
+  <waypoint id="waypoint64_0" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint64_1" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint64_2" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint64_3" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint64_4" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint64_5" x="-1.10" y="-21.98" r="1" />
+  <agent x="8.78" y="-22.09" n="3" dx="0.68" dy="0.68" type="0">
+    <addwaypoint id="waypoint64_0" />
+    <addwaypoint id="waypoint64_1" />
+    <addwaypoint id="waypoint64_2" />
+    <addwaypoint id="waypoint64_3" />
+    <addwaypoint id="waypoint64_4" />
+    <addwaypoint id="waypoint64_5" />
+  </agent>
+  <!--Pedestrians number65-->
+  <waypoint id="waypoint65_0" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint65_1" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint65_2" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint65_3" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint65_4" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint65_5" x="19.95" y="-19.15" r="1" />
+  <agent x="19.68" y="-19.09" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint65_0" />
+    <addwaypoint id="waypoint65_1" />
+    <addwaypoint id="waypoint65_2" />
+    <addwaypoint id="waypoint65_3" />
+    <addwaypoint id="waypoint65_4" />
+    <addwaypoint id="waypoint65_5" />
+  </agent>
+  <!--Pedestrians number66-->
+  <waypoint id="waypoint66_0" x="-1.15" y="-20.05" r="1" />
+  <waypoint id="waypoint66_1" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint66_2" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint66_3" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint66_4" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint66_5" x="19.95" y="-19.15" r="1" />
+  <agent x="8.73" y="-19.64" n="2" dx="0.49" dy="0.49" type="0">
+    <addwaypoint id="waypoint66_0" />
+    <addwaypoint id="waypoint66_1" />
+    <addwaypoint id="waypoint66_2" />
+    <addwaypoint id="waypoint66_3" />
+    <addwaypoint id="waypoint66_4" />
+    <addwaypoint id="waypoint66_5" />
+  </agent>
+  <!--Pedestrians number67-->
+  <waypoint id="waypoint67_0" x="-20.51" y="-19.88" r="1" />
+  <waypoint id="waypoint67_1" x="-20.31" y="-22.48" r="1" />
+  <waypoint id="waypoint67_2" x="-1.10" y="-21.98" r="1" />
+  <waypoint id="waypoint67_3" x="19.98" y="-22.33" r="1" />
+  <waypoint id="waypoint67_4" x="19.95" y="-19.15" r="1" />
+  <waypoint id="waypoint67_5" x="-1.15" y="-20.05" r="1" />
+  <agent x="-1.02" y="-19.89" n="3" dx="0.68" dy="0.68" type="0">
+    <addwaypoint id="waypoint67_0" />
+    <addwaypoint id="waypoint67_1" />
+    <addwaypoint id="waypoint67_2" />
+    <addwaypoint id="waypoint67_3" />
+    <addwaypoint id="waypoint67_4" />
+    <addwaypoint id="waypoint67_5" />
+  </agent>
+  <!--Robot-->
+  <agent x="0.00" y="-4.00" r="0.000000" n="1" dx="0" dy="0" type="2" />
+</scenario>

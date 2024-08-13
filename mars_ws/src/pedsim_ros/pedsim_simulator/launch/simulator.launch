@@ -1,5 +1,5 @@
 <launch>
-  <arg name="kbd_teleop" default="false"/>
+  <arg name="kbd_teleop" default="true"/>
   <arg name="rqt_teleop" default="false"/>
   <arg name="scene_file" default="$(find pedsim_simulator)scenarios/social_contexts.xml"/>
   <arg name="default_queue_size" default="10"/>

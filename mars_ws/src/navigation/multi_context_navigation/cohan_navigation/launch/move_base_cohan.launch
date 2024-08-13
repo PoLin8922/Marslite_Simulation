@@ -8,20 +8,20 @@
   <!-- <node name="humans" pkg="stage_ros" type="humans_bridge.py" args="$(arg num_humans)" output="screen"/> -->
 
   <!-- human pose prediction, for the local-planning -->
-  <node pkg="human_path_prediction" type="human_path_prediction" name="human_path_predict" output="screen" >
+  <!-- <node pkg="human_path_prediction" type="human_path_prediction" name="human_path_predict" output="screen" > -->
     <!-- <remap from="human_path_prediction" to="human_path_predict"/> -->
-    <remap from="~/" to="/human_path_predict"/>
+    <!-- <remap from="~/" to="/human_path_predict"/>
     <remap from="/human_path_predict/tracked_humans" to="/tracked_humans"/>
     <remap from="/human_path_predict/external_human_paths" to="/humans_sim_node/MultiGoalPlanner/plans"/>
     <remap from="/human_path_predict/external_human_trajs" to="/move_base_node/HATebLocalPlannerROS/human_local_trajs"/>
 
     <param name="velobs_mul" value="1.0"/>
     <param name="velscale_mul" value="2.0"/>
-  </node>
+  </node> -->
   
   <!-- <node pkg="human_path_prediction" type="predict_goal.py" name="human_goal_predict" output="screen"/> -->
   <!-- <node pkg="human_path_prediction" type="predict_goal_srv.py" name="human_goal_predict" output="screen"/> -->
-  <node pkg="human_path_prediction" type="predicted_goals_pub.py" name="human_goal_predict" output="screen"/>
+  <!-- <node pkg="human_path_prediction" type="predicted_goals_pub.py" name="human_goal_predict" output="screen"/> -->
 
   <!-- Filter the humans from laser scan -->
   <node pkg="human_layers" type="human_filter.py" name="human_filter_laser" output="screen">

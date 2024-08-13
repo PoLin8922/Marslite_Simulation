@@ -39,6 +39,7 @@ from human_msgs.msg import TrackedSegmentType
 from human_msgs.msg import TrackedSegment
 from geometry_msgs.msg import TransformStamped
 import tf2_ros
+import tf2_geometry_msgs
 from tf.transformations import quaternion_multiply
 
 INTEREST_CLASSES = ["person"]
@@ -71,15 +72,15 @@ class MultiObjectTrackingNode(object):
         
         self.odom_sub = rospy.Subscriber('/odom_filtered', Odometry, self.odom_cb)
         self.sub_det3d = rospy.Subscriber("det3d_result", Det3DArray,self.det_result_cb)
-        # self.sub_scan = message_filters.Subscriber("scan",LaserScan)
-        # self.sub_det3d = message_filters.Subscriber("det3d_result", Det3DArray)
-        # ts = message_filters.TimeSynchronizer([self.sub_det3d,self.sub_scan], queue_size=5)
-        # ts.registerCallback(self.det_result_cb)
-        # self.sub_odom = rospy.Subscriber("odom_filtered", Odometry, self.odom_cb, queue_size=1)
+        
+        # TF Listener
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
 
         # Ego velocity init
         self.ego_velocity = Vector3()
         self.ego_theta = Vector3()
+
         #param
         self.trk3d_array = Trk3DArray()
         
@@ -260,23 +261,52 @@ class MultiObjectTrackingNode(object):
             pose.orientation.y = q[1]
             pose.orientation.z = q[2]
             pose.orientation.w = q[3]
+            transformed_pose = self.transform_pose(pose, 'map')
 
+            
+            if abs(vx) < 0.2:
+                vx = 0
+            if abs(vy) < 0.2:
+                vy = 0
             twist = Twist()
             twist.linear.x = vx
             twist.linear.y = vy
             twist.linear.z = 0.0
+            transformed_twist = self.transform_twist(twist, 'map')
 
-            human_segment.pose.pose = pose
-            human_segment.twist.twist = twist
+            human_segment.pose.pose = transformed_pose
+            human_segment.twist.twist = transformed_twist
 
             tracked_human = TrackedHuman()
             tracked_human.track_id = idx + 1  
             tracked_human.segments.append(human_segment)
             self.tracked_humans.humans.append(tracked_human)
         
+        # Adding static human coordinates (x, y)
+        # static_humans = [
+        #     (-4.70, -2.60), (-2.70, -2.60), (1.40, -2.60), (3.40, -2.60),
+        #     (-4.6, -0.4), (-2.2, -0.4), (1.42, -0.4), (3.7, -0.4),(-4.0, 2.0),
+        #     (-3, 2.0), (-1.15, 2.0), (0.3, 2.0), (2.2, 2.0),(3.0, 2.0),
+        #     (-7.75, 3.15), (-7.75, 0.85), (-7.75, -1.3), (5.8, 3.60),
+        #     (5.8, 1.00), (5.8, -1.3), (-6.0, 2.0), (4.8, 2.0),
+        #     (-1.25, -1.5), (0.16, -1.5)
+        # ]
+
+        # for i, (x, y) in enumerate(static_humans):
+        #     static_segment = TrackedSegment()
+        #     static_segment.type = self.Segment_Type
+        #     static_segment.pose.pose.position.x = x
+        #     static_segment.pose.pose.position.y = y
+        #     static_segment.pose.pose.position.z = 0.0
+        #     static_segment.pose.pose.orientation.w = 1.0  
+        #     static_human = TrackedHuman()
+        #     static_human.track_id = 1000 + i  
+        #     static_human.segments.append(static_segment)
+        #     self.tracked_humans.humans.append(static_human)
+
         if self.tracked_humans.humans:
             self.tracked_humans.header.stamp = rospy.Time.now()
-            self.tracked_humans.header.frame_id = 'odom'
+            self.tracked_humans.header.frame_id = 'map'
             self.tracked_humans_pub.publish(self.tracked_humans)
 
         self.pub_trk3d_vis.publish(marker_array)
@@ -292,6 +322,47 @@ class MultiObjectTrackingNode(object):
 
         # print("elapsed time: {}".format(cycle_time))        
 
+    def transform_pose(self, pose, target_frame):
+        """
+        Transforms a Pose from its current frame to the target frame.
+        """
+        pose_stamped = PoseStamped()
+        pose_stamped.pose = pose
+        pose_stamped.header.frame_id = 'odom'
+        pose_stamped.header.stamp = rospy.Time.now()
+
+        try:
+            transform = self.tf_buffer.lookup_transform(target_frame, 'odom', rospy.Time(0))
+            transformed_pose = tf2_geometry_msgs.do_transform_pose(pose_stamped, transform)
+            return transformed_pose.pose
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+            rospy.logerr(e)
+            return None
+    
+    def transform_twist(self, twist, target_frame):
+        """
+        Transforms a Twist (linear velocity) from its current frame to the target frame.
+        """
+        try:
+            transform = self.tf_buffer.lookup_transform(target_frame, 'odom', rospy.Time(0))
+            rotation = transform.transform.rotation
+            rotation_matrix = tf.transformations.quaternion_matrix([rotation.x, rotation.y, rotation.z, rotation.w])
+            rotation_matrix = rotation_matrix[:3, :3]
+
+            lin_vel = np.array([twist.linear.x, twist.linear.y, twist.linear.z])
+            transformed_lin_vel = np.dot(rotation_matrix, lin_vel)
+
+            transformed_twist = Twist()
+            transformed_twist.linear.x = transformed_lin_vel[0]
+            transformed_twist.linear.y = transformed_lin_vel[1]
+            transformed_twist.linear.z = transformed_lin_vel[2]
+            transformed_twist.angular = twist.angular  
+            return transformed_twist
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+            rospy.logerr(e)
+            return None
+
+    
     def shutdown_cb(self):
         rospy.loginfo("Shutdown " + rospy.get_name())
 

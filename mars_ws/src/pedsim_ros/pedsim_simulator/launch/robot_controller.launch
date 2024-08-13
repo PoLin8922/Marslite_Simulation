@@ -13,9 +13,9 @@
   </node>
 
   <!-- Keyboard robot steering -->
-  <node pkg="pedsim_simulator" name="pedsim_keyboard_teleop" type="keyboard_teleop.py" output="screen" if="$(arg kbd_teleop)">
+  <!-- <node pkg="pedsim_simulator" name="pedsim_keyboard_teleop" type="keyboard_teleop.py" output="screen" if="$(arg kbd_teleop)">
     <remap from="/pedbot/control/pedsim_keyboard_teleop/cmd_vel" to="/pedbot/control/cmd_vel"/>
-  </node>
+  </node> -->
 
   <!-- RQT robot steering -->
   <node pkg="rqt_robot_steering" name="rqt_robot_steering" type="rqt_robot_steering" if="$(arg rqt_teleop)">

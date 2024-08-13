@@ -70,10 +70,8 @@
 #include <dynamic_reconfigure/server.h>
 #include <pedsim_simulator/PedsimSimulatorConfig.h>
 
-// samliu 20210814
-#include <pedsim_simulator/element/areawaypoint.h>
-#include <geometry_msgs/Pose2D.h>
-#include <pedsim_srvs/GymReset.h>
+// added by xzt:
+#include <gazebo_msgs/GetModelState.h>
 
 using SimConfig = pedsim_simulator::PedsimSimulatorConfig;
 
@@ -92,8 +90,6 @@ class Simulator {
                          std_srvs::Empty::Response& response);
   bool onUnpauseSimulation(std_srvs::Empty::Request& request,
                            std_srvs::Empty::Response& response);
-  bool GymResetCb(pedsim_srvs::GymReset::Request& request,
-                  pedsim_srvs::GymReset::Response& response);
 
   void spawnCallback(const ros::TimerEvent& event);
 
@@ -124,7 +120,6 @@ class Simulator {
   // provided services
   ros::ServiceServer srv_pause_simulation_;
   ros::ServiceServer srv_unpause_simulation_;
-  ros::ServiceServer srv_gym_reset_;
 
   // frame ids
   std::string frame_id_;

@@ -1,1 +1,8 @@
 Error: File not found: /home/berlin/lab/socially-store-robot/mars_ws/src/navigation/turtlebot3_navigation/maps/shoppingmall_v3.yaml
+Log: 12
+Log: 13
+Log: 14
+Log: 15
+Log: 16
+Log: 17
+Log: 18
