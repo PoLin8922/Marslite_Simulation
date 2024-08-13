@@ -1,0 +1,8 @@
+prefix=/home/developer/lab/temporary_ws/src/cartographer_ws/devel_isolated/tm5_description
+
+Name: tm5_description
+Description: Description of tm5_description
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

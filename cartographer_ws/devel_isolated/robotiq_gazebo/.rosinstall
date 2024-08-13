@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/developer/lab/temporary_ws/src/cartographer_ws/devel_isolated/robotiq_gazebo/setup.sh

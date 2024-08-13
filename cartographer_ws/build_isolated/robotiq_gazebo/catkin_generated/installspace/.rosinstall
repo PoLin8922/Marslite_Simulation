@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/developer/lab/temporary_ws/src/cartographer_ws/install_isolated/setup.sh
