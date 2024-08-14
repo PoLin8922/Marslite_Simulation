@@ -28,7 +28,7 @@
   </node> -->
 
   <!-- apply corner detection -->
-  <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">
+  <!-- <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">
     <param name="scan_topics" value="/scan"/>
     <param name="cmd_vel_topic" value="/cmd_vel"/>
     <param name="output_frame" value="map"/>
@@ -37,7 +37,7 @@
     <param name="min_occlusion" value="0.8"/>
     <param name="dist_threshold" value="1"/>
     <param name="dist_tolerance" value="0.4"/>
-  </node>
+  </node> -->
 
   <!-- move_base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
