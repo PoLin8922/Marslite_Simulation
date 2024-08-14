@@ -1,6 +1,6 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="shoppingmall.yaml"/>
+  <arg name="roslaunch cohan_navigation nav.launch " default="shoppingmall.yaml"/>
   <arg name="scene_map_file" default="shoppingmall_scene_v3.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="scan_topic" default="scan"/>
