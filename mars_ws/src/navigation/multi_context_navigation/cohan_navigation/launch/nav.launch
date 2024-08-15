@@ -1,6 +1,6 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="shoppingmall.yaml"/>
+  <arg name="roslaunch cohan_navigation nav.launch " default="shoppingmall.yaml"/>
   <arg name="scene_map_file" default="shoppingmall_scene_v3.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="scan_topic" default="scan"/>
@@ -30,10 +30,10 @@
   <include file="$(find cohan_navigation)/launch/move_base_muti_context.launch"></include>
 
   <!-- rviz -->
-  <!-- <group if="$(arg open_rviz)"> 
+  <group if="$(arg open_rviz)"> 
     <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find cohan_navigation)/rviz/cohan_nav_stage.rviz"/>
-  </group> -->
+  </group>
 
   <!-- nav monitor -->
   <node pkg="hyper_system" name="navigation_state_monitor" type="navigation_state_monitor.py"/>

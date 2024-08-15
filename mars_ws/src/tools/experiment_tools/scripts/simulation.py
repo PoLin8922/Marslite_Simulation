@@ -66,16 +66,31 @@ def main():
     # result : 
     # our | path -> our_119 data -> 67
     #####
+    # robot_init_x = 1.0
+    # robot_init_y = 7.45
+    # robot_init_rot = 3.14
+    # robot_end_x = -27
+    # robot_end_y = -17
+    # robot_end_rot = 3.14
+    # static_human ='-4.70,-2.60;-2.70,-2.60;1.40,-2.60;3.40,-2.60;-4.6,-0.4;-2.2,-0.4;1.42,-0.4;3.7,-0.4;-3,1.55;-1.2,1.55;0.7,1.55;2.2,1.55;-7.75,3.15;-7.75,0.85;-7.75,-1.3;5.8,3.60;5.8,1.00;5.8,-1.3;-6.0,2.0;5.0,2.0'
+    # # static_human =''
+    # scene_file = 'Simulation4'
+    # scene = 'shopping_mall_v2'
+
+    # Experiment
+    #####
+    # result : 
+    # our | path -> our_119 data -> 67
+    #####
     robot_init_x = 1.0
     robot_init_y = 7.45
     robot_init_rot = 3.14
     robot_end_x = -27
     robot_end_y = -17
     robot_end_rot = 3.14
-    static_human ='-4.70,-2.60;-2.70,-2.60;1.40,-2.60;3.40,-2.60;-4.6,-0.4;-2.2,-0.4;1.42,-0.4;3.7,-0.4;-3,1.55;-1.2,1.55;0.7,1.55;2.2,1.55;-7.75,3.15;-7.75,0.85;-7.75,-1.3;5.8,3.60;5.8,1.00;5.8,-1.3;-6.0,2.0;5.0,2.0'
-    # static_human =''
-    scene_file = 'Simulation4'
-    scene = 'shopping_mall_v2'
+    # scene_file = 'Simulation4'
+    scene = 'empty'
+    map_file = 'EE5f.yaml'
     
     covariance = '[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]'
     qz_i = math.sin(robot_init_rot / 2.0)
@@ -88,11 +103,11 @@ def main():
     commands = [
         (f"roslaunch pedsim_gazebo_plugin shopping_mall.launch world:={scene} &", 3),
         (f"roslaunch mars_lite_description spawn_mars.launch robot_init_x:={robot_init_x} robot_init_y:={robot_init_y} robot_init_rot:={robot_init_rot} &", 3),
-        ("roslaunch cohan_navigation nav.launch &", 3),
-        (f"rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped '{{header: {{stamp: now, frame_id: \"map\"}}, pose: {{pose: {{position: {{x: {robot_init_x}, y: {robot_init_y}, z: 0.0}}, orientation: {{x: 0.0, y: 0.0, z: {qz_i}, w: {qw_i}}}}}, covariance: {covariance}}}}}'", 1),
-        ("roslaunch hyper_system hyper_controller.launch", 1),
-        (f"roslaunch pedsim_simulator shopping_mall.launch scene_file:={scene_file} &", 3),
-        (f"rosrun stage_ros human_pub.py --static_human='{static_human}' --pub_tracked_human={int(not use_yolo)} &", 1),
+        # (f"roslaunch cohan_navigation nav.launch map_file:={map_file} &", 3),
+        # (f"rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped '{{header: {{stamp: now, frame_id: \"map\"}}, pose: {{pose: {{position: {{x: {robot_init_x}, y: {robot_init_y}, z: 0.0}}, orientation: {{x: 0.0, y: 0.0, z: {qz_i}, w: {qw_i}}}}}, covariance: {covariance}}}}}'", 1),
+        # ("roslaunch hyper_system hyper_controller.launch", 1),
+        # (f"roslaunch pedsim_simulator shopping_mall.launch scene_file:={scene_file} &", 3),
+        # (f"rosrun stage_ros human_pub.py --static_human='{static_human}' --pub_tracked_human={int(not use_yolo)} &", 1),
     ]
 
     if use_yolo:
