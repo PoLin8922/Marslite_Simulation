@@ -23,21 +23,25 @@
   <!-- <node pkg="human_path_prediction" type="predicted_goals_pub.py" name="human_goal_predict" output="screen"/> -->
 
   <!-- Filter the humans from laser scan -->
-  <!-- <node pkg="human_layers" type="human_filter.py" name="human_filter_laser" output="screen">
+  <node pkg="human_layers" type="human_filter.py" name="human_filter_laser" output="screen">
     <remap from="base_scan" to="scan"/>
-  </node> -->
+  </node>
 
   <!-- apply corner detection -->
-  <!-- <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">
+  <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">
     <param name="scan_topics" value="/scan"/>
-    <param name="cmd_vel_topic" value="/cmd_vel"/>
-    <param name="output_frame" value="map"/>
+    <param name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <!-- <param name="output_frame" value="map"/> -->
+    <param name="output_frame" value="odom"/>
     <param name="output_topic" value="/move_base/HATebLocalPlannerROS/critical_corners"/>
     <param name="base_frame" value="base_link"/>
     <param name="min_occlusion" value="0.8"/>
     <param name="dist_threshold" value="1"/>
     <param name="dist_tolerance" value="0.4"/>
-  </node> -->
+  </node>
+
+  <!-- transform teb velovity to robot -->
+  <node pkg="cohan_navigation" type="transVel.py" name="transVel"/>
 
   <!-- move_base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">

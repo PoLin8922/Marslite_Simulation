@@ -250,27 +250,27 @@ void Detector::scanCallback(const sensor_msgs::LaserScanConstPtr &msg, std::stri
       }
 
       // Initialize lifetimes if not already done
-      double finding_tolerance = 0.5;
-      new_cc_lifetimes.clear();
-      new_cc_lifetimes.resize(new_cc_cloud.size() + cc_clouds[j].points.size(), k_death);
+      // double finding_tolerance = 0.5;
+      // new_cc_lifetimes.clear();
+      // new_cc_lifetimes.resize(new_cc_cloud.size() + cc_clouds[j].points.size(), k_death);
 
-      // update cc_clouds and cc_lifetimes
-      int index = 0;
-      for (const auto& point : cc_clouds[j].points) {
-        bool found = false;
-        for (const auto& new_point : new_cc_cloud.points) {
-          if (sqrt(pow(point.x - new_point.x, 2) + pow(point.y - new_point.y, 2)) < finding_tolerance) {
-            found = true;
-            break;
-          }
-        }
-        if (!found && index < cc_lifetimes.size() && cc_lifetimes[index]-1> 0) {
-          new_cc_cloud.push_back(point);
-          new_cc_lifetimes[new_cc_cloud.size()] = cc_lifetimes[index]-1;
-          // printf("find cc with life time : %d\n", new_cc_lifetimes[new_cc_cloud.size()]);
-        } 
-        index ++;
-      }
+      // // update cc_clouds and cc_lifetimes
+      // int index = 0;
+      // for (const auto& point : cc_clouds[j].points) {
+      //   bool found = false;
+      //   for (const auto& new_point : new_cc_cloud.points) {
+      //     if (sqrt(pow(point.x - new_point.x, 2) + pow(point.y - new_point.y, 2)) < finding_tolerance) {
+      //       found = true;
+      //       break;
+      //     }
+      //   }
+      //   if (!found && index < cc_lifetimes.size() && cc_lifetimes[index]-1> 0) {
+      //     new_cc_cloud.push_back(point);
+      //     new_cc_lifetimes[new_cc_cloud.size()] = cc_lifetimes[index]-1;
+      //     // printf("find cc with life time : %d\n", new_cc_lifetimes[new_cc_cloud.size()]);
+      //   } 
+      //   index ++;
+      // }
       cc_clouds[j] = std::move(new_cc_cloud);  
       cc_lifetimes = std::move(new_cc_lifetimes);  
 
