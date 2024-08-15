@@ -125,10 +125,10 @@ loadMapFromFile(nav_msgs::GetMap::Response* resp,
       p = pixels + j*rowstride + i*n_channels;
       pixel_value = *p;
       
-      if(pixel_value < 200 && pixel_value > 150)
+      if(pixel_value < 190 && pixel_value > 170)
         // corrider
         value = CORRIDER;  
-      else if(pixel_value < 150 && pixel_value > 20)
+      else if(pixel_value < 150 && pixel_value > 50)
         // mall
         value = MALL;
       else if(pixel_value < 20 && pixel_value > 10) 
