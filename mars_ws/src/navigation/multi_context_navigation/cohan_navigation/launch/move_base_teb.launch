@@ -1,6 +1,6 @@
 <launch>
   <!-- Arguments -->
-  <arg name="cmd_vel_topic" default="/cmd_vel" />
+  <arg name="cmd_vel_topic" default="/mob_plat/cmd_vel" />
   <arg name="odom_topic" default="odom" />
   <arg name="num_humans" default="2"/>
   
