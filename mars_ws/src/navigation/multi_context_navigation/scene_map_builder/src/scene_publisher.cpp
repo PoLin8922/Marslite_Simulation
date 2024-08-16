@@ -17,7 +17,7 @@ public:
         map_subscriber_ = nh_.subscribe("/scene_map", 1, &ScenePublisher::mapCallback, this);
 
         // Subscribe to the odometry topic
-        odom_subscriber_ = nh_.subscribe("/odom_filtered", 1, &ScenePublisher::odomCallback, this);
+        odom_subscriber_ = nh_.subscribe("/odom", 1, &ScenePublisher::odomCallback, this);
 
         // Publish to scene topic
         scene_publisher_ = nh_.advertise<std_msgs::String>("/scenario", 10);

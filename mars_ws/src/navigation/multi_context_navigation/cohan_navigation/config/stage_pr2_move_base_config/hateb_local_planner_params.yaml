@@ -37,7 +37,7 @@ footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
   # type: "circular"
   radius: 0.7 # for type "circular"
   line_start: [-0.4, 0.0] # for type "line"
-  line_end: [0.4, 0.0] # for type "line"
+  line_end: [0.6, 0.0] # for type "line"
   front_offset: 0.2 # for type "two_circles"
   front_radius: 0.3 # for type "two_circles"
   rear_offset: 0.2 # for type "two_circles"
@@ -87,7 +87,7 @@ yaw_goal_tolerance: 0.15
 free_goal_vel: False
 
 # Obstacles
-min_obstacle_dist: 0.35
+min_obstacle_dist: 0.38
 include_costmap_obstacles: True
 # include_dynamic_obstacles: True
 costmap_obstacles_behind_robot_dist: 1.0
