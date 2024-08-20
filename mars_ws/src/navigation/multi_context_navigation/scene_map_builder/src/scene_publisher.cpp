@@ -43,6 +43,7 @@ public:
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr& odom_msg) {
         getRobotPositionInMap();
+        printf("roobt px : %f, py: %f \n", robot_px, robot_py);
 
         int index = (int)((robot_px - origin_x)/resolution) + (int)(((robot_py - origin_y)/resolution - 1))*width;
         // ROS_INFO("Robot's Position in Map Frame: x=%f, y=%f", robot_px, robot_py);

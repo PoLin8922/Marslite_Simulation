@@ -32,15 +32,14 @@ from walker_msgs.msg import Det3D, Det3DArray
 from walker_msgs.msg import Trk3D, Trk3DArray
 from sensor_msgs.msg import LaserScan
 
-from geometry_msgs.msg import Pose, Twist, PoseStamped, TwistStamped
+from geometry_msgs.msg import Pose, Twist, PoseStamped, TwistStamped, TransformStamped
 from human_msgs.msg import TrackedHumans
 from human_msgs.msg import TrackedHuman
 from human_msgs.msg import TrackedSegmentType
 from human_msgs.msg import TrackedSegment
-from geometry_msgs.msg import TransformStamped
 import tf2_ros
-import tf2_geometry_msgs
-from tf.transformations import quaternion_multiply
+# import tf2_geometry_msgs
+import tf.transformations as tft
 
 INTEREST_CLASSES = ["person"]
 MARKER_LIFETIME = 0.1
@@ -102,7 +101,6 @@ class MultiObjectTrackingNode(object):
         info_list = None
         
         for idx, det in enumerate(msg.dets_list):
-            
             if dets_list is None:
                 dets_list = np.array([det.x, det.y, det.radius], dtype=np.float32)
                 info_list = np.array([det.confidence, det.class_id], dtype=np.float32)
@@ -131,7 +129,7 @@ class MultiObjectTrackingNode(object):
             print("O")
             trackers = self.mot_tracker.update(dets_all)
         else:
-            print("X")
+            # print("X")
             # if no detection in a sequence
             trackers = self.mot_tracker.update_with_no_dets()
         
@@ -261,7 +259,7 @@ class MultiObjectTrackingNode(object):
             pose.orientation.y = q[1]
             pose.orientation.z = q[2]
             pose.orientation.w = q[3]
-            transformed_pose = self.transform_pose(pose, 'map')
+            # transformed_pose = self.transform_pose(pose, 'map')
 
             
             if abs(vx) < 0.2:
@@ -272,41 +270,22 @@ class MultiObjectTrackingNode(object):
             twist.linear.x = vx
             twist.linear.y = vy
             twist.linear.z = 0.0
-            transformed_twist = self.transform_twist(twist, 'map')
+            # transformed_twist = self.transform_twist(twist, 'map')
 
-            human_segment.pose.pose = transformed_pose
-            human_segment.twist.twist = transformed_twist
+            # human_segment.pose.pose = transformed_pose
+            # human_segment.twist.twist = transformed_twist
+            human_segment.pose.pose = pose
+            human_segment.twist.twist = twist
 
             tracked_human = TrackedHuman()
             tracked_human.track_id = idx + 1  
             tracked_human.segments.append(human_segment)
             self.tracked_humans.humans.append(tracked_human)
-        
-        # Adding static human coordinates (x, y)
-        # static_humans = [
-        #     (-4.70, -2.60), (-2.70, -2.60), (1.40, -2.60), (3.40, -2.60),
-        #     (-4.6, -0.4), (-2.2, -0.4), (1.42, -0.4), (3.7, -0.4),(-4.0, 2.0),
-        #     (-3, 2.0), (-1.15, 2.0), (0.3, 2.0), (2.2, 2.0),(3.0, 2.0),
-        #     (-7.75, 3.15), (-7.75, 0.85), (-7.75, -1.3), (5.8, 3.60),
-        #     (5.8, 1.00), (5.8, -1.3), (-6.0, 2.0), (4.8, 2.0),
-        #     (-1.25, -1.5), (0.16, -1.5)
-        # ]
-
-        # for i, (x, y) in enumerate(static_humans):
-        #     static_segment = TrackedSegment()
-        #     static_segment.type = self.Segment_Type
-        #     static_segment.pose.pose.position.x = x
-        #     static_segment.pose.pose.position.y = y
-        #     static_segment.pose.pose.position.z = 0.0
-        #     static_segment.pose.pose.orientation.w = 1.0  
-        #     static_human = TrackedHuman()
-        #     static_human.track_id = 1000 + i  
-        #     static_human.segments.append(static_segment)
-        #     self.tracked_humans.humans.append(static_human)
 
         if self.tracked_humans.humans:
             self.tracked_humans.header.stamp = rospy.Time.now()
-            self.tracked_humans.header.frame_id = 'map'
+            # self.tracked_humans.header.frame_id = 'map'
+            self.tracked_humans.header.frame_id = 'odom'
             self.tracked_humans_pub.publish(self.tracked_humans)
 
         self.pub_trk3d_vis.publish(marker_array)
@@ -322,9 +301,26 @@ class MultiObjectTrackingNode(object):
 
         # print("elapsed time: {}".format(cycle_time))        
 
+    # def transform_pose(self, pose, target_frame):
+    #     """
+    #     Transforms a Pose from its current frame to the target frame.
+    #     """
+    #     pose_stamped = PoseStamped()
+    #     pose_stamped.pose = pose
+    #     pose_stamped.header.frame_id = 'odom'
+    #     pose_stamped.header.stamp = rospy.Time.now()
+
+    #     try:
+    #         transform = self.tf_buffer.lookup_transform(target_frame, 'odom', rospy.Time(0))
+    #         transformed_pose = tf2_geometry_msgs.do_transform_pose(pose_stamped, transform)
+    #         return transformed_pose.pose
+    #     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+    #         rospy.logerr(e)
+    #         return None
+
     def transform_pose(self, pose, target_frame):
         """
-        Transforms a Pose from its current frame to the target frame.
+        Transforms a Pose from its current frame to the target frame without using tf2_geometry_msgs.
         """
         pose_stamped = PoseStamped()
         pose_stamped.pose = pose
@@ -333,7 +329,37 @@ class MultiObjectTrackingNode(object):
 
         try:
             transform = self.tf_buffer.lookup_transform(target_frame, 'odom', rospy.Time(0))
-            transformed_pose = tf2_geometry_msgs.do_transform_pose(pose_stamped, transform)
+
+            # Extract translation and rotation from the transform
+            translation = transform.transform.translation
+            rotation = transform.transform.rotation
+
+            # Create transformation matrix from translation and rotation
+            transform_matrix = tft.concatenate_matrices(
+                tft.translation_matrix([translation.x, translation.y, translation.z]),
+                tft.quaternion_matrix([rotation.x, rotation.y, rotation.z, rotation.w])
+            )
+
+            # Extract the pose components
+            pose_position = [pose.position.x, pose.position.y, pose.position.z, 1.0]
+            pose_orientation = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
+
+            # Apply the transform
+            transformed_position = tft.translation_from_matrix(tft.concatenate_matrices(transform_matrix, tft.translation_matrix(pose_position)))
+            transformed_orientation = tft.quaternion_from_matrix(tft.concatenate_matrices(transform_matrix, tft.quaternion_matrix(pose_orientation)))
+
+            # Construct the transformed pose
+            transformed_pose = PoseStamped()
+            transformed_pose.pose.position.x = transformed_position[0]
+            transformed_pose.pose.position.y = transformed_position[1]
+            transformed_pose.pose.position.z = transformed_position[2]
+            transformed_pose.pose.orientation.x = transformed_orientation[0]
+            transformed_pose.pose.orientation.y = transformed_orientation[1]
+            transformed_pose.pose.orientation.z = transformed_orientation[2]
+            transformed_pose.pose.orientation.w = transformed_orientation[3]
+            transformed_pose.header.frame_id = target_frame
+            transformed_pose.header.stamp = rospy.Time.now()
+
             return transformed_pose.pose
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
             rospy.logerr(e)

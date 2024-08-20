@@ -168,7 +168,7 @@ void Node::DrawAndPublish(const ::ros::WallTimerEvent& unused_timer_event) {
   auto painted_slices = PaintSubmapSlices(submap_slices_, resolution_);
   std::unique_ptr<nav_msgs::OccupancyGrid> msg_ptr = CreateOccupancyGridMsg(
       painted_slices, resolution_, last_frame_id_, last_timestamp_);
-  occupancy_grid_publisher_.publish(*msg_ptr);
+  // occupancy_grid_publisher_.publish(*msg_ptr);
 }
 
 }  // namespace

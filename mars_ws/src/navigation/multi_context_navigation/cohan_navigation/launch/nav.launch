@@ -14,7 +14,7 @@
   <node pkg="map_server" name="map_server" type="map_server" args="$(find cohan_navigation)/maps/$(arg map_file)"/>
 
   <!-- Scene Map server -->
-  <node pkg="scene_map_builder" name="scene_map_server" type="scene_map_server" args="$(find scene_map_builder)/maps/$(arg scene_map_file)"/>
+  <node pkg="scene_map_builder" name="scene_map_server" type="scene_map_server" args="$(find scene_map_builder)/maps/$(arg scene_map_file)" />
 
   <!-- scan filter -->
   <!-- <include file="$(find laser_filters)/launch/my_laser_filter.launch"/>-->

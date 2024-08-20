@@ -14,6 +14,9 @@ sensor_msgs
 geometry_msgs
 visualization_msgs
 tf
+tf2
+tf2_ros
+tf2_geometry_msgs
 cv_bridge
 std_msgs
 message_filters
@@ -117,10 +120,7 @@ find_package(OpenCV REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES scan
-#  CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs tf visualization_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp tf2 tf2_ros tf tf2_geometry_msgs
 )
 
 ###########
@@ -199,11 +199,11 @@ target_link_libraries(scan_node_test
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(path_finding_node_test src/path_finding_node_test.cpp)
-target_link_libraries(path_finding_node_test
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-)
+# add_executable(path_finding_node_test src/path_finding_node_test.cpp)
+# target_link_libraries(path_finding_node_test
+#   ${PROJECT_NAME}
+#   ${catkin_LIBRARIES}
+# )
 
 # add_executable(scan2localmap_node_simulation src/scan2localmap_node_simulation.cpp)
 # target_link_libraries(scan2localmap_node_simulation 
@@ -242,6 +242,14 @@ target_link_libraries(scan_image_combine_node_test
   ${EIGEN3_LIBRARIES}
 )
 add_dependencies(scan_image_combine_node_test walker_msgs_generate_messages_cpp)
+
+add_executable(scan_image_combine_node src/scan_image_combine_node.cpp src/Hungarian.cpp)
+target_link_libraries(scan_image_combine_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  ${EIGEN3_LIBRARIES}
+)
+add_dependencies(scan_image_combine_node walker_msgs_generate_messages_cpp)
 
 # add_executable(path_finding_node src/path_finding_node.cpp)
 # target_link_libraries(path_finding_node 

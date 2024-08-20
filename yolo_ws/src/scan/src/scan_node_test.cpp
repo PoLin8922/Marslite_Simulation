@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     
     // ROS related
     pub_combined_image = nh.advertise<sensor_msgs::PointCloud2>("scan_pointcloud_filtered", 1);
-    ros::Subscriber scan_sub = nh.subscribe("/camera1/depth/color/points", 1, scan_callback);
+    ros::Subscriber scan_sub = nh.subscribe("/camera1/depth_registered/points", 1, scan_callback);
 
     ros::spin();
     return 0;

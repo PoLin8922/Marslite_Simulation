@@ -142,7 +142,7 @@ ScanImageCombineNode::ScanImageCombineNode(ros::NodeHandle nh, ros::NodeHandle p
     ros::param::param<string>("~scan_topic", scan_topic, "/scan_pointcloud_filtered");
     ros::param::param<string>("~img_topic", img_topic, "/camera1/color/image_raw"); 
     ros::param::param<string>("~caminfo_topic", caminfo_topic, "/camera1/color/camera_info"); 
-    ros::param::param<string>("~localmap_frameid", localmap_frameid_, "camera1_realsense_gazebo");
+    ros::param::param<string>("~localmap_frameid", localmap_frameid_, "camera1_link");
 
     // ROS publisher & subscriber & message filter
     pub_combined_image_ = nh_.advertise<sensor_msgs::Image>("debug_reprojection", 1);
@@ -278,9 +278,6 @@ bool ScanImageCombineNode::is_interest_class(string class_name){
 }
 
 
-
-
-
 cv::Point2d ScanImageCombineNode::point_pointcloud2pixel(double x_from_camera, double y_from_camera, double z_from_camera) {
     // Transform to camera frame
     tf::Vector3 pt_camframe(x_from_camera, y_from_camera, z_from_camera); 
@@ -341,11 +338,7 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
         if(is_interest_class(boxes[i].class_name)) {
             ObjInfo obj_info;
             obj_info.box = boxes[i];
-            // Skip the boxes which are too closed
-            bool flag_too_closed = false;
-
-            obj_list.push_back(obj_info);
-            
+            obj_list.push_back(obj_info);            
         }
     }
     
@@ -522,7 +515,6 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
         pub_detection3d_.publish(detection_array);
     }
     
-    //cout <<"third"<< ros::Time::now()-cloud_raw_ptr->header.stamp<<endl;
 }
 
 

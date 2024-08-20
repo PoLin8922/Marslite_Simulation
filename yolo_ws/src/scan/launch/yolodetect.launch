@@ -5,12 +5,14 @@
 
     <!-- Combine pointclouds and image detection result -->
     <node name="scan_image_combine_node_test" pkg="scan" type="scan_image_combine_node_test" required="true" output="screen" />
+    <!-- <node name="scan_image_combine_node" pkg="scan" type="scan_image_combine_node" required="true" output="screen" /> -->
 
     <!-- pointclouds filtering -->
     <node name="scan_node_test" pkg="scan" type="scan_node_test" required="true" output="screen" />
 
     <!-- Multi-Object Tracking node -->
     <node name="mot2d_node_test" pkg="multi_object_tracking" type="mot2d_node_test.py" required="true" output="screen" />
+    <!-- <node name="mot2d_node" pkg="multi_object_tracking" type="mot2d_node.py" required="true" output="screen" /> -->
 
     <!-- 開啟2D_guassian -->
     <!-- yucheng -->

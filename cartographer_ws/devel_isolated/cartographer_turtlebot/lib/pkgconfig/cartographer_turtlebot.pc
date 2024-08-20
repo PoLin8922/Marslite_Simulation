@@ -1,8 +1,0 @@
-prefix=/home/developer/lab/temporary_ws/src/cartographer_ws/devel_isolated/cartographer_turtlebot
-
-Name: cartographer_turtlebot
-Description: Description of cartographer_turtlebot
-Version: 0.3.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: message_runtime cartographer_ros roscpp roslib sensor_msgs

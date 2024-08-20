@@ -1,8 +1,0 @@
-prefix=/home/developer/lab/temporary_ws/src/cartographer_ws/devel_isolated/robotiq_description
-
-Name: robotiq_description
-Description: Description of robotiq_description
-Version: 0.1.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

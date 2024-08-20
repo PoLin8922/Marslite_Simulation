@@ -40,8 +40,8 @@
     <param name="odom_model_type"           value="diff"/>
     <param name="odom_alpha1"               value="10.0"/>
     <param name="odom_alpha2"               value="10.0"/>
-    <param name="odom_alpha3"               value="2.0"/>
-    <param name="odom_alpha4"               value="2.0"/>
+    <param name="odom_alpha3"               value="5.0"/>
+    <param name="odom_alpha4"               value="0.2"/>
     <param name="odom_frame_id"             value="odom"/>
     <param name="base_frame_id"             value="base_footprint"/>
 

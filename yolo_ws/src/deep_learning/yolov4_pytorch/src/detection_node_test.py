@@ -161,7 +161,7 @@ class Yolov4Node(object):
 
         # print('num_detections:', len(boxes))
         for index, box in enumerate(boxes):
-            # print('box:', box)
+            print('box:', box)
             bbox_msg = BBox2D()
             bbox_msg.center.x = math.floor(box[0] * req.image.width)
             bbox_msg.center.y = math.floor(box[1] * req.image.height)
@@ -183,7 +183,7 @@ class Yolov4Node(object):
     def image_cb(self, msg):
         try:
             cv_image = self.cvbridge.imgmsg_to_cv2(msg, "rgb8")
-            rospy.loginfo("Get image")
+            # rospy.loginfo("Get image")
         except CvBridgeError as e:
             print(e)
             return
@@ -220,7 +220,7 @@ class Yolov4Node(object):
         self.pub_bbox.publish(detection_msg)
 
         result_img = cv2.cvtColor(result_img, cv2.COLOR_RGB2BGR)
-        cv2.imshow('Yolo demo', result_img)
+        # cv2.imshow('Yolo demo', result_img)
         cv2.waitKey(1)
 
 

@@ -1,8 +1,0 @@
-prefix=/home/developer/lab/temporary_ws/src/cartographer_ws/devel_isolated/robotiq_gazebo
-
-Name: robotiq_gazebo
-Description: Description of robotiq_gazebo
-Version: 0.1.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: roscpp gazebo_ros control_toolbox xmlrpcpp

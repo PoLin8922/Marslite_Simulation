@@ -133,12 +133,11 @@ void StaticHumanLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i
         double v = sqrt(vx * vx + vy * vy);
         double val;
         
-        if(v > 0.01)
+        if(v > 0.15)
           // val = Asymmetrical_Gaussian(x, y, cx, cy, vx, vy, radius_, r_ratio_, amplitude_);
-          val = 0.0;
+          val = Gaussian2D(x, y, cx, cy, amplitude_, radius_, radius_);
         else{
           val = Gaussian2D(x, y, cx, cy, amplitude_, radius_, radius_);
-          val = 0.0;
         }
         // printf("personal space result : %f\n", val);
         

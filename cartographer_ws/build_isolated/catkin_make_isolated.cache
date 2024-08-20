@@ -1,2 +1,2 @@
 cartographer:cartographer_ros:cartographer_turtlebot/cartographer_turtlebot:mars_lite_description:robotiq/robotiq_description:robotiq/robotiq_gazebo:tmr_ros1_simplified_edition/tm5_700_moveit_config:tmr_ros1_simplified_edition/tm5_description
--G Ninja -DCATKIN_DEVEL_PREFIX=/home/developer/lab/temporary_ws/src/cartographer_ws/devel_isolated -DCMAKE_INSTALL_PREFIX=/home/developer/lab/temporary_ws/src/cartographer_ws/install_isolated
+-G Ninja -DCATKIN_DEVEL_PREFIX=/home/developer/berlin/Marslite_Simulation/cartographer_ws/devel_isolated -DCMAKE_INSTALL_PREFIX=/home/developer/berlin/Marslite_Simulation/cartographer_ws/install_isolated

@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="scene_map_builder" name="scene_publisher" type="scene_publisher"/>
+    <node pkg="scene_map_builder" name="scene_publisher" type="scene_publisher" output="screen"/>
     <node pkg="hyper_system" name="navigability_pub" type="navigability_pub"/>
     <node pkg="hyper_system" name="fuzzy_controller" type="fuzzy_controller.py"/>
 </launch>
