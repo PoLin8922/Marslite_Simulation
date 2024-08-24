@@ -230,12 +230,6 @@ target_link_libraries(static_visualize
    ${catkin_LIBRARIES}
 )
 
-add_executable(navigability_costmap src/navigability_costmap.cpp)
-
-target_link_libraries(navigability_costmap
-  ${catkin_LIBRARIES}
-)
-
 #############
 ## Install ##
 #############
