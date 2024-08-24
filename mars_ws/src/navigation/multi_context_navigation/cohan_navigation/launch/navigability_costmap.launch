@@ -1,0 +1,7 @@
+<launch>
+  <!-- move_base -->
+  <node pkg="hateb_local_planner" type="navigability_costmap" respawn="false" name="navigability_costmap" output="screen">
+    <rosparam file="$(find cohan_navigation)/config/stage_pr2_move_base_config/costmap_common_params.yaml" command="load" ns="navigability_costmap" />
+    <rosparam file="$(find cohan_navigation)/config/stage_pr2_move_base_config/navigability_costmap.yaml" command="load" />
+  </node>
+</launch>
