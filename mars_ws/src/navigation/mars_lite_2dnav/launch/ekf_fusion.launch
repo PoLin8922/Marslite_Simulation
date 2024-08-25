@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="output" default="screen"/>
+  <rosparam command="load" file="$(find mars_lite_2dnav)/config/robot_localization.yaml" />
+  <arg name="odom_topic" default="odom_combined" />
+  <arg name="transform_time_offset" default="0.1" />
+  <arg name="transform_timeout" default="0.1" />
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se_odom" clear_params="true" output="$(arg output)">
+    <param name="transform_time_offset" value="$(arg transform_time_offset)" />
+    <param name="transform_timeout" value="$(arg transform_timeout)" />
+    <remap from="odometry/filtered" to="$(arg odom_topic)"/>
+    <!-- <remap from="cmd_vel" to="mob_plat/cmd_vel"/>   -->
+  </node>
+
+
+</launch>

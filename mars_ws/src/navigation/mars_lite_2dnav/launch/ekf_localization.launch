@@ -1,0 +1,9 @@
+<launch>
+   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_mars_lite" clear_params="true">
+    <rosparam command="load" file="$(find mars_lite_2dnav)/config/ekf_mars_lite.yaml" />
+
+   <!--  Placeholder for output topic remapping-->
+    <remap from="odometry/filtered" to="/odom_combined"/>
+    <remap from="cmd_vel" to="/mob_plat/cmd_vel"/>  
+  </node>
+</launch>

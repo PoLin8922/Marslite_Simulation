@@ -124,7 +124,9 @@ protected:
       // define parameter
       double v = sqrt(vx * vx + vy * vy);
       double theta = atan2(vy, vx);
-      double sigmaHead = fmax(1.2 * v, var);
+      // double sigmaHead = fmax(1.2 * v, var);
+      double sigmaHead = fmax(0.8 * v, var);
+      sigmaHead = fmin(sigmaHead, 1.2*var);
       // double sigmaHead = fmax(1.2 * v, 1.0);
       // double sigmaRear = var / 7.0;
       // double sigmaLarge = var / 5.0;

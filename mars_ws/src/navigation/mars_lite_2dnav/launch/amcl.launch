@@ -1,0 +1,25 @@
+ <launch>
+     <arg name="output" default="screen"/>
+   
+     <!-- Robot Localization using ekf -->
+     <include file="$(find mars_lite_2dnav)/launch/ekf_fusion.launch"/>
+   
+     <!-- Move Base -->
+     <include file="$(find mars_lite_2dnav)/launch/includes/move_base_localization.launch.xml"/>   
+    <!-- Map Server -->
+    <arg name="path" default="$(find mars_lite_2dnav)/maps"/>
+    <!-- <arg name="file" default="smartcenter_2.yaml"/> -->
+    <arg name="file" default="current_area.yaml"/>
+    <arg name="map_file" value="$(arg path)/$(arg file)"/>
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"/> 
+    <!-- AMCL -->
+    <include file="$(find mars_lite_2dnav)/launch/includes/amcl.launch.xml">
+          <arg name="initial_pose_x" value="0.0"/>
+          <arg name="initial_pose_y" value="0.0"/>
+          <arg name="initial_pose_a" value="0.0"/>
+          <arg name="odom_frame_id" value="odom"/>
+    </include>
+ 
+
+
+</launch>

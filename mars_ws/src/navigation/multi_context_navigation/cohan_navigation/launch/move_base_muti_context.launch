@@ -23,9 +23,9 @@
   <!-- <node pkg="human_path_prediction" type="predicted_goals_pub.py" name="human_goal_predict" output="screen"/> -->
 
   <!-- Filter the humans from laser scan -->
-  <node pkg="human_layers" type="human_filter.py" name="human_filter_laser" output="screen">
+  <!-- <node pkg="human_layers" type="human_filter.py" name="human_filter_laser" output="screen">
     <remap from="base_scan" to="scan"/>
-  </node>
+  </node> -->
 
   <!-- apply corner detection -->
   <node pkg="ros_cc_detector" name="critical_points_detector" type="detection" output="screen" respawn="true">

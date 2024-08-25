@@ -1,0 +1,8 @@
+<launch>
+    <arg name="output" default="screen"/>
+    <arg name="map_name" default="current_area"/> 
+
+   <node name="save_map" pkg="map_server" type="map_saver" args="-f $(find mars_lite_2dnav)/maps/$(arg map_name)" output="$(arg output)"/>
+ 
+</launch>
+

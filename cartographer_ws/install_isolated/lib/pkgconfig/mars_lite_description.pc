@@ -1,8 +1,0 @@
-prefix=/home/developer/lab/temporary_ws/src/cartographer_ws/install_isolated
-
-Name: mars_lite_description
-Description: Description of mars_lite_description
-Version: 1.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

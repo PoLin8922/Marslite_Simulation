@@ -1,0 +1,18 @@
+<launch>
+  <arg name="output" default="screen"/>
+  <include file="$(find mars_lite_2dnav)/launch/ekf_fusion.launch"/>
+  <include file="$(find mars_lite_2dnav)/launch/includes/move_base_localization.launch.xml"/>
+ 
+  <node name="slam" pkg="gmapping" type="slam_gmapping" args="scan:=scan _odom_frame:=odom _base_frame:=base_footprint" output="$(arg output)">
+     <param name="linear_update" value="0.1"/>
+     <param name="angular_update" value="0.1"/>
+     <param name="particles" value="300"/>
+     <param name="lskip" value="10"/>
+     <param name="xmin" value="-15"/>
+     <param name="ymin" value="-15"/>
+     <param name="xmax" value="15"/>
+     <param name="ymax" value="15"/>
+     <param name="map_update_interval" value="1.0"/>
+
+  </node>
+</launch>
