@@ -66,6 +66,7 @@ class FyzzyController:
         self.human_path_prediction_controller = self.fuzzy_df.human_path_prediction_controller
 
         # scene semantics levels
+        self.speed_up_level_fake = -1 
         self.speed_up_level = -1    
         self.robot_invisiable_level = -1
         self.right_side_level = -1 
@@ -89,21 +90,25 @@ class FyzzyController:
     def scenario_callback(self, data):
         # rospy.loginfo("Received scenario data: %s", data.data)
         if data.data == "mall":
+            self.speed_up_level_fake = 1
             self.speed_up_level = 5
             self.robot_invisiable_level = 10
             self.right_side_level = 6
             self.pspace_level = 10
         elif data.data == "corrider":
+            self.speed_up_level_fake = 7
             self.speed_up_level = 7
             self.robot_invisiable_level = 5
             self.right_side_level = 10
             self.pspace_level = 10
         elif data.data == "warehouse":
+            self.speed_up_level_fake = 10
             self.speed_up_level = 10
             self.robot_invisiable_level = 0
             self.right_side_level = 0
             self.pspace_level = 0
         else:
+            self.speed_up_level_fake = -1
             self.speed_up_level = -1
             self.robot_invisiable_level = -1
             self.right_side_level = -1
@@ -132,7 +137,8 @@ class FyzzyController:
     def update_optimaltime(self):
         simulation = ctrl.ControlSystemSimulation(self.optimaltime_controller)
         simulation.input['navigability'] = self.navigability
-        simulation.input['speed_up_level'] = self.speed_up_level
+        # simulation.input['speed_up_level'] = self.speed_up_level
+        simulation.input['speed_up_level'] = self.speed_up_level_fake
         simulation.compute()
 
         raw_output = simulation.output['weight_optimaltime']
@@ -289,26 +295,52 @@ class FyzzyController:
         # if pspace_r_ratio and pspace_cov and weight_optimaltime and weight_cc and external_predict:
         
         hateb_client = Client("/move_base/HATebLocalPlannerROS", timeout=30)
-        human_layer_global_client = Client("/move_base/global_costmap/human_layer_static", timeout=30)
-        human_layer_local_client = Client("/move_base/local_costmap/human_layer_static", timeout=30)
+        # human_layer_global_client = Client("/move_base/global_costmap/human_layer_static", timeout=30)
+        # human_layer_local_client = Client("/move_base/local_costmap/human_layer_static", timeout=30)
+        human_layer_navigability_client = Client("/move_base/navigability_costmap/human_layer_static", timeout=30)
+
+        inflation_layer_global_client = Client("/move_base/global_costmap/inflation_layer", timeout=30)
+        inflation_layer_local_client = Client("/move_base/local_costmap/inflation_layer", timeout=30)
 
         hateb_config = {
             "weight_optimaltime": "{:.3f}".format(self.weight_optimaltime),
             "weight_cc": "{:.3f}".format(self.weight_cc),
             # "use_external_prediction": "{:.3f}".format(self.external_predict),
         }
-        human_layer_global_config = {
+        # human_layer_global_config = {
+        #     "radius": "{:.3f}".format(self.pspace_cov),
+        #     "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
+        # }
+        # human_layer_local_config = {
+        #     "radius": "{:.3f}".format(self.pspace_cov),
+        #     "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
+        # }
+        human_layer_navigability_config = {
             "radius": "{:.3f}".format(self.pspace_cov),
             "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
         }
-        human_layer_local_config = {
-            "radius": "{:.3f}".format(self.pspace_cov),
-            "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
+
+        self.inflation_radius_global = 0.35 + self.pspace_cov*0.7
+        self.inflation_radius_local = 0.35 + self.pspace_cov*0.2
+        print("updated inflation_radius_global: ", self.inflation_radius_global)
+        print("updated inflation_radius_local: ", self.inflation_radius_local)
+
+
+        inflation_layer_global_config = {
+            "inflation_radius": "{:.3f}".format(self.inflation_radius_global),
+        }
+        inflation_layer_local_config = {
+            "inflation_radius": "{:.3f}".format(self.inflation_radius_local),
         }
         
         hateb_client.update_configuration(hateb_config)
-        human_layer_global_client.update_configuration(human_layer_global_config)
-        human_layer_local_client.update_configuration(human_layer_local_config)
+        # human_layer_global_client.update_configuration(human_layer_global_config)
+        # human_layer_local_client.update_configuration(human_layer_local_config)
+        human_layer_navigability_client.update_configuration(human_layer_navigability_config)
+
+        inflation_layer_global_client.update_configuration(inflation_layer_global_config)
+        inflation_layer_local_client.update_configuration(inflation_layer_local_config)
+        
         self.update_update_pspace_r_ratio_definitions(self.pspace_cov)
 
 

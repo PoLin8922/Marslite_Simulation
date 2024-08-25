@@ -20,7 +20,7 @@ class FyzzyDefinition:
 
         # define fuzzy output
         # self.fz_weight_optimaltime = ctrl.Consequent(np.arange(5, 31, 0.1), 'weight_optimaltime')
-        self.fz_weight_optimaltime = ctrl.Consequent(np.arange(0, 25, 0.1), 'weight_optimaltime')
+        self.fz_weight_optimaltime = ctrl.Consequent(np.arange(0, 21, 0.1), 'weight_optimaltime')
         self.fz_weight_cc = ctrl.Consequent(np.arange(0, 21, 0.1), 'weight_cc')                               
         self.fz_pspace_cov = ctrl.Consequent(np.arange(0.4, 1.21, 0.005), 'pspace_cov')                             
         self.fz_pspace_r_ratio = ctrl.Consequent(np.arange(0.6, 1.01, 0.005), 'pspace_r_ratio')                     
@@ -53,11 +53,11 @@ class FyzzyDefinition:
 
 
         # output
-        self.fz_weight_optimaltime['VL'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 0, 2.5)
-        self.fz_weight_optimaltime['L'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 6, 2.5)
-        self.fz_weight_optimaltime['M'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 12.5, 2.5)
-        self.fz_weight_optimaltime['H'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 18, 2.5)
-        self.fz_weight_optimaltime['VH'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 25, 2.5)
+        self.fz_weight_optimaltime['VL'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 0, 2)
+        self.fz_weight_optimaltime['L'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 4, 2)
+        self.fz_weight_optimaltime['M'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 9, 2)
+        self.fz_weight_optimaltime['H'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 17, 2)
+        self.fz_weight_optimaltime['VH'] = fuzz.gaussmf(self.fz_weight_optimaltime.universe, 20, 2)
 
         self.fz_weight_cc['VL'] = fuzz.gaussmf(self.fz_weight_cc.universe, 0, 2)
         self.fz_weight_cc['L'] = fuzz.gaussmf(self.fz_weight_cc.universe, 3.0, 2)
@@ -85,7 +85,7 @@ class FyzzyDefinition:
         ## fz_navigability, fz_speed_up_level | fz_weight_optimaltime
         self.rule1 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_speed_up_level['L'], self.fz_weight_optimaltime['VL'])
         self.rule2 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['L'])
-        self.rule3 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['H'])
+        self.rule3 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['M'])
         self.rule4 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['L'], self.fz_weight_optimaltime['L'])
         self.rule5 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['M'], self.fz_weight_optimaltime['L'])
         self.rule6 = ctrl.Rule(self.fz_navigability['L'] & self.fz_speed_up_level['H'], self.fz_weight_optimaltime['H'])

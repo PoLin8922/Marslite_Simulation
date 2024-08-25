@@ -23,12 +23,12 @@ private:
     int navigable_space_threshold_ = 10;
     int map_size_;
     std::deque<float> navigability_history_;
-    const size_t history_size_ = 35;
+    const size_t history_size_ = 20;
     float alpha_ = 0.1;
 
 public:
     LocalMapAnalyzer() : map_received_(false) {
-        map_sub_ = nh_.subscribe("/move_base/local_costmap/costmap", 1, &LocalMapAnalyzer::mapCallback, this);
+        map_sub_ = nh_.subscribe("/move_base/navigability_costmap/costmap", 1, &LocalMapAnalyzer::mapCallback, this);
         navigability_pub_ = nh_.advertise<std_msgs::Float32>("navigability", 1);
     }
 

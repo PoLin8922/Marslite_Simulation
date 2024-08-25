@@ -9,9 +9,11 @@ global_costmap:
   plugins:
     - {name: static_layer, type: "costmap_2d::StaticLayer"}
     - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
-    - {name: human_layer_static, type: "human_layers::StaticHumanLayer"}
-    # - {name: human_layer_visible, type: "human_layers::HumanVisibilityLayer"}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
-    
+  
+  inflation_layer:
+    enabled:              true
+    cost_scaling_factor:  3.0  
+    inflation_radius:     0.9
 
 

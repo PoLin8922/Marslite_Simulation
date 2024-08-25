@@ -4,6 +4,7 @@
 #include "tf2_ros/transform_listener.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "std_msgs/String.h"
+#include "geometry_msgs/Point.h"
 
 // define scene map color
 #define MALL 98
@@ -21,6 +22,14 @@ public:
 
         // Publish to scene topic
         scene_publisher_ = nh_.advertise<std_msgs::String>("/scenario", 10);
+
+        // Publish robot position in map frame
+        position_publisher_ = nh_.advertise<geometry_msgs::Point>("/robot_position_map", 10);
+    }
+
+    ~ScenePublisher() {
+        // Free allocated memory
+        delete[] data;
     }
 
     void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg) {
@@ -43,7 +52,7 @@ public:
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr& odom_msg) {
         getRobotPositionInMap();
-        printf("roobt px : %f, py: %f \n", robot_px, robot_py);
+        // printf("roobt px : %f, py: %f \n", robot_px, robot_py);
 
         int index = (int)((robot_px - origin_x)/resolution) + (int)(((robot_py - origin_y)/resolution - 1))*width;
         // ROS_INFO("Robot's Position in Map Frame: x=%f, y=%f", robot_px, robot_py);
@@ -63,6 +72,13 @@ public:
         std_msgs::String msg;
         msg.data = scenario;
         scene_publisher_.publish(msg);
+
+        geometry_msgs::Point position_msg;
+        position_msg.x = robot_px;
+        position_msg.y = robot_py;
+        position_msg.z = 0.0;  
+
+        position_publisher_.publish(position_msg);
     }
 
     void getRobotPositionInMap() {
@@ -79,8 +95,7 @@ public:
             robot_py = robot_pose_map.pose.position.y;
         } 
         catch (tf2::TransformException& ex) {
-            // ROS_WARN("Could not transform robot's pose: %s", ex.what());
-            // ROS_WARN("Scene publisher could not transform robot's pose");
+            ROS_WARN("Could not transform robot's pose: %s", ex.what());
         }
     }
 
@@ -89,6 +104,7 @@ private:
     ros::Subscriber map_subscriber_;
     ros::Subscriber odom_subscriber_;
     ros::Publisher scene_publisher_;
+    ros::Publisher position_publisher_;
 
     double resolution;
     double *data, origin_x, origin_y, width;;
