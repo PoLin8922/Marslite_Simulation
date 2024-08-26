@@ -66,7 +66,7 @@ class DataCollector:
 
     def get_next_file_name(self):
         i = 1
-        directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/data' # docker
+        directory = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/data' # docker
         while os.path.isfile(os.path.join(directory, f"{self.base_name}_{i}.json")):
             i += 1
         return os.path.join(directory, f"{self.base_name}_{i}.json")

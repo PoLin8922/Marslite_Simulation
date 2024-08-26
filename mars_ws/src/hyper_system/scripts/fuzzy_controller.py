@@ -71,6 +71,7 @@ class FyzzyController:
         self.robot_invisiable_level = -1
         self.right_side_level = -1 
         self.pspace_level = -1 
+        self.map_size = 5
 
         # output
         self.weight_optimaltime = 1
@@ -95,24 +96,28 @@ class FyzzyController:
             self.robot_invisiable_level = 10
             self.right_side_level = 6
             self.pspace_level = 10
+            self.map_size = 5
         elif data.data == "corrider":
             self.speed_up_level_fake = 7
             self.speed_up_level = 7
             self.robot_invisiable_level = 5
             self.right_side_level = 10
             self.pspace_level = 10
+            self.map_size = 3
         elif data.data == "warehouse":
             self.speed_up_level_fake = 10
             self.speed_up_level = 10
             self.robot_invisiable_level = 0
             self.right_side_level = 0
             self.pspace_level = 0
+            self.map_size = 5
         else:
             self.speed_up_level_fake = -1
             self.speed_up_level = -1
             self.robot_invisiable_level = -1
             self.right_side_level = -1
             self.pspace_level = -1
+            self.map_size = 5
 
 
     def navigability_callback(self, data):
@@ -297,10 +302,12 @@ class FyzzyController:
         hateb_client = Client("/move_base/HATebLocalPlannerROS", timeout=30)
         # human_layer_global_client = Client("/move_base/global_costmap/human_layer_static", timeout=30)
         # human_layer_local_client = Client("/move_base/local_costmap/human_layer_static", timeout=30)
-        human_layer_navigability_client = Client("/move_base/navigability_costmap/human_layer_static", timeout=30)
-
+        
         inflation_layer_global_client = Client("/move_base/global_costmap/inflation_layer", timeout=30)
         inflation_layer_local_client = Client("/move_base/local_costmap/inflation_layer", timeout=30)
+
+        navigability_costmap_client = Client("/move_base/navigability_costmap", timeout=30)
+        human_layer_navigability_client = Client("/move_base/navigability_costmap/human_layer_static", timeout=30)
 
         hateb_config = {
             "weight_optimaltime": "{:.3f}".format(self.weight_optimaltime),
@@ -332,6 +339,11 @@ class FyzzyController:
         inflation_layer_local_config = {
             "inflation_radius": "{:.3f}".format(self.inflation_radius_local),
         }
+
+        map_size_config = {
+            "width": int(self.map_size),
+            "height": int(self.map_size),
+        }
         
         hateb_client.update_configuration(hateb_config)
         # human_layer_global_client.update_configuration(human_layer_global_config)
@@ -340,6 +352,8 @@ class FyzzyController:
 
         inflation_layer_global_client.update_configuration(inflation_layer_global_config)
         inflation_layer_local_client.update_configuration(inflation_layer_local_config)
+
+        navigability_costmap_client.update_configuration(map_size_config)
         
         self.update_update_pspace_r_ratio_definitions(self.pspace_cov)
 

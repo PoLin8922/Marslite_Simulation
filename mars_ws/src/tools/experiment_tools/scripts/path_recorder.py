@@ -58,9 +58,11 @@ class PositionRecorder:
             robot_px = robot_pose_map.pose.position.x
             robot_py = robot_pose_map.pose.position.y
             return robot_px, robot_py
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
-            # rospy.logwarn("Could not transform robot's pose: %s", ex)
+        except :
             return None, None
+        # except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
+        #     # rospy.logwarn("Could not transform robot's pose: %s", ex)
+        #     return None, None
     
     def save_to_json(self):
         with open(self.file_name, 'w') as f:
@@ -69,7 +71,7 @@ class PositionRecorder:
 
     def get_next_file_name(self):
         i = 1
-        directory = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path' # docker
+        directory = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path' # docker
         while os.path.isfile(os.path.join(directory, f"{self.base_name}_{i}.json")):
             i += 1
         return os.path.join(directory, f"{self.base_name}_{i}.json")

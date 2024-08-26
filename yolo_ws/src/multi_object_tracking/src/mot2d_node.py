@@ -107,7 +107,7 @@ class MultiObjectTrackingNode(object):
             trackers = self.mot_tracker.update(dets_all)
         else:
             # if no detection in a sequence
-            # print("X")
+            print("X")
             trackers = self.mot_tracker.update_with_no_dets()
         
         # Skip the visualization at first callback

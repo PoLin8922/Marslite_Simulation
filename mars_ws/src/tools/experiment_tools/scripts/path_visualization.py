@@ -8,30 +8,30 @@ from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 from scipy.interpolate import UnivariateSpline
 
-teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_178.json'
-hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_177.json'
-our_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_176.json'
+# teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_178.json'
+# hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_177.json'
+our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_4.json'
 
 class PathVisualizer:
     def __init__(self):
         rospy.init_node('path_visualizer')
 
-        self.teb_path_pub = rospy.Publisher('/teb_path', Path, queue_size=10)
-        self.hateb_path_pub = rospy.Publisher('/hateb_path', Path, queue_size=10)
+        # self.teb_path_pub = rospy.Publisher('/teb_path', Path, queue_size=10)
+        # self.hateb_path_pub = rospy.Publisher('/hateb_path', Path, queue_size=10)
         self.our_path_pub = rospy.Publisher('/our_path', Path, queue_size=10)
 
-        self.teb_path_data, self.teb_path = self.load_and_smooth_path(teb_file_name)
-        self.hateb_path_data,self.hateb_path = self.load_path_from_file(hateb_file_name)
+        # self.teb_path_data, self.teb_path = self.load_and_smooth_path(teb_file_name)
+        # self.hateb_path_data,self.hateb_path = self.load_path_from_file(hateb_file_name)
         self.our_path_data,self.our_path = self.load_and_smooth_path(our_file_name)
 
         rospy.loginfo("Path Visualizer node started and publishing path.")
 
-        print("teb path length:", self.calculate_path_length(self.teb_path_data))
-        print("hateb path length:", self.calculate_path_length(self.hateb_path_data))
+        # print("teb path length:", self.calculate_path_length(self.teb_path_data))
+        # print("hateb path length:", self.calculate_path_length(self.hateb_path_data))
         print("our path length:", self.calculate_path_length(self.our_path_data))
 
-        rospy.Timer(rospy.Duration(1.0), self.publish_teb_path)
-        rospy.Timer(rospy.Duration(1.0), self.publish_hateb_path)
+        # rospy.Timer(rospy.Duration(1.0), self.publish_teb_path)
+        # rospy.Timer(rospy.Duration(1.0), self.publish_hateb_path)
         rospy.Timer(rospy.Duration(1.0), self.publish_our_path)
 
     
@@ -97,13 +97,13 @@ class PathVisualizer:
             path_length += distance
         return path_length
     
-    def publish_teb_path(self, event):
-        self.teb_path.header.stamp = rospy.Time.now()  
-        self.teb_path_pub.publish(self.teb_path)
+    # def publish_teb_path(self, event):
+    #     self.teb_path.header.stamp = rospy.Time.now()  
+    #     self.teb_path_pub.publish(self.teb_path)
 
-    def publish_hateb_path(self, event):
-        self.hateb_path.header.stamp = rospy.Time.now()  
-        self.hateb_path_pub.publish(self.hateb_path)
+    # def publish_hateb_path(self, event):
+    #     self.hateb_path.header.stamp = rospy.Time.now()  
+    #     self.hateb_path_pub.publish(self.hateb_path)
 
     def publish_our_path(self, event):
         self.our_path.header.stamp = rospy.Time.now()  
