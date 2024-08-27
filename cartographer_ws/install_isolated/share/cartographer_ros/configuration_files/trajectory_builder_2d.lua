@@ -44,8 +44,8 @@ TRAJECTORY_BUILDER_2D = {
 
   ceres_scan_matcher = {
     occupied_space_weight = 1.,
-    translation_weight = 10.,
-    rotation_weight = 40.,
+    translation_weight = 100.,
+    rotation_weight = 400.,
     ceres_solver_options = {
       use_nonmonotonic_steps = false,
       max_num_iterations = 20,
@@ -85,7 +85,7 @@ TRAJECTORY_BUILDER_2D = {
   },
 
   submaps = {
-    num_range_data = 90,
+    num_range_data = 20000,
     grid_options_2d = {
       grid_type = "PROBABILITY_GRID",
       resolution = 0.05,
