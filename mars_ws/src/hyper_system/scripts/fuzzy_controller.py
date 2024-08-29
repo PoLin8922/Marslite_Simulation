@@ -79,7 +79,7 @@ class FyzzyController:
         self.pspace_r_ratio = 1
         self.weight_cc = 0
         
-        rate = rospy.Rate(5) # unit : HZ
+        rate = rospy.Rate(10) # unit : HZ
         while not rospy.is_shutdown():
             if self.navigability != -1 and self.robot_move: 
                 self.main_control()
@@ -91,8 +91,8 @@ class FyzzyController:
     def scenario_callback(self, data):
         # rospy.loginfo("Received scenario data: %s", data.data)
         if data.data == "mall":
-            self.speed_up_level_fake = 1
-            self.speed_up_level = 5
+            self.speed_up_level_fake = 5
+            self.speed_up_level = 1
             self.robot_invisiable_level = 10
             self.right_side_level = 6
             self.pspace_level = 10
@@ -103,14 +103,15 @@ class FyzzyController:
             self.robot_invisiable_level = 5
             self.right_side_level = 10
             self.pspace_level = 10
-            self.map_size = 3
+            # self.map_size = 2.5
+            self.map_size = 2.8
         elif data.data == "warehouse":
             self.speed_up_level_fake = 10
             self.speed_up_level = 10
             self.robot_invisiable_level = 0
             self.right_side_level = 0
             self.pspace_level = 0
-            self.map_size = 5
+            self.map_size = 3.5
         else:
             self.speed_up_level_fake = -1
             self.speed_up_level = -1
@@ -142,8 +143,16 @@ class FyzzyController:
     def update_optimaltime(self):
         simulation = ctrl.ControlSystemSimulation(self.optimaltime_controller)
         simulation.input['navigability'] = self.navigability
-        # simulation.input['speed_up_level'] = self.speed_up_level
         simulation.input['speed_up_level'] = self.speed_up_level_fake
+        simulation.compute()
+
+        raw_output_fake = simulation.output['weight_optimaltime']
+        smoothed_output_fake = self.smooth_output(self.weight_optimaltime_deque, raw_output_fake)
+        print("updated optimaltime_fake: ", smoothed_output_fake)
+
+
+        simulation.input['navigability'] = self.navigability
+        simulation.input['speed_up_level'] = self.speed_up_level
         simulation.compute()
 
         raw_output = simulation.output['weight_optimaltime']
@@ -156,7 +165,7 @@ class FyzzyController:
         self.weight_optimaltime_pub.publish(msg)
         print("updated optimaltime: ", msg.data)
 
-        return smoothed_output
+        return smoothed_output_fake
   
 
     def update_weight_cc(self):
@@ -327,8 +336,12 @@ class FyzzyController:
             "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
         }
 
-        self.inflation_radius_global = 0.35 + self.pspace_cov*0.7
-        self.inflation_radius_local = 0.35 + self.pspace_cov*0.2
+        if self.speed_up_level == 7:
+            self.inflation_radius_global = 0.35 + self.pspace_cov*0.9
+            self.inflation_radius_local = 0.35 + self.pspace_cov*0.4
+        else:
+            self.inflation_radius_global = 0.35 + self.pspace_cov*0.7
+            self.inflation_radius_local = 0.35 + self.pspace_cov*0.2
         print("updated inflation_radius_global: ", self.inflation_radius_global)
         print("updated inflation_radius_local: ", self.inflation_radius_local)
 

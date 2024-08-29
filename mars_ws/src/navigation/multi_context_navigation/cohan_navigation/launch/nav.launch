@@ -1,7 +1,7 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="EE6f.yaml"/>
-  <arg name="scene_map_file" default="EE5f_scene.yaml"/>
+  <arg name="map_file" default="0827.yaml"/>
+  <arg name="scene_map_file" default="0827_scene.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="scan_topic" default="scan"/>
 
