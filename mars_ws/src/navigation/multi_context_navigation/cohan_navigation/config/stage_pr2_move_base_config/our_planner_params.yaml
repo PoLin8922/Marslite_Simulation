@@ -88,6 +88,7 @@ free_goal_vel: False
 
 # Obstacles
 min_obstacle_dist: 0.15
+# min_obstacle_dist: 0.35
 include_costmap_obstacles: True
 # include_dynamic_obstacles: True
 costmap_obstacles_behind_robot_dist: 1.0
@@ -167,7 +168,7 @@ weight_obstacle: 50.0
 weight_dynamic_obstacle: 50 # not in use yet
 # weight_viapoint: 0.5
 weight_viapoint: 1.5
-# weight_viapoint: 4
+# weight_viapoint: 3
 weight_human_viapoint: 0.5
 weight_human_robot_safety: 2.0
 weight_human_human_safety: 2.0

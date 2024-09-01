@@ -23,11 +23,7 @@ def main():
 
     use_yolo = 0
 
-    # Experiment
-    #####
-    # result : 
-    # our | path -> our_119 data -> 67
-    #####
+    # Experiment parameters
     robot_mid_x = -5.09434127808
     robot_mid_y = -13.2973918915
     robot_mid_rot_z = -0.373237511573
@@ -60,30 +56,33 @@ def main():
     for command, delay, suppress_output in commands:
         run_command(command, delay, suppress_output)
 
-    mid_command = f"""
-    rostopic pub /move_base/goal move_base_msgs/MoveBaseActionGoal \\
-    '{{header: {{stamp: now, frame_id: "map"}}, goal: {{target_pose: {{header: {{frame_id: "map"}}, pose: {{position: {{x: {robot_mid_x}, y: {robot_mid_y}, z: 0.0}}, orientation: {{x: 0.0, y: 0.0, z: {robot_mid_rot_z}, w: {robot_mid_rot_w}}}}}}}}}}}' &
-    """
-
-    inti_pose_command = f"""
-    rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped '{{header: {{stamp: now, frame_id: \"map\"}}, pose: {{pose: {{position: {{x: {robot_init_pose_x}, y: {robot_init_pose_y}, z: 0.0}}, orientation: {{x: 0.0, y: 0.0, z: {robot_init_pose_rot_z}, w: {robot_init_pose_rot_w}}}}}, covariance: {covariance}}}}}' &
-    """
-
     goal_command = f"""
     rostopic pub /move_base/goal move_base_msgs/MoveBaseActionGoal \\
     '{{header: {{stamp: now, frame_id: "map"}}, goal: {{target_pose: {{header: {{frame_id: "map"}}, pose: {{position: {{x: {robot_end_x}, y: {robot_end_y}, z: 0.0}}, orientation: {{x: 0.0, y: 0.0, z: {robot_end_rot_z}, w: {robot_end_rot_w}}}}}}}}}}}' &
     """
 
-    # input("Press 'y' to proceed with mid point publishing and simulation unpause... ")
-    # run_command(mid_command, 0)
+    while True:
+        user_input = input("Enter '1' to publish goal and /nav_state_gt true, '2' to publish /door_crossing true, '3' to publish /door_crossing false, '4' to publish /nav_state_gt false,, or 'q' to quit: ")
 
-    input("Press 'y' to proceed with goal publishing and simulation unpause... ")
-    # run_command(inti_pose_command, 0)
-    run_command(goal_command, 0)
+        if user_input == '1':
+            run_command("rosbag record -a  -x \"/camera1.*\"", 0)
+            run_command(goal_command, 0)
+            run_command("rostopic pub /nav_state_gt std_msgs/Bool \"data: true\"", 0)
+        elif user_input == '2':
+            run_command("rostopic pub /door_crossing std_msgs/Bool \"data: true\"", 0)
+        elif user_input == '3':
+            run_command("rostopic pub /door_crossing std_msgs/Bool \"data: false\"", 0)
+        elif user_input == '4':
+            run_command("rostopic pub /nav_state_gt std_msgs/Bool \"data: false\"", 0)
+        elif user_input.lower() == 'q':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid input. Please enter '1', '2', '3', '4', or 'q'.")
 
 if __name__ == '__main__':
     try:
         main()
         rospy.spin()
     except rospy.ROSInterruptException:
-        rospy.loginfo("Simulation1 terminated.")
+        rospy.loginfo("Simulation terminated.")

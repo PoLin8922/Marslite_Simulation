@@ -38,6 +38,8 @@ class FyzzyController:
 
         # parameter
         self.navigability = -1
+        self.weight_viapoint = 1.0
+        self.min_obstacle_dist = 0.25
         self.robot_move = False
         self.crossing_door = False
         self.command = "rosrun dynamic_reconfigure dynparam set " 
@@ -105,8 +107,8 @@ class FyzzyController:
             self.robot_invisiable_level = 5
             self.right_side_level = 10
             self.pspace_level = 10
-            self.map_size = 2.8
-            # self.map_size = 3.00
+            # self.map_size = 2.8
+            self.map_size = 3.5
         elif data.data == "warehouse":
             self.speed_up_level_fake = 10
             self.speed_up_level = 10
@@ -160,7 +162,7 @@ class FyzzyController:
         smoothed_output_fake = self.smooth_output(self.weight_optimaltime_deque, raw_output_fake)
 
         msg = Float32()
-        msg.data = self.speed_up_level
+        msg.data = self.speed_up_level_fake
         self.speed_up_level_pub.publish(msg)
         msg.data = smoothed_output_fake
         self.weight_optimaltime_pub.publish(msg)
@@ -327,11 +329,37 @@ class FyzzyController:
         navigability_costmap_client = Client("/move_base/navigability_costmap", timeout=30)
         human_layer_navigability_client = Client("/move_base/navigability_costmap/human_layer_static", timeout=30)
 
+        print("-------------")
+        print(self.crossing_door)
+        if self.crossing_door:
+            self.inflation_radius_global = 0.35
+            self.inflation_radius_local = 0.35 
+            self.weight_viapoint = 3.0
+            self.min_obstacle_dist = 0.15
+        elif self.speed_up_level == 7:
+            self.inflation_radius_global = 0.35 + self.pspace_cov*1.5
+            self.inflation_radius_local = 0.35 + self.pspace_cov*1.0
+            self.weight_viapoint = 1.0
+            self.min_obstacle_dist = 0.35
+        else:
+            self.inflation_radius_global = 0.35 + self.pspace_cov*0.8
+            self.inflation_radius_local = 0.35 + self.pspace_cov*0.25
+            self.weight_viapoint = 1.0
+            self.min_obstacle_dist = 0.25
+        print("updated inflation_radius_global: ", self.inflation_radius_global)
+        print("updated inflation_radius_local: ", self.inflation_radius_local)
+        print("updated weight_viapoint: ", self.weight_viapoint)
+        print("updated min_obstacle_dist: ", self.min_obstacle_dist)
+        print("-------------")
+
         hateb_config = {
             "weight_optimaltime": "{:.3f}".format(self.weight_optimaltime),
             "weight_cc": "{:.3f}".format(self.weight_cc),
+            "weight_viapoint": "{:.3f}".format(self.weight_viapoint),
+            "min_obstacle_dist": "{:.3f}".format(self.min_obstacle_dist)
             # "use_external_prediction": "{:.3f}".format(self.external_predict),
         }
+
         # human_layer_global_config = {
         #     "radius": "{:.3f}".format(self.pspace_cov),
         #     "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
@@ -345,18 +373,7 @@ class FyzzyController:
             "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
         }
 
-        print(self.crossing_door)
-        if self.crossing_door:
-            self.inflation_radius_global = 0.35
-            self.inflation_radius_local = 0.35 
-        elif self.speed_up_level == 7:
-            self.inflation_radius_global = 0.35 + self.pspace_cov*0.9
-            self.inflation_radius_local = 0.35 + self.pspace_cov*0.4
-        else:
-            self.inflation_radius_global = 0.35 + self.pspace_cov*0.8
-            self.inflation_radius_local = 0.35 + self.pspace_cov*0.25
-        print("updated inflation_radius_global: ", self.inflation_radius_global)
-        print("updated inflation_radius_local: ", self.inflation_radius_local)
+       
 
 
         inflation_layer_global_config = {
@@ -372,6 +389,7 @@ class FyzzyController:
         }
         
         hateb_client.update_configuration(hateb_config)
+
         # human_layer_global_client.update_configuration(human_layer_global_config)
         # human_layer_local_client.update_configuration(human_layer_local_config)
         human_layer_navigability_client.update_configuration(human_layer_navigability_config)
