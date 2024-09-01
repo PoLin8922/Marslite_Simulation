@@ -56,7 +56,7 @@ class MultiObjectTrackingNode(object):
         self.last_time = None
 
         # Tracker
-        self.mot_tracker = AB3DMOT(max_age=1, min_hits=2)
+        self.mot_tracker = AB3DMOT(max_age=1, min_hits=1)
 
         # ROS parameters
         self.flag_trk_vis = rospy.get_param('~flag_trk_vis', False)

@@ -29,7 +29,7 @@ class DataCollector:
 
         self.recording = False
 
-        self.nav_state_sub = rospy.Subscriber('nav_state', Bool, self.nav_state_callback)
+        self.nav_state_sub = rospy.Subscriber('nav_state_gt', Bool, self.nav_state_callback)
         rospy.Subscriber("navigability", Float32, self.navigability_callback)
         rospy.Subscriber("/speed_up_level", Float32, self.speed_up_level_callback)
         rospy.Subscriber("/robot_invisiable_level", Float32, self.robot_invisiable_level_callback)
@@ -78,6 +78,7 @@ class DataCollector:
         rospy.loginfo(f"Data saved to {filename}")
 
     def nav_state_callback(self, msg):
+        print(msg)
         if msg.data and not self.recording:  # Navigation started
             rospy.loginfo("Navigation started")
             self.recording = True

@@ -10,7 +10,7 @@ from scipy.interpolate import UnivariateSpline
 
 # teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_178.json'
 # hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_177.json'
-our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_4.json'
+our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_14.json'
 
 class PathVisualizer:
     def __init__(self):

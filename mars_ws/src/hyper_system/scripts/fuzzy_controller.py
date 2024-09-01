@@ -24,6 +24,7 @@ class FyzzyController:
         rospy.Subscriber("/scenario", String, self.scenario_callback)
         rospy.Subscriber("/navigability", Float32, self.navigability_callback)
         rospy.Subscriber('nav_state', Bool, self.nav_state_callback)
+        rospy.Subscriber('door_crossing', Bool, self.door_crossing_callback)
 
         self.speed_up_level_pub = rospy.Publisher("/speed_up_level", Float32, queue_size=10)
         self.robot_invisiable_level_pub = rospy.Publisher("/robot_invisiable_level", Float32, queue_size=10)
@@ -38,6 +39,7 @@ class FyzzyController:
         # parameter
         self.navigability = -1
         self.robot_move = False
+        self.crossing_door = False
         self.command = "rosrun dynamic_reconfigure dynparam set " 
 
         # Initialize the moving averages
@@ -103,8 +105,8 @@ class FyzzyController:
             self.robot_invisiable_level = 5
             self.right_side_level = 10
             self.pspace_level = 10
-            # self.map_size = 2.5
             self.map_size = 2.8
+            # self.map_size = 3.00
         elif data.data == "warehouse":
             self.speed_up_level_fake = 10
             self.speed_up_level = 10
@@ -135,6 +137,14 @@ class FyzzyController:
             if self.robot_move:
                 self.robot_move = False
                 rospy.loginfo("Navigation ended.")
+
+    def door_crossing_callback(self, msg):
+        if msg.data: 
+            if not self.crossing_door:
+                self.crossing_door = True
+                rospy.loginfo("Navigation through the door.")
+        else:  
+                self.crossing_door = False
     
     def smooth_output(self, deque, value):
         deque.append(value)
@@ -148,8 +158,13 @@ class FyzzyController:
 
         raw_output_fake = simulation.output['weight_optimaltime']
         smoothed_output_fake = self.smooth_output(self.weight_optimaltime_deque, raw_output_fake)
-        print("updated optimaltime_fake: ", smoothed_output_fake)
 
+        msg = Float32()
+        msg.data = self.speed_up_level
+        self.speed_up_level_pub.publish(msg)
+        msg.data = smoothed_output_fake
+        self.weight_optimaltime_pub.publish(msg)
+        print("updated optimaltime: ", msg.data)
 
         simulation.input['navigability'] = self.navigability
         simulation.input['speed_up_level'] = self.speed_up_level
@@ -157,15 +172,9 @@ class FyzzyController:
 
         raw_output = simulation.output['weight_optimaltime']
         smoothed_output = self.smooth_output(self.weight_optimaltime_deque, raw_output)
+        print("updated optimaltime_fake: ", smoothed_output)
 
-        msg = Float32()
-        msg.data = self.speed_up_level
-        self.speed_up_level_pub.publish(msg)
-        msg.data = smoothed_output
-        self.weight_optimaltime_pub.publish(msg)
-        print("updated optimaltime: ", msg.data)
-
-        return smoothed_output_fake
+        return smoothed_output
   
 
     def update_weight_cc(self):
@@ -336,12 +345,16 @@ class FyzzyController:
             "right_cov_ratio": "{:.3f}".format(self.pspace_r_ratio)
         }
 
-        if self.speed_up_level == 7:
+        print(self.crossing_door)
+        if self.crossing_door:
+            self.inflation_radius_global = 0.35
+            self.inflation_radius_local = 0.35 
+        elif self.speed_up_level == 7:
             self.inflation_radius_global = 0.35 + self.pspace_cov*0.9
             self.inflation_radius_local = 0.35 + self.pspace_cov*0.4
         else:
-            self.inflation_radius_global = 0.35 + self.pspace_cov*0.7
-            self.inflation_radius_local = 0.35 + self.pspace_cov*0.2
+            self.inflation_radius_global = 0.35 + self.pspace_cov*0.8
+            self.inflation_radius_local = 0.35 + self.pspace_cov*0.25
         print("updated inflation_radius_global: ", self.inflation_radius_global)
         print("updated inflation_radius_local: ", self.inflation_radius_local)
 
