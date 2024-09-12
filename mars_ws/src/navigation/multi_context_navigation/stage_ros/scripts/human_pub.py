@@ -30,9 +30,9 @@ class StageHumans(object):
         self.static_human_positions = static_human_positions
         self.pub_tracked_human = pub_tracked_human
 
-        rospy.Subscriber("/pedsim_simulator/simulated_agents", AgentStates, self.agent_states_callback)
-
-    def agent_states_callback(self, agent_states):
+        self.agent_states_timer = rospy.Timer(rospy.Duration(0.1), self.agent_states_callback)
+        
+    def agent_states_callback(self, pub_tracked_human):
         tracked_humans = TrackedHumans()
 
         # Add static humans first
@@ -53,30 +53,6 @@ class StageHumans(object):
 
             tracked_human = TrackedHuman()
             tracked_human.track_id = j
-            tracked_human.segments.append(human_segment)
-            tracked_humans.humans.append(tracked_human)
-
-        # Add dynamic humans from agent_states
-        for i, agent_state in enumerate(agent_states.agent_states, start=len(self.static_human_positions) + 1):
-            human_segment = TrackedSegment()
-            human_segment.type = self.Segment_Type
-
-            pose = Pose()
-            pose.position.x = agent_state.pose.position.x
-            pose.position.y = agent_state.pose.position.y
-            pose.position.z = agent_state.pose.position.z
-            pose.orientation = agent_state.pose.orientation
-
-            twist = Twist()
-            twist.linear.x = agent_state.twist.linear.x
-            twist.linear.y = agent_state.twist.linear.y
-            twist.linear.z = agent_state.twist.linear.z
-
-            human_segment.pose.pose = pose
-            human_segment.twist.twist = twist
-
-            tracked_human = TrackedHuman()
-            tracked_human.track_id = i
             tracked_human.segments.append(human_segment)
             tracked_humans.humans.append(tracked_human)
 

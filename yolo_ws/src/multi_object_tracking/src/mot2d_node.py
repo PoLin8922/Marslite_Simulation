@@ -36,6 +36,7 @@ from human_msgs.msg import TrackedHuman
 from human_msgs.msg import TrackedSegmentType
 from human_msgs.msg import TrackedSegment
 
+
 INTEREST_CLASSES = ["person"]
 MAX_WALKING_SPEED = 1.5
 ODOM_FRAME = "odom"
@@ -78,12 +79,13 @@ class MultiObjectTrackingNode(object):
 
     def det_result_cb(self, msg):
         try:
-            (trans, rot) = self.tflistener.lookupTransform(ODOM_FRAME, msg.header.frame_id, rospy.Time())
-            # print("trans:", trans, "\nrot:", rot)
+            # (trans, rot) = self.tflistener.lookupTransform(ODOM_FRAME, msg.header.frame_id, rospy.Time())
+            (trans, rot) = self.tflistener.lookupTransform(MAP_FRAME, msg.header.frame_id, rospy.Time())
             tf_laser2odom = self.tflistener.fromTranslationRotation(trans, rot)
             
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            rospy.logwarn("Cannot get tf from {} to {}".format(ODOM_FRAME, msg.header.frame_id))
+            # rospy.logwarn("Cannot get tf from {} to {}".format(ODOM_FRAME, msg.header.frame_id))
+            rospy.logwarn("Cannot get tf from {} to {}".format(MAP_FRAME, msg.header.frame_id))
             tf_laser2odom = np.eye(4)
 
         dets_list = None
@@ -140,75 +142,75 @@ class MultiObjectTrackingNode(object):
             yaw = np.arctan2(vy, vx)
 
             # Custom ROS message
-            trk3d_msg = Trk3D()
-            trk3d_msg.x, trk3d_msg.y = d[0], d[1]
-            trk3d_msg.radius = d[2]
-            trk3d_msg.vx, trk3d_msg.vy = vx, vy
-            trk3d_msg.yaw = yaw
-            trk3d_msg.confidence = d[6]
-            trk3d_msg.class_id = int(d[7])
-            trk3d_array.trks_list.append(trk3d_msg)
+            # trk3d_msg = Trk3D()
+            # trk3d_msg.x, trk3d_msg.y = d[0], d[1]
+            # trk3d_msg.radius = d[2]
+            # trk3d_msg.vx, trk3d_msg.vy = vx, vy
+            # trk3d_msg.yaw = yaw
+            # trk3d_msg.confidence = d[6]
+            # trk3d_msg.class_id = int(d[7])
+            # trk3d_array.trks_list.append(trk3d_msg)
 
             # Visualization
-            marker = Marker()
-            marker.header.frame_id = ODOM_FRAME # msg.header.frame_id
-            marker.header.stamp = rospy.Time()
-            marker.ns = 'tracking_object'
-            marker.id = idx
-            marker.lifetime = rospy.Duration(self.marker_lifetime)#The lifetime of the bounding-box, you can modify it according to the power of your machine.
-            marker.type = Marker.CYLINDER
-            marker.action = Marker.ADD
-            marker.scale.x = d[2] * 2
-            marker.scale.y = d[2] * 2
-            marker.scale.z = 1.6
-            marker.color.b = 1.0
-            marker.color.a = 0.5 #The alpha of the bounding-box
-            marker.pose.position.x = d[0]
-            marker.pose.position.y = d[1]
-            marker.pose.position.z = tf_laser2odom[2][3] # 0.0
+            # marker = Marker()
+            # marker.header.frame_id = ODOM_FRAME # msg.header.frame_id
+            # marker.header.stamp = rospy.Time()
+            # marker.ns = 'tracking_object'
+            # marker.id = idx
+            # marker.lifetime = rospy.Duration(self.marker_lifetime)#The lifetime of the bounding-box, you can modify it according to the power of your machine.
+            # marker.type = Marker.CYLINDER
+            # marker.action = Marker.ADD
+            # marker.scale.x = d[2] * 2
+            # marker.scale.y = d[2] * 2
+            # marker.scale.z = 1.6
+            # marker.color.b = 1.0
+            # marker.color.a = 0.5 #The alpha of the bounding-box
+            # marker.pose.position.x = d[0]
+            # marker.pose.position.y = d[1]
+            # marker.pose.position.z = tf_laser2odom[2][3] # 0.0
             q = euler_to_quaternion(0, 0, yaw)
-            marker.pose.orientation.x = q[0]
-            marker.pose.orientation.y = q[1]
-            marker.pose.orientation.z = q[2]
-            marker.pose.orientation.w = q[3]
-            marker_array.markers.append(marker)
+            # marker.pose.orientation.x = q[0]
+            # marker.pose.orientation.y = q[1]
+            # marker.pose.orientation.z = q[2]
+            # marker.pose.orientation.w = q[3]
+            # marker_array.markers.append(marker)
 
             # Show tracking ID
-            str_marker = Marker()
-            str_marker.header.frame_id = ODOM_FRAME
-            str_marker.header.stamp = rospy.Time()
-            str_marker.ns = 'tracking_id'
-            str_marker.id = idx
-            str_marker.scale.z = 0.4 #The size of the text
-            str_marker.color.b = 1.0
-            str_marker.color.g = 1.0
-            str_marker.color.r = 1.0
-            str_marker.color.a = 1.0
-            str_marker.pose.position.x = d[0]
-            str_marker.pose.position.y = d[1]
-            str_marker.pose.position.z = 0.0
-            str_marker.lifetime = rospy.Duration(self.marker_lifetime)
-            str_marker.type = Marker.TEXT_VIEW_FACING
-            str_marker.action = Marker.ADD
-            # str_marker.text = "{}".format(int(d[5])) # str(d[5])
-            # str_marker.text = "person" + str(int(d[5]))
-            str_marker.text = "{:.2f}".format(speed)
-            marker_array.markers.append(str_marker)
+            # str_marker = Marker()
+            # str_marker.header.frame_id = ODOM_FRAME
+            # str_marker.header.stamp = rospy.Time()
+            # str_marker.ns = 'tracking_id'
+            # str_marker.id = idx
+            # str_marker.scale.z = 0.4 #The size of the text
+            # str_marker.color.b = 1.0
+            # str_marker.color.g = 1.0
+            # str_marker.color.r = 1.0
+            # str_marker.color.a = 1.0
+            # str_marker.pose.position.x = d[0]
+            # str_marker.pose.position.y = d[1]
+            # str_marker.pose.position.z = 0.0
+            # str_marker.lifetime = rospy.Duration(self.marker_lifetime)
+            # str_marker.type = Marker.TEXT_VIEW_FACING
+            # str_marker.action = Marker.ADD
+            # # str_marker.text = "{}".format(int(d[5])) # str(d[5])
+            # # str_marker.text = "person" + str(int(d[5]))
+            # str_marker.text = "{:.2f}".format(speed)
+            # marker_array.markers.append(str_marker)
             
             # Show direction 
-            arrow_marker = copy.deepcopy(marker)
-            arrow_marker.type = Marker.ARROW
-            arrow_marker.ns = 'direction_arrow'
-            arrow_marker.scale.x = 1.0 * (speed / MAX_WALKING_SPEED)
-            arrow_marker.scale.y = 0.2
-            arrow_marker.scale.z = 0.2
-            marker_array.markers.append(arrow_marker)
+            # arrow_marker = copy.deepcopy(marker)
+            # arrow_marker.type = Marker.ARROW
+            # arrow_marker.ns = 'direction_arrow'
+            # arrow_marker.scale.x = 1.0 * (speed / MAX_WALKING_SPEED)
+            # arrow_marker.scale.y = 0.2
+            # arrow_marker.scale.z = 0.2
+            # marker_array.markers.append(arrow_marker)
 
-            # Publish tracking result
-            trk3d_array.header.frame_id = ODOM_FRAME 
-            trk3d_array.header.stamp = rospy.Time()
-            trk3d_array.scan = msg.scan
-            self.pub_trk3d_result.publish(trk3d_array)
+            # # Publish tracking result
+            # trk3d_array.header.frame_id = ODOM_FRAME 
+            # trk3d_array.header.stamp = rospy.Time()
+            # trk3d_array.scan = msg.scan
+            # self.pub_trk3d_result.publish(trk3d_array)
 
             # Pub humans
             # if math.sqrt(d[0]**2 + d[1]**2) < 4:
@@ -246,13 +248,32 @@ class MultiObjectTrackingNode(object):
             tracked_human.segments.append(human_segment)
             self.tracked_humans.humans.append(tracked_human)
 
+        # Adding static human coordinates (x, y)
+        # static_humans = [
+        #     (-4.5549082756,-4.36297702789), (-5.67179727554,-3.30626940727), (-6.06984233856,-1.8177126646)
+        # ]
+        static_humans = [
+            (-5.16965198517,-5.17823123932), (-4.38030338287,-6.03064537048), (-3.56143164635,-6.81289148331), (-2.6241736412, -7.0585641861)
+        ]
+
+        for i, (x, y) in enumerate(static_humans):
+            static_segment = TrackedSegment()
+            static_segment.type = self.Segment_Type
+            static_segment.pose.pose.position.x = x
+            static_segment.pose.pose.position.y = y
+            static_segment.pose.pose.position.z = 0.0
+            static_segment.pose.pose.orientation.w = 1.0  
+            static_human = TrackedHuman()
+            static_human.track_id = 1000 + i  
+            static_human.segments.append(static_segment)
+            self.tracked_humans.humans.append(static_human)
+
         if self.tracked_humans.humans:
             self.tracked_humans.header.stamp = rospy.Time.now()
-            # self.tracked_humans.header.frame_id = 'map'
-            self.tracked_humans.header.frame_id = 'odom'
+            self.tracked_humans.header.frame_id = 'map'
+            # self.tracked_humans.header.frame_id = 'odom'
             self.tracked_humans_pub.publish(self.tracked_humans)
-        
-
+    
 
     def shutdown_cb(self):
         rospy.loginfo("Shutdown " + rospy.get_name())

@@ -7,7 +7,7 @@ always_send_full_costmap: true
 
 obstacle_layer:
  enabled: true
- obstacle_range: 3.0
+ obstacle_range: 4.0
  raytrace_range: 3.5
  footprint_clearing_enabled: true
  track_unknown_space: true

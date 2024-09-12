@@ -19,7 +19,7 @@ class MainNode:
         self.base_name = 'our'
         self.nav_state_sub = rospy.Subscriber('nav_state_gt', Bool, self.nav_state_callback)
 
-        self.distance_calculator = DistanceCalculator()
+        # self.distance_calculator = DistanceCalculator()
         self.position_recorder = PositionRecorder()
 
         rospy.loginfo("Main node started")

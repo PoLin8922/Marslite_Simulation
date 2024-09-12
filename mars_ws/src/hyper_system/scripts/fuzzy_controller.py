@@ -42,6 +42,7 @@ class FyzzyController:
         self.min_obstacle_dist = 0.25
         self.robot_move = False
         self.crossing_door = False
+        self.scenario = "non"
         self.command = "rosrun dynamic_reconfigure dynparam set " 
 
         # Initialize the moving averages
@@ -75,7 +76,8 @@ class FyzzyController:
         self.robot_invisiable_level = -1
         self.right_side_level = -1 
         self.pspace_level = -1 
-        self.map_size = 5
+        self.map_w = 5
+        self.map_h = 5
 
         # output
         self.weight_optimaltime = 1
@@ -95,34 +97,45 @@ class FyzzyController:
     def scenario_callback(self, data):
         # rospy.loginfo("Received scenario data: %s", data.data)
         if data.data == "mall":
+            self.scenario = "mall"
             self.speed_up_level_fake = 5
             self.speed_up_level = 1
             self.robot_invisiable_level = 10
             self.right_side_level = 6
             self.pspace_level = 10
-            self.map_size = 5
+            self.map_w = 3.5
+            self.map_h = 3.5
         elif data.data == "corrider":
+            self.scenario = "corrider"
             self.speed_up_level_fake = 7
-            self.speed_up_level = 7
+            self.speed_up_level = 5
             self.robot_invisiable_level = 5
             self.right_side_level = 10
             self.pspace_level = 10
-            # self.map_size = 2.8
-            self.map_size = 3.5
+            # self.map_w = 5.5
+            # self.map_h = 5.5
+            self.map_w = 3.5
+            self.map_h = 3.5
         elif data.data == "warehouse":
+            self.scenario = "warehouse"
             self.speed_up_level_fake = 10
             self.speed_up_level = 10
             self.robot_invisiable_level = 0
             self.right_side_level = 0
             self.pspace_level = 0
-            self.map_size = 3.5
+            self.map_w = 3.8
+            self.map_h = 3.8
+            # self.map_w = 3.5
+            # self.map_h = 3.5
         else:
+            self.scenario = "non"
             self.speed_up_level_fake = -1
             self.speed_up_level = -1
             self.robot_invisiable_level = -1
             self.right_side_level = -1
             self.pspace_level = -1
-            self.map_size = 5
+            self.map_w = 5
+            self.map_h = 5
 
 
     def navigability_callback(self, data):
@@ -166,7 +179,7 @@ class FyzzyController:
         self.speed_up_level_pub.publish(msg)
         msg.data = smoothed_output_fake
         self.weight_optimaltime_pub.publish(msg)
-        print("updated optimaltime: ", msg.data)
+        print("updated optimaltime_fake: ", msg.data)
 
         simulation.input['navigability'] = self.navigability
         simulation.input['speed_up_level'] = self.speed_up_level
@@ -174,7 +187,7 @@ class FyzzyController:
 
         raw_output = simulation.output['weight_optimaltime']
         smoothed_output = self.smooth_output(self.weight_optimaltime_deque, raw_output)
-        print("updated optimaltime_fake: ", smoothed_output)
+        print("updated optimaltime: ", smoothed_output)
 
         return smoothed_output
   
@@ -339,13 +352,19 @@ class FyzzyController:
         elif self.speed_up_level == 7:
             self.inflation_radius_global = 0.35 + self.pspace_cov*1.5
             self.inflation_radius_local = 0.35 + self.pspace_cov*1.0
-            self.weight_viapoint = 1.0
+            # self.weight_viapoint = 1.0
+            self.weight_viapoint = 2.5
             self.min_obstacle_dist = 0.35
         else:
-            self.inflation_radius_global = 0.35 + self.pspace_cov*0.8
-            self.inflation_radius_local = 0.35 + self.pspace_cov*0.25
+            added_global = (self.navigability-0.2)/0.6*1.1
+            added_local = (self.navigability-0.2)/0.6*0.3
+            self.inflation_radius_global = 0.35 + max(added_global, 0)
+            self.inflation_radius_local = 0.35 + max(added_local, 0)
+            # self.inflation_radius_global = 0.35 + self.pspace_cov*0.8
+            # self.inflation_radius_local = 0.35 + self.pspace_cov*0.15
             self.weight_viapoint = 1.0
             self.min_obstacle_dist = 0.25
+        print(self.scenario)
         print("updated inflation_radius_global: ", self.inflation_radius_global)
         print("updated inflation_radius_local: ", self.inflation_radius_local)
         print("updated weight_viapoint: ", self.weight_viapoint)
@@ -384,8 +403,8 @@ class FyzzyController:
         }
 
         map_size_config = {
-            "width": int(self.map_size),
-            "height": int(self.map_size),
+            "width": int(self.map_w),
+            "height": int(self.map_h),
         }
         
         hateb_client.update_configuration(hateb_config)

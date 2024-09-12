@@ -25,6 +25,8 @@ class FyzzyDefinition:
         self.fz_pspace_cov = ctrl.Consequent(np.arange(0.4, 1.21, 0.005), 'pspace_cov')                             
         self.fz_pspace_r_ratio = ctrl.Consequent(np.arange(0.6, 1.01, 0.005), 'pspace_r_ratio')                     
         self.fz_use_external_prediction = ctrl.Consequent(np.arange(0, 1.01, 0.01), 'use_external_prediction')    #### range not yet 
+        # self.fz_inflation_rate_global = ctrl.Consequent(np.arange(0, 1.51, 0.015), 'use_external_prediction')
+        # self.fz_inflation_rate_local = ctrl.Consequent(np.arange(0, 1.01, 0.01), 'use_external_prediction')
 
 
         # define membership function
@@ -79,6 +81,12 @@ class FyzzyDefinition:
 
         self.fz_use_external_prediction['S'] = fuzz.trimf(self.fz_use_external_prediction.universe, [0, 0.4, 0.8])
         self.fz_use_external_prediction['L'] = fuzz.trimf(self.fz_use_external_prediction.universe, [0.6, 0.8, 1.0])
+
+        # self.fz_inflation_rate_global['VL'] = fuzz.gaussmf(self.fz_inflation_rate_global.universe, 0.0, 0.15)
+        # self.fz_inflation_rate_global['L'] = fuzz.gaussmf(self.fz_inflation_rate_global.universe, 0.38, 0.15)
+        # self.fz_inflation_rate_global['M'] = fuzz.gaussmf(self.fz_inflation_rate_global.universe, 0.75, 0.15)
+        # self.fz_inflation_rate_global['H'] = fuzz.gaussmf(self.fz_inflation_rate_global.universe, 1.22, 0.15)
+        # self.fz_inflation_rate_global['VH'] = fuzz.gaussmf(self.fz_inflation_rate_global.universe, 1.5, 0.15)
 
 
         # define rules
@@ -165,6 +173,25 @@ class FyzzyDefinition:
         self.rule64 = ctrl.Rule(self.fz_navigability['H'], self.fz_use_external_prediction['L'])
         self.rule65 = ctrl.Rule(self.fz_navigability['VH'], self.fz_use_external_prediction['L'])
         self.human_path_prediction_controller = ctrl.ControlSystem([self.rule61, self.rule62, self.rule63, self.rule64, self.rule65])
+
+        # ## fz_navigability, fz_right_side_level | fz_pspace_r_ratio
+        # self.rule66 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['M'])
+        # self.rule67 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['L'])
+        # self.rule68 = ctrl.Rule(self.fz_navigability['VL'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['VL'])
+        # self.rule69 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['H'])
+        # self.rule60 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
+        # self.rule61 = ctrl.Rule(self.fz_navigability['L'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
+        # self.rule62 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['H'])
+        # self.rule63 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['M'])
+        # self.rule64 = ctrl.Rule(self.fz_navigability['M'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['L'])
+        # self.rule65 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['VH'])
+        # self.rule66 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['H'])
+        # self.rule67 = ctrl.Rule(self.fz_navigability['H'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['M'])
+        # self.rule68 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['L'], self.fz_pspace_r_ratio['VH'])
+        # self.rule69 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['M'], self.fz_pspace_r_ratio['H'])
+        # self.rule70 = ctrl.Rule(self.fz_navigability['VH'] & self.fz_right_side_level['H'], self.fz_pspace_r_ratio['M'])
+        # self.pspace_r_ratio_controller = ctrl.ControlSystem([self.rule46, self.rule47, self.rule48, self.rule49, self.rule50, self.rule51, self.rule52, self.rule53,
+        #                                                     self.rule54, self.rule55, self.rule56, self.rule57, self.rule58, self.rule59, self.rule60])
 
         # visulization
         # self.fz_speed_up_level.view()

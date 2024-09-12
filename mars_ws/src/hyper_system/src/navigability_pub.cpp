@@ -3,6 +3,7 @@
 #include <queue>
 #include <vector>
 #include <std_msgs/Float32.h>
+#include <std_msgs/String.h>
 #include "hyper_system/Navigability.h"
 
 // Structure to represent a cell in the grid
@@ -16,9 +17,10 @@ class LocalMapAnalyzer {
 private:
     ros::NodeHandle nh_;
     ros::Subscriber map_sub_;
+    // ros::Subscriber scenario_sub_;
     ros::Publisher navigability_pub_;
     nav_msgs::OccupancyGrid local_map_;
-    bool map_received_;
+    bool map_received_, is_corridor_;
     int room_space_threshold_ =  95;
     int navigable_space_threshold_ = 10;
     int map_size_;
@@ -29,6 +31,7 @@ private:
 public:
     LocalMapAnalyzer() : map_received_(false) {
         map_sub_ = nh_.subscribe("/move_base/navigability_costmap/costmap", 1, &LocalMapAnalyzer::mapCallback, this);
+        // scenario_sub_ = nh_.subscribe("/scenario", 1, &LocalMapAnalyzer::scenarioCallback, this);
         navigability_pub_ = nh_.advertise<std_msgs::Float32>("navigability", 1);
     }
 
@@ -36,7 +39,16 @@ public:
         local_map_ = *msg;
         map_received_ = true;
         map_size_ = local_map_.info.width*local_map_.info.height;
+        // map_width_ = local_map_.info.width;
     }
+
+    // void scenarioCallback(const std_msgs::String::ConstPtr& msg) {
+    //     if (msg->data == "corrider") {  
+    //         is_corridor_ = true;
+    //     } else {
+    //         is_corridor_ = false;
+    //     }
+    // }
 
     void publishNavigabilityRatio() {
         float navigability = analyzeLocalMap();
@@ -104,6 +116,10 @@ public:
         }
         
         // printf("map_size:%d, navigable_space:%d \n", map_size_, navigable_space);
+        // if(is_corridor_ ){
+        //     map_size_ = 100*60;
+        //     printf("corridor map_size  : %d\n", map_size_);
+        // }
         float ratio = static_cast<float>(navigable_space) /  map_size_;
         return ratio;
     }

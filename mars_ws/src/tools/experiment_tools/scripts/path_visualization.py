@@ -10,7 +10,7 @@ from scipy.interpolate import UnivariateSpline
 
 # teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_178.json'
 # hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_177.json'
-our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_14.json'
+our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_32.json'
 
 class PathVisualizer:
     def __init__(self):
@@ -28,7 +28,7 @@ class PathVisualizer:
 
         # print("teb path length:", self.calculate_path_length(self.teb_path_data))
         # print("hateb path length:", self.calculate_path_length(self.hateb_path_data))
-        print("our path length:", self.calculate_path_length(self.our_path_data))
+        # print("our path length:", self.calculate_path_length(self.our_path_data))
 
         # rospy.Timer(rospy.Duration(1.0), self.publish_teb_path)
         # rospy.Timer(rospy.Duration(1.0), self.publish_hateb_path)
