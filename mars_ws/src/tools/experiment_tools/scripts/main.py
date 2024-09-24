@@ -13,14 +13,13 @@ class MainNode:
     def __init__(self):
         rospy.init_node('main_node', anonymous=True)
 
+        self.position_recorder = PositionRecorder()
+
         self.is_navigating = False
         self.start_time = None
         self.end_time = None
         self.base_name = 'our'
-        self.nav_state_sub = rospy.Subscriber('nav_state_gt', Bool, self.nav_state_callback)
-
-        # self.distance_calculator = DistanceCalculator()
-        self.position_recorder = PositionRecorder()
+        self.nav_state_sub = rospy.Subscriber('nav_state_gt', Bool, self.nav_state_callback)        
 
         rospy.loginfo("Main node started")
 

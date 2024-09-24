@@ -7,7 +7,7 @@ from std_srvs.srv import Empty
 class StageHumans():
 
     def HumansPub(self):
-        rate = rospy.Rate(0.8)
+        rate = rospy.Rate(0.5)
         clear_costmaps_service = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
         while not rospy.is_shutdown():
             try:

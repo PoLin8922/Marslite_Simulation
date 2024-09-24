@@ -132,7 +132,8 @@ class Yolov4Node(object):
         self.class_names = load_class_names(namesfile)
 
         self.use_cuda_info = torch.cuda.is_available()   
-        self.use_cuda = 1   
+        self.use_cuda = 1  
+        # self.use_cuda = 0 
         if self.use_cuda:
             self.model.cuda()
 

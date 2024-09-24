@@ -51,7 +51,7 @@ namespace move_base {
   MoveBase::MoveBase(tf2_ros::Buffer& tf) :
     tf_(tf),
     as_(NULL),
-    planner_costmap_ros_(NULL), controller_costmap_ros_(NULL), navigability_costmap_ros_(NULL),
+    planner_costmap_ros_(NULL), controller_costmap_ros_(NULL), navigability_costmap_ros_(NULL), displayed_costmap_ros_(NULL),
     bgp_loader_("nav_core", "nav_core::BaseGlobalPlanner"),
     blp_loader_("nav_core", "nav_core::BaseLocalPlanner"),
     recovery_loader_("nav_core", "nav_core::RecoveryBehavior"),
@@ -136,6 +136,9 @@ namespace move_base {
     navigability_costmap_ros_ = new costmap_2d::Costmap2DROS("navigability_costmap", tf_);
     navigability_costmap_ros_->pause();
 
+    displayed_costmap_ros_ = new costmap_2d::Costmap2DROS("displayed_costmap", tf_);
+    displayed_costmap_ros_->pause();
+
     //create a local planner
     try {
       tc_ = blp_loader_.createInstance(local_planner);
@@ -150,6 +153,7 @@ namespace move_base {
     planner_costmap_ros_->start();
     controller_costmap_ros_->start();
     navigability_costmap_ros_ ->start();
+    displayed_costmap_ros_->start();
 
     //advertise a service for getting a plan
     make_plan_srv_ = private_nh.advertiseService("make_plan", &MoveBase::planService, this);
@@ -163,6 +167,7 @@ namespace move_base {
       planner_costmap_ros_->stop();
       controller_costmap_ros_->stop();
       navigability_costmap_ros_->stop();
+      displayed_costmap_ros_->stop();
     }
 
     //load any user specified recovery behaviors, and if that fails load the defaults
@@ -465,6 +470,9 @@ namespace move_base {
 
     if(navigability_costmap_ros_ != NULL)
       delete navigability_costmap_ros_;
+
+    if(displayed_costmap_ros_ != NULL)
+      delete displayed_costmap_ros_;
 
     planner_thread_->interrupt();
     planner_thread_->join();

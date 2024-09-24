@@ -54,7 +54,7 @@ def main():
     args = parser.parse_args()
 
     # file = f'/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/data/simulation1_data_{args.file_number}.json'
-    file = f'/home/berlin/lab/temporary_ws/thesis_marslite/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/data/simulation1_data_{args.file_number}.json'
+    file = f'/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/data/simulation1_data_{args.file_number}.json'
     
     with open(file, 'r') as f:
         data = json.load(f)

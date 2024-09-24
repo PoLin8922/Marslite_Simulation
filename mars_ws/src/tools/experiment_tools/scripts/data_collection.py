@@ -6,10 +6,13 @@ from geometry_msgs.msg import Twist
 import json
 import time
 import os
+import argparse
 
 class DataCollector:
-    def __init__(self):
+    def __init__(self, time_bias):
         rospy.init_node('data_collector', anonymous=True)
+
+        self.time_bias = time_bias
         
         self.data = {
             "time": [],
@@ -25,6 +28,21 @@ class DataCollector:
             "use_external_prediction": [],
             # "cmd_vel_linear": [],
             # "cmd_vel_angular": []
+        }
+
+        self.current_data = {
+            "navigability": None,
+            "speed_up_level": None,
+            "robot_invisiable_level": None,
+            "right_side_level": None,
+            "pspace_level": None,
+            "weight_optimaltime": None,
+            "weight_cc": None,
+            "pspace_cov": None,
+            "pspace_r_ratio": None,
+            "use_external_prediction": None,
+            # "cmd_vel_linear": None,
+            # "cmd_vel_angular": None
         }
 
         self.recording = False
@@ -44,21 +62,6 @@ class DataCollector:
         
         self.start_time = time.time()
         self.base_name = "simulation1_data"
-
-        self.current_data = {
-            "navigability": None,
-            "speed_up_level": None,
-            "robot_invisiable_level": None,
-            "right_side_level": None,
-            "pspace_level": None,
-            "weight_optimaltime": None,
-            "weight_cc": None,
-            "pspace_cov": None,
-            "pspace_r_ratio": None,
-            "use_external_prediction": None,
-            # "cmd_vel_linear": None,
-            # "cmd_vel_angular": None
-        }
 
         self.timer = rospy.Timer(rospy.Duration(0.1), self.collect_data)  # Adjust the duration as needed
 
@@ -91,7 +94,7 @@ class DataCollector:
 
     def collect_data(self, event):
         if self.recording:
-            self.data["time"].append(time.time() - self.start_time)
+            self.data["time"].append(time.time() - self.start_time + self.time_bias)
             self.data["navigability"].append(self.current_data["navigability"])
             self.data["speed_up_level"].append(self.current_data["speed_up_level"])
             self.data["robot_invisiable_level"].append(self.current_data["robot_invisiable_level"])
@@ -140,7 +143,11 @@ class DataCollector:
     #     self.current_data["cmd_vel_angular"] = msg.angular.z
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Data Collector Node")
+    parser.add_argument("time_bias", type=float, help="Time bias to be applied to the timestamps")
+    args = parser.parse_args()
+
     try:
-        DataCollector()
+        DataCollector(args.time_bias)
     except rospy.ROSInterruptException:
         pass

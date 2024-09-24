@@ -7,13 +7,14 @@ import numpy as np
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 from scipy.interpolate import UnivariateSpline
+import argparse
 
 # teb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_178.json'
 # hateb_file_name = '/home/developer/lab/socially-store-robot/mars_ws/src/tools/experiment_tools/files/path/our_177.json'
-our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_32.json'
+# our_file_name = '/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_57.json'
 
 class PathVisualizer:
-    def __init__(self):
+    def __init__(self, our_file_name):
         rospy.init_node('path_visualizer')
 
         # self.teb_path_pub = rospy.Publisher('/teb_path', Path, queue_size=10)
@@ -110,8 +111,14 @@ class PathVisualizer:
         self.our_path_pub.publish(self.our_path)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Plot robot path.')
+    parser.add_argument('file_number', type=int, help='The number of the path data file to open')
+    args = parser.parse_args()
+
+    our_file_name = f'/home/developer/berlin/Marslite_Simulation/mars_ws/src/tools/experiment_tools/files/path/our_{args.file_number}.json'
+
     try:
-        path_visualizer = PathVisualizer()
+        path_visualizer = PathVisualizer(our_file_name)
         rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("Path Visualizer node terminated.")

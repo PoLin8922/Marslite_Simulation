@@ -447,6 +447,27 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
     cv::Mat cvimage;
     cv_bridge::CvImagePtr detected_cv_ptr = cv_bridge::toCvCopy(srv.response.result.result_image);
     cv::undistort(detected_cv_ptr->image, cvimage, K_, D_);
+
+    // --------------------------------------------------------------------------------------
+    // bool skip_scan_image_combine = true;
+    bool skip_scan_image_combine = false;
+    if(skip_scan_image_combine){
+        if(pub_detection_image_.getNumSubscribers() > 0){
+            cv_bridge::CvImage result_image(cv_ptr->header, "rgb8", cvimage);
+            pub_detection_image_.publish(result_image.toImageMsg());
+        }
+
+        // Publish detection result
+        if(pub_detection3d_.getNumSubscribers() > 0) {
+            detection_array.header.frame_id = "merged_laser_frame";
+            detection_array.header.stamp = ros::Time::now();
+            detection_array.scan = *laser_msg_ptr;
+            pub_detection3d_.publish(detection_array);
+        }
+
+        return;
+    }
+    // --------------------------------------------------------------------------------------
     
     // Convert laserscan to pointcloud:  laserscan --> ROS PointCloud2 --> PCL PointCloudXYZ
     sensor_msgs::PointCloud2 cloud_msg;
@@ -519,77 +540,77 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
                 laser_clusters_list.push_back(laser_cluster);
 
                 // Visualization 
-                visualization_msgs::Marker marker;
-                marker.header.frame_id = laser_msg_ptr->header.frame_id;
-                marker.header.stamp = ros::Time();
-                marker.ns = "debug1";
-                marker.id = it - cluster_indices.begin();
-                marker.type = visualization_msgs::Marker::LINE_STRIP;
-                marker.lifetime = ros::Duration(kLifetimeOfMarker);
-                marker.action = visualization_msgs::Marker::ADD;
-                geometry_msgs::Point tmp_pt;
-                tmp_pt.x = min_point.x;
-                tmp_pt.y = min_point.y;
-                marker.points.push_back(tmp_pt);
-                tmp_pt.x = max_point.x;
-                tmp_pt.y = max_point.y;
-                marker.points.push_back(tmp_pt);
-                marker.scale.x = 0.1;
-                marker.pose.orientation.x = 0.0;
-                marker.pose.orientation.y = 0.0;
-                marker.pose.orientation.z = 0.0;
-                marker.pose.orientation.w = 1.0;
-                marker.color.a = 0.5;
-                marker.color.r = 1.0;
-                marker.color.b = 1.0;
-                debug_mrk_array.markers.push_back(marker);
+                // visualization_msgs::Marker marker;
+                // marker.header.frame_id = laser_msg_ptr->header.frame_id;
+                // marker.header.stamp = ros::Time();
+                // marker.ns = "debug1";
+                // marker.id = it - cluster_indices.begin();
+                // marker.type = visualization_msgs::Marker::LINE_STRIP;
+                // marker.lifetime = ros::Duration(kLifetimeOfMarker);
+                // marker.action = visualization_msgs::Marker::ADD;
+                // geometry_msgs::Point tmp_pt;
+                // tmp_pt.x = min_point.x;
+                // tmp_pt.y = min_point.y;
+                // marker.points.push_back(tmp_pt);
+                // tmp_pt.x = max_point.x;
+                // tmp_pt.y = max_point.y;
+                // marker.points.push_back(tmp_pt);
+                // marker.scale.x = 0.1;
+                // marker.pose.orientation.x = 0.0;
+                // marker.pose.orientation.y = 0.0;
+                // marker.pose.orientation.z = 0.0;
+                // marker.pose.orientation.w = 1.0;
+                // marker.color.a = 0.5;
+                // marker.color.r = 1.0;
+                // marker.color.b = 1.0;
+                // debug_mrk_array.markers.push_back(marker);
 
-                visualization_msgs::Marker marker2;
-                marker2.header.frame_id = laser_msg_ptr->header.frame_id;
-                marker2.header.stamp = ros::Time();
-                marker2.ns = "debug2";
-                marker2.id = it - cluster_indices.begin();
-                marker2.type = visualization_msgs::Marker::SPHERE;
-                marker2.lifetime = ros::Duration(kLifetimeOfMarker);
-                marker2.action = visualization_msgs::Marker::ADD;
-                marker2.scale.x = 0.5;
-                marker2.scale.y = 0.5;
-                marker2.scale.z = 0.5;
-                marker2.pose.position.x = center[0];
-                marker2.pose.position.y = center[1];
-                marker2.pose.orientation.x = 0.0;
-                marker2.pose.orientation.y = 0.0;
-                marker2.pose.orientation.z = 0.0;
-                marker2.pose.orientation.w = 1.0;
-                marker2.color.a = 0.5;
-                marker2.color.b = 1.0;
-                debug_mrk_array.markers.push_back(marker2);
+                // visualization_msgs::Marker marker2;
+                // marker2.header.frame_id = laser_msg_ptr->header.frame_id;
+                // marker2.header.stamp = ros::Time();
+                // marker2.ns = "debug2";
+                // marker2.id = it - cluster_indices.begin();
+                // marker2.type = visualization_msgs::Marker::SPHERE;
+                // marker2.lifetime = ros::Duration(kLifetimeOfMarker);
+                // marker2.action = visualization_msgs::Marker::ADD;
+                // marker2.scale.x = 0.5;
+                // marker2.scale.y = 0.5;
+                // marker2.scale.z = 0.5;
+                // marker2.pose.position.x = center[0];
+                // marker2.pose.position.y = center[1];
+                // marker2.pose.orientation.x = 0.0;
+                // marker2.pose.orientation.y = 0.0;
+                // marker2.pose.orientation.z = 0.0;
+                // marker2.pose.orientation.w = 1.0;
+                // marker2.color.a = 0.5;
+                // marker2.color.b = 1.0;
+                // debug_mrk_array.markers.push_back(marker2);
 
-                visualization_msgs::Marker marker3;
-                marker3.header.frame_id = laser_msg_ptr->header.frame_id;
-                marker3.header.stamp = ros::Time();
-                marker3.ns = "debug3";
-                marker3.id = it - cluster_indices.begin();
-                marker3.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
-                marker3.lifetime = ros::Duration(kLifetimeOfMarker);
-                marker3.action = visualization_msgs::Marker::ADD;
-                marker3.scale.z = 0.5;
-                marker3.pose.position.x = center[0];
-                marker3.pose.position.y = center[1];
-                marker3.pose.position.z = 1.0;
-                marker3.pose.orientation.x = 0.0;
-                marker3.pose.orientation.y = 0.0;
-                marker3.pose.orientation.z = 0.0;
-                marker3.pose.orientation.w = 1.0;
-                marker3.color.a = 1.0;
-                marker3.color.r = 1.0;
-                marker3.color.g = 1.0;
-                // marker3.text = std::to_string(laser_cluster.dimension_2d);
-                marker3.text = std::to_string(std::atan2(laser_cluster.key_vec_imgspace.y, laser_cluster.key_vec_imgspace.x) / M_PI * 180.0);
-                debug_mrk_array.markers.push_back(marker3);
+                // visualization_msgs::Marker marker3;
+                // marker3.header.frame_id = laser_msg_ptr->header.frame_id;
+                // marker3.header.stamp = ros::Time();
+                // marker3.ns = "debug3";
+                // marker3.id = it - cluster_indices.begin();
+                // marker3.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+                // marker3.lifetime = ros::Duration(kLifetimeOfMarker);
+                // marker3.action = visualization_msgs::Marker::ADD;
+                // marker3.scale.z = 0.5;
+                // marker3.pose.position.x = center[0];
+                // marker3.pose.position.y = center[1];
+                // marker3.pose.position.z = 1.0;
+                // marker3.pose.orientation.x = 0.0;
+                // marker3.pose.orientation.y = 0.0;
+                // marker3.pose.orientation.z = 0.0;
+                // marker3.pose.orientation.w = 1.0;
+                // marker3.color.a = 1.0;
+                // marker3.color.r = 1.0;
+                // marker3.color.g = 1.0;
+                // // marker3.text = std::to_string(laser_cluster.dimension_2d);
+                // marker3.text = std::to_string(std::atan2(laser_cluster.key_vec_imgspace.y, laser_cluster.key_vec_imgspace.x) / M_PI * 180.0);
+                // debug_mrk_array.markers.push_back(marker3);
             }
         }
-        pub_debug_mrk_array_.publish(debug_mrk_array);
+        // pub_debug_mrk_array_.publish(debug_mrk_array);
 
         
 
@@ -674,43 +695,43 @@ void ScanImageCombineNode::img_scan_cb(const cv_bridge::CvImage::ConstPtr &cv_pt
                     detection_array.dets_list.push_back(det_msg);
 
                     // Visualization
-                    if(flag_det_vis_) {
-                        visualization_msgs::Marker marker;
-                        marker.header.frame_id = laser_msg_ptr->header.frame_id;
-                        marker.header.stamp = ros::Time();
-                        marker.ns = "detection_result";
-                        marker.id = i;
-                        marker.type = visualization_msgs::Marker::CUBE;
-                        marker.lifetime = ros::Duration(kLifetimeOfMarker);
-                        marker.action = visualization_msgs::Marker::ADD;
-                        marker.pose.position.x = obj_list_[i].location.x;
-                        marker.pose.position.y = obj_list_[i].location.y;
-                        marker.pose.position.z = rightbottom_laserframe.getZ() * std::cos(camera_mount_elevation_angle_);
-                        marker.pose.orientation.x = 0.0;
-                        marker.pose.orientation.y = 0.0;
-                        marker.pose.orientation.z = 0.0;
-                        marker.pose.orientation.w = 1.0;
-                        marker.scale.x = w_from_image;
-                        marker.scale.y = w_from_image;
-                        marker.scale.z = h_from_image;
-                        marker.color.a = 0.4;
-                        marker.color.g = 1.0;
-                        marker_array.markers.push_back(marker);
-                    }
+                    // if(flag_det_vis_) {
+                    //     visualization_msgs::Marker marker;
+                    //     marker.header.frame_id = laser_msg_ptr->header.frame_id;
+                    //     marker.header.stamp = ros::Time();
+                    //     marker.ns = "detection_result";
+                    //     marker.id = i;
+                    //     marker.type = visualization_msgs::Marker::CUBE;
+                    //     marker.lifetime = ros::Duration(kLifetimeOfMarker);
+                    //     marker.action = visualization_msgs::Marker::ADD;
+                    //     marker.pose.position.x = obj_list_[i].location.x;
+                    //     marker.pose.position.y = obj_list_[i].location.y;
+                    //     marker.pose.position.z = rightbottom_laserframe.getZ() * std::cos(camera_mount_elevation_angle_);
+                    //     marker.pose.orientation.x = 0.0;
+                    //     marker.pose.orientation.y = 0.0;
+                    //     marker.pose.orientation.z = 0.0;
+                    //     marker.pose.orientation.w = 1.0;
+                    //     marker.scale.x = w_from_image;
+                    //     marker.scale.y = w_from_image;
+                    //     marker.scale.z = h_from_image;
+                    //     marker.color.a = 0.4;
+                    //     marker.color.g = 1.0;
+                    //     marker_array.markers.push_back(marker);
+                    // }
                 }
             }
         }   // end if check prerequisite for the linear assignment
     } // end if check cloud size > 0
     
     // Publish visualization topics
-    if(flag_det_vis_ && pub_marker_array_.getNumSubscribers() > 0)
-        pub_marker_array_.publish(marker_array);
-    if(flag_det_vis_ && pub_colored_pc_.getNumSubscribers() > 0) {
-        sensor_msgs::PointCloud2 colored_cloud_msg;
-        pcl::toROSMsg(*cloud_colored, colored_cloud_msg);
-        colored_cloud_msg.header.frame_id = "merged_laser_frame";
-        pub_colored_pc_.publish(colored_cloud_msg);
-    }
+    // if(flag_det_vis_ && pub_marker_array_.getNumSubscribers() > 0)
+    //     pub_marker_array_.publish(marker_array);
+    // if(flag_det_vis_ && pub_colored_pc_.getNumSubscribers() > 0) {
+    //     sensor_msgs::PointCloud2 colored_cloud_msg;
+    //     pcl::toROSMsg(*cloud_colored, colored_cloud_msg);
+    //     colored_cloud_msg.header.frame_id = "merged_laser_frame";
+    //     pub_colored_pc_.publish(colored_cloud_msg);
+    // }
 
     if(pub_detection_image_.getNumSubscribers() > 0){
         cv_bridge::CvImage result_image(cv_ptr->header, "rgb8", cvimage);
